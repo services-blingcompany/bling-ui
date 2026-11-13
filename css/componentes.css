@@ -1,5 +1,5 @@
 /* @blingcompany/bling-ui — Componentes (.tarjeta, .boton-*, .insignia-*, .campo,
-   .selector, .pestana, .cifra, .rotulo-mayus, .item-menu, .modal…). CSS común:
+   .selector, .pestana, .cifra, .rotulo-mayus, .item-menu, .modal, .barra-lateral…). CSS común:
    funciona con Tailwind 3 y 4. Importarlo ANTES que las utilidades de
    Tailwind para que las clases sueltas (h-8, px-2) sigan ganando. */
 
@@ -458,6 +458,178 @@
     box-shadow: var(--nc-shadow);
   }
 
+  /* ── Barra lateral ───────────────────────────────────────────────────────
+     Navegación de app, igual en todo el ecosistema. Fondo blanco en el tema
+     claro (--nc-bg-100), borde de un píxel, filas compactas.
+
+     <aside class="barra-lateral" data-compacta="false">
+       <div class="barra-lateral-marca">logo · nombre · botón para plegar</div>
+       <nav class="barra-lateral-nav sidebar-scroll">
+         <div class="barra-lateral-grupo">
+           <p class="barra-lateral-titulo">Cuenta</p>
+           <a class="barra-lateral-item" aria-current="page">
+             <svg/> <span class="barra-lateral-texto">Mi perfil</span>
+           </a>
+         </div>
+       </nav>
+       <div class="barra-lateral-pie">
+         <button class="barra-lateral-cuenta">avatar · nombre · email</button>
+       </div>
+     </aside>
+
+     data-compacta="true" la deja en 64 px: sólo íconos (los textos se
+     ocultan y quedan como title/aria-label en cada ítem). */
+  .barra-lateral {
+    --ancho-barra: 256px;
+    display: flex;
+    flex-direction: column;
+    width: var(--ancho-barra);
+    height: 100%;
+    min-height: 0;
+    /* Blanca en el tema claro; en los oscuros, el tono más profundo del tema. */
+    background-color: var(--nc-bg-100);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radio-panel);
+    color: var(--color-ink-soft);
+    overflow: hidden;
+    transition: width 200ms ease-out;
+  }
+  .barra-lateral[data-compacta='true'] {
+    --ancho-barra: 64px;
+  }
+  .barra-lateral-marca {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--esp-2);
+    height: 56px;
+    padding: 0 var(--esp-3) 0 var(--esp-4);
+    flex-shrink: 0;
+  }
+  .barra-lateral[data-compacta='true'] .barra-lateral-marca {
+    flex-direction: column;
+    justify-content: center;
+    height: auto;
+    padding: var(--esp-3) 0;
+  }
+  .barra-lateral-nav {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: var(--esp-2) var(--esp-3);
+  }
+  .barra-lateral-grupo + .barra-lateral-grupo {
+    margin-top: var(--esp-6);
+  }
+  .barra-lateral-titulo {
+    padding: 0 var(--esp-2);
+    margin-bottom: var(--esp-2);
+    font-size: var(--texto-rotulo);
+    line-height: var(--interlineado-rotulo);
+    color: var(--color-muted);
+  }
+  .barra-lateral-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 32px;
+    padding: 0 var(--esp-2);
+    border: 1px solid transparent;
+    border-radius: var(--radio-control);
+    font-size: 13px;
+    color: var(--color-ink-soft);
+    text-align: left;
+    white-space: nowrap;
+    transition: background-color 120ms, color 120ms, border-color 120ms;
+  }
+  .barra-lateral-item + .barra-lateral-item {
+    margin-top: 2px;
+  }
+  .barra-lateral-item > svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--color-muted);
+    stroke-width: 1.75;
+  }
+  .barra-lateral-item:hover {
+    background-color: var(--color-surface-2);
+    color: var(--color-ink);
+  }
+  .barra-lateral-item[aria-current='page'] {
+    background-color: var(--color-surface-2);
+    border-color: var(--color-line);
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+  .barra-lateral-item[aria-current='page'] > svg {
+    color: var(--color-ink);
+  }
+  .barra-lateral-texto {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .barra-lateral[data-compacta='true'] .barra-lateral-nav {
+    padding: var(--esp-2);
+  }
+  .barra-lateral[data-compacta='true'] .barra-lateral-item {
+    justify-content: center;
+    padding: 0;
+  }
+  .barra-lateral[data-compacta='true'] :is(.barra-lateral-texto, .barra-lateral-titulo, .barra-lateral-ocultable) {
+    display: none;
+  }
+  .barra-lateral[data-compacta='true'] .barra-lateral-grupo + .barra-lateral-grupo {
+    margin-top: var(--esp-3);
+    padding-top: var(--esp-3);
+    border-top: 1px solid var(--color-line);
+  }
+  .barra-lateral-pie {
+    flex-shrink: 0;
+    padding: var(--esp-2) var(--esp-3) var(--esp-3);
+    border-top: 1px solid var(--color-line);
+  }
+  .barra-lateral[data-compacta='true'] .barra-lateral-pie {
+    padding: var(--esp-2);
+  }
+  /* Fila de la cuenta: abre el menú del usuario (perfil, tema, salir). */
+  .barra-lateral-cuenta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 6px;
+    border-radius: var(--radio-control);
+    text-align: left;
+    transition: background-color 120ms;
+  }
+  .barra-lateral-cuenta:hover,
+  .barra-lateral-cuenta[aria-expanded='true'] {
+    background-color: var(--color-surface-2);
+  }
+  .barra-lateral[data-compacta='true'] .barra-lateral-cuenta {
+    justify-content: center;
+  }
+  /* Menú flotante (de la cuenta, o cualquier otro): surge sobre el disparador. */
+  .menu-flotante {
+    padding: 4px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radio-control);
+    box-shadow: var(--nc-shadow);
+  }
+  .menu-flotante .item-menu > svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-muted);
+  }
+  .menu-flotante hr {
+    margin: 4px 0;
+    border: 0;
+    border-top: 1px solid var(--color-line);
+  }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Foco visible con teclado. El tema lo dibuja en los campos; acá se suma a

@@ -49,6 +49,8 @@ const componentes = readFileSync(join(raiz, 'css/componentes.css'), 'utf8');
 const definidas = new Set([...tokens.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
 const tema = readFileSync(join(raiz, 'css/tema.css'), 'utf8');
 for (const m of tema.matchAll(/(--[a-z0-9-]+)\s*:/g)) definidas.add(m[1]);
+// Variables locales de un componente (p. ej. --ancho-barra en .barra-lateral).
+for (const m of componentes.matchAll(/(--[a-z0-9-]+)\s*:/g)) definidas.add(m[1]);
 const usadas = new Set([...componentes.matchAll(/var\((--[a-z0-9-]+)/g)].map((m) => m[1]));
 const faltan = [...usadas].filter((v) => !definidas.has(v));
 comprobar(faltan.length === 0, `componentes: todas las variables definidas${faltan.length ? ` (faltan ${faltan.join(', ')})` : ''}`);
