@@ -1,0 +1,984 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   @blingcompany/bling-ui — Tema del ecosistema (FUENTE DE VERDAD)
+   ─────────────────────────────────────────────────────────────────────────────
+   Los 6 temas (corporate, light, dark, daltonico, horizon, amoled) como
+   variables --nc-* / --bling-* sobre la clase del <html>. Antes vivía en el
+   repo bling y se copiaba con `theme:sync`; desde bling-ui se instala como
+   dependencia (o se vendoriza con scripts/vendorizar.mjs).
+   Lo propio de cada app (editores, animaciones) NO va acá.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ========================================
+   Bling Theme — CSS Custom Properties
+   Default: Corporate (warm dark + emerald)
+   Other themes: Light, Dark, AMOLED, Horizon, Daltonico
+   ======================================== */
+
+/* ── Fuente de verdad del ecosistema ──────────────────────────────────────
+   Este archivo es el canónico de los 4 temas/ apps: bling, market (idéntico
+   byte a byte), shop (lo común + su propia sección de editor) y auth (sólo
+   tokens, con acento propio declarado). Un cambio acá se propaga con
+   `npm run theme:sync` y se verifica con `npm run theme:check`; la lógica
+   vive en scripts/theme-sync.mjs.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ─── Corporate — warm dark + emerald accent, luxury corporate feel ─── */
+:root, html.corporate, html:not(.light):not(.amoled):not(.dark):not(.horizon):not(.daltonico) {
+  --nc-bg-0: #0c0d0f;
+  --nc-bg-30: #151618;
+  --nc-bg-70: #121315;
+  --nc-bg-100: #0c0d0f;
+  --nc-surface-0: #151618;
+  --nc-surface-30: #1e2023;
+  --nc-surface-70: #26282c;
+  --nc-surface-100: #17191c;
+  --nc-text-body: #c8c5be;
+  --nc-text-muted: #96938b;
+  --nc-text-h2: #eeede8;
+  --nc-text-h1: #ffffff;
+  --nc-text-focus: #f5f4f0;
+  --nc-border: rgba(180, 175, 160, 0.14);
+  --nc-border-focus: rgba(16, 185, 129, 0.5);
+  --nc-placeholder: rgba(122, 119, 110, 0.5);
+  --nc-primary: #10b981;
+  --nc-primary-hover: #34d399;
+  --nc-brand: #10b981;
+  --nc-brand-hover: #34d399;
+  --nc-surface-hover: rgba(38, 40, 44, 0.6);
+
+  /* ── Glass palette ── */
+  --bling-surface-rgb: 21, 22, 24;
+  --bling-surface-highlight-rgb: 38, 40, 44;
+  --bling-surface-hover-rgb: 50, 52, 58;
+  --bling-surface-hover-base-rgb: 23, 25, 28;
+  --bling-edge-light-rgb: 200, 197, 190;
+  --bling-edge-mid-rgb: 122, 119, 110;
+  --bling-edge-dark-rgb: 38, 40, 44;
+  --bling-shadow-rgb: 0, 0, 0;
+  --bling-glow-rgb: 16, 185, 129;
+  --bling-ambient-a-rgb: 28, 32, 30;
+  --bling-ambient-b-rgb: 38, 40, 44;
+  --bling-ambient-c-rgb: 18, 20, 22;
+  --bling-btn-bg-rgb: 18, 19, 21;
+  --bling-accent-rgb: 16, 185, 129;
+  --bling-accent-bright-rgb: 52, 211, 153;
+  --bling-accent-dim-rgb: 5, 130, 88;
+  --bling-btn-shine-rgb: 255, 255, 255;
+  --bling-btn-shade-rgb: 0, 0, 0;
+  --bling-accent: #10b981;
+
+  /* ── Semantic variables ── */
+  --bling-danger: #ef4444;
+  --bling-danger-bg: rgba(239, 68, 68, 0.08);
+  --bling-danger-border: rgba(239, 68, 68, 0.15);
+  --bling-success: #10b981;
+  --bling-success-bg: rgba(16, 185, 129, 0.07);
+  --bling-success-border: rgba(16, 185, 129, 0.14);
+  --bling-warning: #f59e0b;
+  --bling-warning-bg: rgba(245, 158, 11, 0.06);
+  --bling-warning-border: rgba(245, 158, 11, 0.12);
+  --bling-info: #06b6d4;
+  --bling-info-bg: rgba(6, 182, 212, 0.07);
+  --bling-info-border: rgba(6, 182, 212, 0.12);
+  --bling-live: #10b981;
+  --bling-live-bg: rgba(16, 185, 129, 0.07);
+  --bling-urgent: #ef4444;
+  --bling-urgent-bg: rgba(239, 68, 68, 0.08);
+  --bling-primary-fg: #0c0d0f;
+  --bling-avatar-0: rgba(16, 185, 129, 0.75);
+  --bling-avatar-1: rgba(139, 92, 246, 0.65);
+  --bling-avatar-2: rgba(245, 158, 11, 0.65);
+  --bling-avatar-3: rgba(236, 72, 153, 0.65);
+  --bling-avatar-4: rgba(16, 185, 129, 0.45);
+  --bling-avatar-5: rgba(200, 197, 190, 0.5);
+  --bling-avatar-6: rgba(50, 52, 58, 0.75);
+  --bling-avatar-7: rgba(16, 185, 129, 0.6);
+
+  /* ── Semantic RGB variants ── */
+  --bling-danger-rgb: 239, 68, 68;
+  --bling-success-rgb: 16, 185, 129;
+  --bling-warning-rgb: 245, 158, 11;
+  --bling-live-rgb: 16, 185, 129;
+  --bling-urgent-rgb: 239, 68, 68;
+  --bling-brand-rgb: 16, 185, 129;
+  --nc-primary-rgb: 16, 185, 129;
+  --bling-overlay: rgba(12, 13, 15, 0.65);
+}
+
+/* ─── Tema claro — neutro frío ─── */
+html.light {
+  --nc-bg-0: #f8f9fa;
+  --nc-bg-30: #fcfcfd;
+  --nc-bg-70: #f3f4f6;
+  --nc-bg-100: #ffffff;
+  --nc-surface-0: #ffffff;
+  --nc-surface-30: #f1f2f4;
+  --nc-surface-70: #eceef0;
+  --nc-surface-100: #ffffff;
+  --nc-text-body: #28292b;
+  --nc-text-muted: #66686d;
+  --nc-text-h2: #18191b;
+  --nc-text-h1: #0b0c0d;
+  --nc-text-focus: #0b0c0d;
+  --nc-border: #e2e4e8;
+  --nc-border-focus: #3b82f6;
+  --nc-placeholder: #a1a4aa;
+  --nc-primary: #3b82f6;
+  --nc-primary-hover: #2563eb;
+  --nc-brand: #eab308;
+  --nc-brand-hover: #ca8a04;
+  --nc-surface-hover: #e8eaed;
+
+  --bling-surface-rgb: 235, 236, 239;
+  --bling-surface-highlight-rgb: 248, 249, 251;
+  --bling-surface-hover-rgb: 225, 227, 231;
+  --bling-surface-hover-base-rgb: 235, 236, 239;
+  --bling-edge-light-rgb: 255, 255, 255;
+  --bling-edge-mid-rgb: 212, 214, 218;
+  --bling-edge-dark-rgb: 245, 245, 247;
+  --bling-shadow-rgb: 0, 0, 0;
+  --bling-glow-rgb: 0, 0, 0;
+  --bling-ambient-a-rgb: 0, 0, 0;
+  --bling-ambient-b-rgb: 0, 0, 0;
+  --bling-ambient-c-rgb: 0, 0, 0;
+  --bling-btn-bg-rgb: 238, 239, 242;
+  --bling-accent-rgb: 50, 100, 190;
+  --bling-accent-bright-rgb: 70, 130, 230;
+  --bling-accent-dim-rgb: 0, 0, 0;
+  --bling-btn-shine-rgb: 255, 255, 255;
+  --bling-btn-shade-rgb: 0, 0, 0;
+  --bling-accent: #3264be;
+
+  /* ── Semantic variables ── */
+  --bling-danger-bg: rgba(220, 38, 38, 0.06);
+  --bling-danger-border: rgba(220, 38, 38, 0.12);
+  --bling-success: #16a34a;
+  --bling-success-bg: rgba(22, 163, 74, 0.06);
+  --bling-success-border: rgba(22, 163, 74, 0.12);
+  --bling-warning: #d97706;
+  --bling-warning-bg: rgba(217, 119, 6, 0.05);
+  --bling-warning-border: rgba(217, 119, 6, 0.1);
+  --bling-info: #3b82f6;
+  --bling-info-bg: rgba(59, 130, 246, 0.05);
+  --bling-info-border: rgba(59, 130, 246, 0.1);
+  --bling-live: #16a34a;
+  --bling-live-bg: rgba(22, 163, 74, 0.06);
+  --bling-urgent: #dc2626;
+  --bling-urgent-bg: rgba(220, 38, 38, 0.06);
+  --bling-primary-fg: #ffffff;
+  --bling-avatar-0: rgba(59, 130, 246, 0.7);
+  --bling-avatar-1: rgba(22, 163, 74, 0.7);
+  --bling-avatar-2: rgba(139, 92, 246, 0.7);
+  --bling-avatar-3: rgba(219, 39, 119, 0.7);
+  --bling-avatar-4: rgba(217, 119, 6, 0.7);
+  --bling-avatar-5: rgba(14, 165, 233, 0.7);
+  --bling-avatar-6: rgba(220, 38, 38, 0.7);
+  --bling-avatar-7: rgba(99, 102, 241, 0.7);
+
+  /* ── Semantic RGB variants ── */
+  --bling-danger-rgb: 220, 38, 38;
+  --bling-success-rgb: 22, 163, 74;
+  --bling-warning-rgb: 217, 119, 6;
+  --bling-live-rgb: 22, 163, 74;
+  --bling-urgent-rgb: 220, 38, 38;
+  --bling-brand-rgb: 234, 179, 8;
+  --nc-primary-rgb: 59, 130, 246;
+  --bling-overlay: rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Dark — gris neutro, cero saturación, acento grafito ─── */
+html.dark {
+  --nc-bg-0: #0a0b0d;
+  --nc-bg-30: #111317;
+  --nc-bg-70: #15171c;
+  --nc-bg-100: #08090b;
+  --nc-surface-0: #111317;
+  --nc-surface-30: #1a1d23;
+  --nc-surface-70: #20242b;
+  --nc-surface-100: #16191e;
+  --nc-text-body: #c7cbd1;
+  --nc-text-muted: #8b8f98;
+  --nc-text-h2: #f0f1f3;
+  --nc-text-h1: #ffffff;
+  --nc-text-focus: #e4e6ea;
+  --nc-border: rgba(140, 145, 155, 0.18);
+  --nc-border-focus: rgba(96, 140, 220, 0.45);
+  --nc-placeholder: rgba(140, 145, 155, 0.5);
+  --nc-primary: #4d7fe0;
+  --nc-primary-hover: #6f9aec;
+  --nc-brand: #ffcc00;
+  --nc-brand-hover: #ffd83c;
+  --nc-surface-hover: rgba(40, 46, 58, 0.6);
+
+  /* ── Glass palette ── */
+  --bling-surface-rgb: 12, 13, 16;
+  --bling-surface-highlight-rgb: 45, 50, 60;
+  --bling-surface-hover-rgb: 55, 65, 85;
+  --bling-surface-hover-base-rgb: 16, 18, 22;
+  --bling-edge-light-rgb: 180, 190, 205;
+  --bling-edge-mid-rgb: 90, 100, 120;
+  --bling-edge-dark-rgb: 70, 90, 130;
+  --bling-shadow-rgb: 0, 0, 0;
+  --bling-glow-rgb: 50, 80, 140;
+  --bling-ambient-a-rgb: 60, 80, 120;
+  --bling-ambient-b-rgb: 80, 95, 130;
+  --bling-ambient-c-rgb: 40, 55, 90;
+  --bling-btn-bg-rgb: 10, 11, 14;
+  --bling-accent-rgb: 70, 105, 165;
+  --bling-accent-bright-rgb: 110, 150, 220;
+  --bling-accent-dim-rgb: 55, 85, 135;
+  --bling-btn-shine-rgb: 255, 255, 255;
+  --bling-btn-shade-rgb: 0, 0, 0;
+  --bling-accent: #4669a5;
+
+  /* ── Semantic variables ── */
+  --bling-danger: #f0625f;
+  --bling-danger-bg: rgba(240, 98, 95, 0.1);
+  --bling-danger-border: rgba(240, 98, 95, 0.18);
+  --bling-success: #36c98f;
+  --bling-success-bg: rgba(54, 201, 143, 0.09);
+  --bling-success-border: rgba(54, 201, 143, 0.16);
+  --bling-warning: #e0a83e;
+  --bling-warning-bg: rgba(224, 168, 62, 0.08);
+  --bling-warning-border: rgba(224, 168, 62, 0.15);
+  --bling-info: #60a5fa;
+  --bling-info-bg: rgba(96, 165, 250, 0.08);
+  --bling-info-border: rgba(96, 165, 250, 0.15);
+  --bling-live: #36c98f;
+  --bling-live-bg: rgba(54, 201, 143, 0.09);
+  --bling-urgent: #f0625f;
+  --bling-urgent-bg: rgba(240, 98, 95, 0.1);
+  --bling-primary-fg: #ffffff;
+  --bling-avatar-0: rgba(77, 127, 224, 0.75);
+  --bling-avatar-1: rgba(54, 201, 143, 0.75);
+  --bling-avatar-2: rgba(154, 110, 230, 0.75);
+  --bling-avatar-3: rgba(220, 90, 145, 0.75);
+  --bling-avatar-4: rgba(224, 168, 62, 0.75);
+  --bling-avatar-5: rgba(60, 165, 195, 0.75);
+  --bling-avatar-6: rgba(240, 98, 95, 0.75);
+  --bling-avatar-7: rgba(120, 100, 220, 0.75);
+
+  /* ── Semantic RGB variants ── */
+  --bling-danger-rgb: 240, 98, 95;
+  --bling-success-rgb: 54, 201, 143;
+  --bling-warning-rgb: 224, 168, 62;
+  --bling-live-rgb: 54, 201, 143;
+  --bling-urgent-rgb: 240, 98, 95;
+  --bling-brand-rgb: 255, 204, 0;
+  --nc-primary-rgb: 77, 127, 224;
+  --bling-overlay: rgba(0, 0, 0, 0.55);
+}
+
+/* ─── Daltonico — colorblind-safe, blue/orange palette ─── */
+html.daltonico {
+  --nc-bg-0: #0a1628;
+  --nc-bg-30: #0f1f38;
+  --nc-bg-70: #0c1a30;
+  --nc-bg-100: #0a1628;
+  --nc-surface-0: #0f1f38;
+  --nc-surface-30: #162a4a;
+  --nc-surface-70: #1c3358;
+  --nc-surface-100: #0d1b32;
+  --nc-text-body: #d0d8e8;
+  --nc-text-muted: #93a1b8;
+  --nc-text-h2: #e8edf5;
+  --nc-text-h1: #ffffff;
+  --nc-text-focus: #f0f4fa;
+  --nc-border: rgba(100, 140, 200, 0.15);
+  --nc-border-focus: rgba(0, 119, 187, 0.5);
+  --nc-placeholder: rgba(122, 139, 168, 0.5);
+  --nc-primary: #0077bb;
+  --nc-primary-hover: #3399dd;
+  --nc-brand: #0077bb;
+  --nc-brand-hover: #3399dd;
+  --nc-surface-hover: rgba(22, 42, 74, 0.6);
+
+  --bling-surface-rgb: 15, 31, 56;
+  --bling-surface-highlight-rgb: 22, 42, 74;
+  --bling-surface-hover-rgb: 28, 51, 88;
+  --bling-surface-hover-base-rgb: 13, 27, 50;
+  --bling-edge-light-rgb: 208, 216, 232;
+  --bling-edge-mid-rgb: 122, 139, 168;
+  --bling-edge-dark-rgb: 22, 42, 74;
+  --bling-shadow-rgb: 0, 0, 0;
+  --bling-glow-rgb: 0, 119, 187;
+  --bling-ambient-a-rgb: 15, 31, 56;
+  --bling-ambient-b-rgb: 22, 42, 74;
+  --bling-ambient-c-rgb: 10, 22, 40;
+  --bling-btn-bg-rgb: 10, 22, 40;
+  --bling-accent-rgb: 0, 119, 187;
+  --bling-accent-bright-rgb: 51, 153, 221;
+  --bling-accent-dim-rgb: 0, 80, 130;
+  --bling-btn-shine-rgb: 255, 255, 255;
+  --bling-btn-shade-rgb: 0, 0, 0;
+  --bling-accent: #0077bb;
+
+  /* ── Semantic: blue/orange — safe for protanopia/deuteranopia ── */
+  --bling-danger: #ee7733;
+  --bling-danger-bg: rgba(238, 119, 51, 0.08);
+  --bling-danger-border: rgba(238, 119, 51, 0.15);
+  --bling-success: #009988;
+  --bling-success-bg: rgba(0, 153, 136, 0.07);
+  --bling-success-border: rgba(0, 153, 136, 0.12);
+  --bling-warning: #ee7733;
+  --bling-warning-bg: rgba(238, 119, 51, 0.06);
+  --bling-warning-border: rgba(238, 119, 51, 0.12);
+  --bling-info: #0077bb;
+  --bling-info-bg: rgba(0, 119, 187, 0.07);
+  --bling-info-border: rgba(0, 119, 187, 0.12);
+  --bling-live: #009988;
+  --bling-live-bg: rgba(0, 153, 136, 0.07);
+  --bling-urgent: #ee7733;
+  --bling-urgent-bg: rgba(238, 119, 51, 0.08);
+  --bling-primary-fg: #ffffff;
+
+  --bling-avatar-0: rgba(0, 119, 187, 0.6);
+  --bling-avatar-1: rgba(0, 153, 136, 0.6);
+  --bling-avatar-2: rgba(238, 119, 51, 0.6);
+  --bling-avatar-3: rgba(180, 130, 220, 0.6);
+  --bling-avatar-4: rgba(0, 119, 187, 0.4);
+  --bling-avatar-5: rgba(0, 153, 136, 0.4);
+  --bling-avatar-6: rgba(22, 42, 74, 0.85);
+  --bling-avatar-7: rgba(0, 119, 187, 0.35);
+
+  --bling-danger-rgb: 238, 119, 51;
+  --bling-success-rgb: 0, 153, 136;
+  --bling-warning-rgb: 238, 119, 51;
+  --bling-live-rgb: 0, 153, 136;
+  --bling-urgent-rgb: 238, 119, 51;
+  --bling-brand-rgb: 0, 119, 187;
+  --nc-primary-rgb: 0, 119, 187;
+  --bling-overlay: rgba(10, 22, 40, 0.65);
+
+  /* ── Daltonico extras: high-contrast borders for interactive elements ── */
+  --daltonico-focus-ring: 0 0 0 2px #0077bb, 0 0 0 4px rgba(0, 119, 187, 0.3);
+  --daltonico-badge-bg: rgba(0, 119, 187, 0.15);
+  --daltonico-badge-border: rgba(0, 119, 187, 0.3);
+}
+
+/* ─── Horizon — cosmic-dark, corporate slate accents ─── */
+html.horizon {
+  --nc-bg-0: #020305;
+  --nc-bg-30: #04070c;
+  --nc-bg-70: #060912;
+  --nc-bg-100: #020305;
+  --nc-surface-0: #05080f;
+  --nc-surface-30: #0c1220;
+  --nc-surface-40: #0e1627;
+  --nc-surface-70: #121b2d;
+  --nc-surface-100: #070c16;
+  --nc-text-body: #cbd5e1;
+  --nc-text-muted: #79899f;
+  --nc-text-h2: #e2e8f0;
+  --nc-text-h1: #ffffff;
+  --nc-text-focus: #f8fafc;
+  --nc-border: rgba(74, 90, 116, 0.12);
+  --nc-border-focus: rgba(74, 90, 116, 0.45);
+  --nc-placeholder: rgba(100, 116, 139, 0.4);
+  --nc-primary: #4a5a74;
+  --nc-primary-hover: #5a6a84;
+  --nc-brand: #4a5a74;
+  --nc-brand-hover: #5a6a84;
+  --nc-surface-hover: rgba(30, 37, 53, 0.4);
+
+  --bling-surface-rgb: 5, 8, 15;
+  --bling-surface-highlight-rgb: 18, 27, 45;
+  --bling-surface-hover-rgb: 30, 37, 53;
+  --bling-surface-hover-base-rgb: 8, 13, 24;
+  --bling-edge-light-rgb: 255, 255, 255;
+  --bling-edge-mid-rgb: 74, 90, 116;
+  --bling-edge-dark-rgb: 30, 37, 53;
+  --bling-shadow-rgb: 0, 0, 0;
+  --bling-glow-rgb: 74, 90, 116;
+  --bling-ambient-a-rgb: 12, 21, 36;
+  --bling-ambient-b-rgb: 30, 37, 53;
+  --bling-ambient-c-rgb: 2, 3, 5;
+  --bling-btn-bg-rgb: 3, 4, 6;
+  --bling-accent-rgb: 74, 90, 116;
+  --bling-accent-bright-rgb: 90, 106, 132;
+  --bling-accent-dim-rgb: 30, 37, 53;
+  --bling-btn-shine-rgb: 255, 255, 255;
+  --bling-btn-shade-rgb: 0, 0, 0;
+  --bling-accent: #4a5a74;
+
+  --bling-danger: #ef4444;
+  --bling-danger-bg: rgba(239, 68, 68, 0.08);
+  --bling-danger-border: rgba(239, 68, 68, 0.15);
+  --bling-success: #34d399;
+  --bling-success-bg: rgba(52, 211, 153, 0.07);
+  --bling-success-border: rgba(52, 211, 153, 0.14);
+  --bling-warning: #fbbf24;
+  --bling-warning-bg: rgba(251, 191, 36, 0.06);
+  --bling-warning-border: rgba(251, 191, 36, 0.12);
+  --bling-info: #60a5fa;
+  --bling-info-bg: rgba(96, 165, 250, 0.07);
+  --bling-info-border: rgba(96, 165, 250, 0.14);
+  --bling-live: #34d399;
+  --bling-live-bg: rgba(52, 211, 153, 0.07);
+  --bling-urgent: #ef4444;
+  --bling-urgent-bg: rgba(239, 68, 68, 0.08);
+  --bling-primary-fg: #cbd5e1;
+
+  --bling-avatar-0: rgba(74, 90, 116, 0.7);
+  --bling-avatar-1: rgba(52, 211, 153, 0.7);
+  --bling-avatar-2: rgba(255, 255, 255, 0.8);
+  --bling-avatar-3: rgba(49, 71, 99, 0.85);
+  --bling-avatar-4: rgba(74, 90, 116, 0.5);
+  --bling-avatar-5: rgba(90, 106, 132, 0.6);
+  --bling-avatar-6: rgba(30, 37, 53, 0.85);
+  --bling-avatar-7: rgba(74, 90, 116, 0.55);
+
+  --bling-danger-rgb: 239, 68, 68;
+  --bling-success-rgb: 52, 211, 153;
+  --bling-warning-rgb: 251, 191, 36;
+  --bling-live-rgb: 52, 211, 153;
+  --bling-urgent-rgb: 239, 68, 68;
+  --bling-brand-rgb: 74, 90, 116;
+  --nc-primary-rgb: 74, 90, 116;
+  --bling-overlay: rgba(2, 3, 5, 0.65);
+}
+
+/* ─── Tema AMOLED — negro puro ─── */
+html.amoled {
+  --nc-bg-0: #000000;
+  --nc-bg-30: #000000;
+  --nc-bg-70: #000000;
+  --nc-bg-100: #000000;
+  --nc-surface-0: #000000;
+  --nc-surface-30: #000000;
+  --nc-surface-70: #030303;
+  --nc-surface-100: #000000;
+  --nc-text-body: #c7cbd1;
+  --nc-text-muted: #8b8f98;
+  --nc-text-h2: #f0f1f3;
+  --nc-text-h1: #ffffff;
+  --nc-text-focus: #e4e6ea;
+  --nc-border: rgba(255, 255, 255, 0.04);
+  --nc-border-focus: rgba(100, 145, 225, 0.25);
+  --nc-placeholder: rgba(255, 255, 255, 0.2);
+  --nc-primary: #4d7fe0;
+  --nc-primary-hover: #6f9aec;
+  --nc-brand: #ffcc00;
+  --nc-brand-hover: #ffd83c;
+  --nc-surface-hover: rgba(255, 255, 255, 0.03);
+
+  --bling-surface-rgb: 0, 0, 0;
+  --bling-surface-highlight-rgb: 0, 0, 0;
+  --bling-surface-hover-rgb: 0, 0, 0;
+  --bling-surface-hover-base-rgb: 0, 0, 0;
+  --bling-edge-light-rgb: 0, 0, 0;
+  --bling-edge-mid-rgb: 0, 0, 0;
+  --bling-edge-dark-rgb: 0, 0, 0;
+  --bling-shadow-rgb: 0, 0, 0;
+  --bling-glow-rgb: 0, 0, 0;
+  --bling-ambient-a-rgb: 0, 0, 0;
+  --bling-ambient-b-rgb: 0, 0, 0;
+  --bling-ambient-c-rgb: 0, 0, 0;
+  --bling-btn-bg-rgb: 0, 0, 0;
+  --bling-accent-rgb: 8, 16, 32;
+  --bling-accent-bright-rgb: 12, 24, 48;
+  --bling-accent-dim-rgb: 0, 0, 0;
+  --bling-btn-shine-rgb: 0, 0, 0;
+  --bling-btn-shade-rgb: 0, 0, 0;
+  --bling-accent: #081020;
+
+  /* ── Semantic variables ── */
+  --bling-danger: #e2554f;
+  --bling-danger-bg: rgba(226, 85, 79, 0.08);
+  --bling-danger-border: rgba(226, 85, 79, 0.12);
+  --bling-success: #2bb87d;
+  --bling-success-bg: rgba(43, 184, 125, 0.07);
+  --bling-success-border: rgba(43, 184, 125, 0.1);
+  --bling-warning: #d59b35;
+  --bling-warning-bg: rgba(213, 155, 53, 0.06);
+  --bling-warning-border: rgba(213, 155, 53, 0.1);
+  --bling-info: #5b9be6;
+  --bling-info-bg: rgba(91, 155, 230, 0.07);
+  --bling-info-border: rgba(91, 155, 230, 0.1);
+  --bling-live: #2bb87d;
+  --bling-live-bg: rgba(43, 184, 125, 0.07);
+  --bling-urgent: #e2554f;
+  --bling-urgent-bg: rgba(226, 85, 79, 0.08);
+  --bling-primary-fg: #ffffff;
+  --bling-avatar-0: rgba(77, 127, 224, 0.4);
+  --bling-avatar-1: rgba(43, 184, 125, 0.4);
+  --bling-avatar-2: rgba(148, 105, 220, 0.4);
+  --bling-avatar-3: rgba(210, 85, 140, 0.4);
+  --bling-avatar-4: rgba(213, 155, 53, 0.4);
+  --bling-avatar-5: rgba(55, 150, 180, 0.4);
+  --bling-avatar-6: rgba(226, 85, 79, 0.4);
+  --bling-avatar-7: rgba(115, 95, 210, 0.4);
+
+  /* ── Semantic RGB variants ── */
+  --bling-danger-rgb: 226, 85, 79;
+  --bling-success-rgb: 43, 184, 125;
+  --bling-warning-rgb: 213, 155, 53;
+  --bling-live-rgb: 43, 184, 125;
+  --bling-urgent-rgb: 226, 85, 79;
+  --bling-brand-rgb: 255, 204, 0;
+  --nc-primary-rgb: 77, 127, 224;
+  --bling-overlay: rgba(0, 0, 0, 0.7);
+}
+
+/* ── .bling-glass per-theme glass variables ── */
+html.light .bling-glass {
+  --glass-bg-0: rgba(248, 249, 250, 0.92);
+  --glass-surface-0: rgba(255, 255, 255, 0.72);
+  --glass-surface-30: rgba(240, 241, 243, 0.55);
+  --glass-surface-hover: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-border-focus: rgba(59, 130, 246, 0.25);
+  --glass-text-body: #28292b;
+  --glass-text-muted: #81848a;
+  --glass-placeholder: rgba(129, 132, 138, 0.5);
+}
+
+html.amoled .bling-glass {
+  --glass-bg-0: rgba(0, 0, 0, 0.98);
+  --glass-surface-0: rgba(0, 0, 0, 0.85);
+  --glass-surface-30: rgba(0, 0, 0, 0.7);
+  --glass-surface-hover: rgba(255, 255, 255, 0.02);
+  --glass-border: rgba(255, 255, 255, 0.03);
+  --glass-border-focus: rgba(100, 145, 225, 0.2);
+  --glass-text-body: #cdd1d8;
+  --glass-text-muted: #93979f;
+  --glass-placeholder: rgba(147, 151, 159, 0.35);
+}
+
+/* ── .bling-glass semantic variables ── */
+.bling-glass {
+  --bling-danger: #f0625f;
+  --bling-danger-bg: rgba(240, 98, 95, 0.1);
+  --bling-danger-border: rgba(240, 98, 95, 0.18);
+  --bling-success: #36c98f;
+  --bling-success-bg: rgba(54, 201, 143, 0.09);
+  --bling-success-border: rgba(54, 201, 143, 0.16);
+  --bling-warning: #e0a83e;
+  --bling-warning-bg: rgba(224, 168, 62, 0.08);
+  --bling-warning-border: rgba(224, 168, 62, 0.15);
+  --bling-info: #60a5fa;
+  --bling-info-bg: rgba(96, 165, 250, 0.08);
+  --bling-info-border: rgba(96, 165, 250, 0.15);
+  --bling-live: #36c98f;
+  --bling-live-bg: rgba(54, 201, 143, 0.09);
+  --bling-urgent: #f0625f;
+  --bling-urgent-bg: rgba(240, 98, 95, 0.1);
+  --bling-primary-fg: #ffffff;
+  --bling-avatar-0: rgba(77, 127, 224, 0.75);
+  --bling-avatar-1: rgba(54, 201, 143, 0.75);
+  --bling-avatar-2: rgba(154, 110, 230, 0.75);
+  --bling-avatar-3: rgba(220, 90, 145, 0.75);
+  --bling-avatar-4: rgba(224, 168, 62, 0.75);
+  --bling-avatar-5: rgba(60, 165, 195, 0.75);
+  --bling-avatar-6: rgba(240, 98, 95, 0.75);
+  --bling-avatar-7: rgba(120, 100, 220, 0.75);
+}
+
+html.light .bling-glass {
+  --bling-danger: #dc2626;
+  --bling-danger-bg: rgba(220, 38, 38, 0.06);
+  --bling-danger-border: rgba(220, 38, 38, 0.12);
+  --bling-success: #16a34a;
+  --bling-success-bg: rgba(22, 163, 74, 0.06);
+  --bling-success-border: rgba(22, 163, 74, 0.12);
+  --bling-warning: #d97706;
+  --bling-warning-bg: rgba(217, 119, 6, 0.05);
+  --bling-warning-border: rgba(217, 119, 6, 0.1);
+  --bling-info: #3b82f6;
+  --bling-info-bg: rgba(59, 130, 246, 0.05);
+  --bling-info-border: rgba(59, 130, 246, 0.1);
+  --bling-live: #16a34a;
+  --bling-live-bg: rgba(22, 163, 74, 0.06);
+  --bling-urgent: #dc2626;
+  --bling-urgent-bg: rgba(220, 38, 38, 0.06);
+  --bling-primary-fg: #ffffff;
+  --bling-avatar-0: rgba(59, 130, 246, 0.7);
+  --bling-avatar-1: rgba(22, 163, 74, 0.7);
+  --bling-avatar-2: rgba(139, 92, 246, 0.7);
+  --bling-avatar-3: rgba(219, 39, 119, 0.7);
+  --bling-avatar-4: rgba(217, 119, 6, 0.7);
+  --bling-avatar-5: rgba(14, 165, 233, 0.7);
+  --bling-avatar-6: rgba(220, 38, 38, 0.7);
+  --bling-avatar-7: rgba(99, 102, 241, 0.7);
+}
+
+html.amoled .bling-glass {
+  --bling-danger: #e2554f;
+  --bling-danger-bg: rgba(226, 85, 79, 0.07);
+  --bling-danger-border: rgba(226, 85, 79, 0.1);
+  --bling-success: #2bb87d;
+  --bling-success-bg: rgba(43, 184, 125, 0.06);
+  --bling-success-border: rgba(43, 184, 125, 0.09);
+  --bling-warning: #d59b35;
+  --bling-warning-bg: rgba(213, 155, 53, 0.05);
+  --bling-warning-border: rgba(213, 155, 53, 0.08);
+  --bling-info: #5b9be6;
+  --bling-info-bg: rgba(91, 155, 230, 0.06);
+  --bling-info-border: rgba(91, 155, 230, 0.09);
+  --bling-live: #2bb87d;
+  --bling-live-bg: rgba(43, 184, 125, 0.06);
+  --bling-urgent: #e2554f;
+  --bling-urgent-bg: rgba(226, 85, 79, 0.07);
+  --bling-primary-fg: #ffffff;
+  --bling-avatar-0: rgba(77, 127, 224, 0.4);
+  --bling-avatar-1: rgba(43, 184, 125, 0.4);
+  --bling-avatar-2: rgba(148, 105, 220, 0.4);
+  --bling-avatar-3: rgba(210, 85, 140, 0.4);
+  --bling-avatar-4: rgba(213, 155, 53, 0.4);
+  --bling-avatar-5: rgba(55, 150, 180, 0.4);
+  --bling-avatar-6: rgba(226, 85, 79, 0.4);
+  --bling-avatar-7: rgba(115, 95, 210, 0.4);
+}
+
+html.horizon .bling-glass {
+  --bling-danger: #ef4444;
+  --bling-danger-bg: rgba(239, 68, 68, 0.07);
+  --bling-danger-border: rgba(239, 68, 68, 0.1);
+  --bling-success: #34d399;
+  --bling-success-bg: rgba(52, 211, 153, 0.06);
+  --bling-success-border: rgba(52, 211, 153, 0.09);
+  --bling-warning: #fbbf24;
+  --bling-warning-bg: rgba(251, 191, 36, 0.05);
+  --bling-warning-border: rgba(251, 191, 36, 0.08);
+  --bling-info: #60a5fa;
+  --bling-info-bg: rgba(96, 165, 250, 0.06);
+  --bling-info-border: rgba(96, 165, 250, 0.09);
+  --bling-live: #34d399;
+  --bling-live-bg: rgba(52, 211, 153, 0.06);
+  --bling-urgent: #ef4444;
+  --bling-urgent-bg: rgba(239, 68, 68, 0.07);
+  --bling-primary-fg: #cbd5e1;
+  --bling-avatar-0: rgba(74, 90, 116, 0.7);
+  --bling-avatar-1: rgba(52, 211, 153, 0.7);
+  --bling-avatar-2: rgba(255, 255, 255, 0.8);
+  --bling-avatar-3: rgba(49, 71, 99, 0.85);
+  --bling-avatar-4: rgba(74, 90, 116, 0.5);
+  --bling-avatar-5: rgba(90, 106, 132, 0.6);
+  --bling-avatar-6: rgba(30, 37, 53, 0.85);
+  --bling-avatar-7: rgba(74, 90, 116, 0.55);
+}
+
+/* ─── Editor de artículos ─── */
+.bling-editor {
+  --nc-border: var(--nc-border-editor);
+}
+:root .bling-editor {
+  --nc-border-editor: rgba(148, 163, 184, 0.16);
+}
+html.dark .bling-editor {
+  --nc-border-editor: rgba(140, 145, 155, 0.25);
+}
+html.light .bling-editor {
+  --nc-border-editor: #d4d6da;
+}
+html.amoled .bling-editor {
+  --nc-border-editor: rgba(255, 255, 255, 0.08);
+}
+html.horizon .bling-editor {
+  --nc-border-editor: rgba(165, 199, 235, 0.12);
+}
+
+/* ─── Scrollbar theme vars ─── */
+html {
+  --bling-thumb: rgba(180, 190, 210, 0.25);
+  --bling-thumb-hover: rgba(200, 210, 230, 0.40);
+  --bling-thumb-active: rgba(220, 230, 245, 0.55);
+}
+html.dark {
+  --bling-thumb: rgba(180, 190, 210, 0.25);
+  --bling-thumb-hover: rgba(200, 210, 230, 0.40);
+  --bling-thumb-active: rgba(220, 230, 245, 0.55);
+}
+html.light {
+  --bling-thumb: rgba(0, 0, 0, 0.12);
+  --bling-thumb-hover: rgba(0, 0, 0, 0.20);
+  --bling-thumb-active: rgba(0, 0, 0, 0.32);
+}
+html.amoled {
+  --bling-thumb: rgba(255, 255, 255, 0.12);
+  --bling-thumb-hover: rgba(255, 255, 255, 0.22);
+  --bling-thumb-active: rgba(255, 255, 255, 0.35);
+}
+html.horizon {
+  --bling-thumb: rgba(165, 199, 235, 0.15);
+  --bling-thumb-hover: rgba(165, 199, 235, 0.3);
+  --bling-thumb-active: rgba(255, 255, 255, 0.45);
+}
+
+/* ─── Light mode — component clean overrides ─── */
+html.light .bling-mesh-bg {
+  --bling-mesh-intensity: 0;
+}
+
+html.light .glass-surface {
+  background: var(--nc-surface-0, #ffffff);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.06),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html.light .glass-surface::before {
+  display: none;
+}
+
+html.light .glass-surface:hover {
+  background: var(--nc-surface-0, #ffffff);
+  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+html.light .glass-button,
+html.light .glass-button-sm {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04),
+              inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+html.light .glass-button:hover,
+html.light .glass-button-sm:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06),
+              inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+html.light .bling-mobile-nav {
+  box-shadow: 0 -4px 20px -8px rgba(0, 0, 0, 0.06),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html.light .glass-btn-icon,
+html.light .glass-btn-secondary {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html.light .glass-btn-icon:hover,
+html.light .glass-btn-secondary:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06),
+              inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+html.light .glass-btn-primary {
+  box-shadow: 0 4px 12px rgba(var(--nc-primary-rgb), 0.15),
+              inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+html.light .glass-btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(var(--nc-primary-rgb), 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+html.light .bling-action-sheet {
+  box-shadow: 0 -4px 24px -8px rgba(0, 0, 0, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@media (min-width: 768px) {
+  html.light .bling-action-sheet {
+    box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+html.light .bling-action-item:hover {
+  box-shadow: none;
+  background: var(--nc-surface-hover);
+}
+
+/* ─── Horizon — component overrides ─── */
+html.horizon .bling-mesh-bg {
+  --bling-mesh-intensity: 0.25;
+}
+
+html.horizon .glass-surface {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 90, 116, 0.06) 0%, rgba(18, 27, 45, 0.01) 60%, transparent 100%),
+    radial-gradient(120% 120% at 50% -10%, rgba(var(--bling-surface-highlight-rgb), 0.15) 0%, rgba(var(--bling-surface-rgb), 0.85) 100%);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  position: relative;
+}
+
+html.horizon .glass-surface::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 0.75px;
+  background: linear-gradient(
+    135deg,
+    rgba(74, 90, 116, 0.08) 0%,
+    rgba(74, 90, 116, 0.15) 25%,
+    rgba(74, 90, 116, 0.22) 48%,
+    rgba(74, 90, 116, 0.25) 50%,
+    rgba(74, 90, 116, 0.22) 52%,
+    rgba(74, 90, 116, 0.15) 75%,
+    rgba(74, 90, 116, 0.08) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+html.horizon .glass-surface:hover {
+  box-shadow:
+    0 6px 24px rgba(18, 27, 45, 0.3),
+    0 0 15px rgba(74, 90, 116, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+html.horizon .glass-button,
+html.horizon .glass-button-sm {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 90, 116, 0.05) 0%, rgba(18, 27, 45, 0.01) 60%, transparent 100%),
+    rgb(var(--bling-btn-bg-rgb, 3, 4, 6));
+  border: 0.75px solid rgba(74, 90, 116, 0.25);
+  color: var(--nc-text-body);
+}
+
+html.horizon .glass-button:hover,
+html.horizon .glass-button-sm:hover {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 90, 116, 0.08) 0%, rgba(18, 27, 45, 0.03) 60%, transparent 100%),
+    rgb(var(--bling-btn-bg-rgb, 3, 4, 6));
+  border-color: rgba(74, 90, 116, 0.4);
+  box-shadow:
+    0 4px 14px rgba(18, 27, 45, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html.horizon .glass-btn-primary {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 90, 116, 0.06) 0%, rgba(18, 27, 45, 0.02) 60%, transparent 100%),
+    #030406;
+  border: 0.75px solid rgba(74, 90, 116, 0.3);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+}
+
+html.horizon .glass-btn-primary:hover {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 90, 116, 0.12) 0%, rgba(18, 27, 45, 0.04) 60%, transparent 100%),
+    #030406;
+  border-color: rgba(74, 90, 116, 0.45);
+  color: #ffffff;
+  box-shadow:
+    0 6px 20px rgba(18, 27, 45, 0.3),
+    0 0 15px rgba(74, 90, 116, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ── Premium highlighted card ── */
+.premium-highlighted {
+  background: rgba(var(--nc-primary-rgb), 0.05);
+  border: 2px solid rgba(var(--nc-primary-rgb), 0.3);
+  box-shadow: 0 4px 12px rgba(var(--nc-primary-rgb), 0.1);
+}
+
+html.horizon .premium-highlighted {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 90, 116, 0.06) 0%, rgba(18, 27, 45, 0.02) 60%, transparent 100%),
+    rgb(var(--bling-surface-rgb, 5, 8, 15));
+  border: 0.75px solid rgba(74, 90, 116, 0.35);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(74, 90, 116, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html.horizon .bling-mobile-nav {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 90, 116, 0.04) 0%, rgba(18, 27, 45, 0.01) 60%, transparent 100%),
+    rgb(var(--bling-surface-rgb, 5, 8, 15));
+  border-top: 0.75px solid rgba(74, 90, 116, 0.15);
+}
+
+/* ========================================
+   Bling Theme — Component Overrides (Corporate default)
+   Mesh gradients, glass morphism, action sheet
+   ======================================== */
+
+/* ── Mesh background (reduced for corporate default) ── */
+:root .bling-mesh-bg {
+  --bling-mesh-intensity: 0;
+}
+
+/* ── Glass morphism ── */
+:root .glass-surface {
+  box-shadow: 0 4px 16px -8px rgba(0, 0, 0, 0.06),
+              inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+:root .glass-surface:hover {
+  box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+:root .glass-button,
+:root .glass-button-sm {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03),
+              inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+:root .glass-button:hover,
+:root .glass-button-sm:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06),
+              inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+:root .bling-mobile-nav {
+  box-shadow: 0 -2px 12px -8px rgba(0, 0, 0, 0.04),
+              inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+:root .glass-btn-icon,
+:root .glass-btn-secondary {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03),
+              inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+:root .glass-btn-icon:hover,
+:root .glass-btn-secondary:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+:root .glass-btn-primary {
+  box-shadow: 0 2px 8px rgba(var(--nc-primary-rgb), 0.1),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+:root .glass-btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(var(--nc-primary-rgb), 0.14),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ── Action sheet ── */
+:root .bling-action-sheet {
+  box-shadow: 0 -2px 16px -8px rgba(0, 0, 0, 0.04),
+              inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+@media (min-width: 768px) {
+  :root .bling-action-sheet {
+    box-shadow: 0 6px 24px -12px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+}
+
+:root .bling-action-item:hover {
+  box-shadow: none;
+  background: var(--nc-surface-hover);
+}
+
+/* ── Nav expandable animation ── */
+@keyframes navSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

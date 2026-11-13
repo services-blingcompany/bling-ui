@@ -1,0 +1,484 @@
+/* @blingcompany/bling-ui — Componentes (.tarjeta, .boton-*, .insignia-*, .campo,
+   .selector, .pestana, .cifra, .rotulo-mayus, .item-menu, .modal…). CSS común:
+   funciona con Tailwind 3 y 4. Importarlo ANTES que las utilidades de
+   Tailwind para que las clases sueltas (h-8, px-2) sigan ganando. */
+
+/* Barra de desplazamiento fina: toma el color del tema activo (pulgar con
+   --bling-thumb*, y scrollbar-color en Firefox). */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bling-thumb-hover) transparent;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: var(--bling-thumb);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--bling-thumb-hover);
+  background-clip: content-box;
+}
+
+/* Componentes (en contable van en @layer components; Tailwind 3 no lo permite
+   fuera del archivo con sus directivas, así que este archivo se importa ANTES
+   que globals.css: las utilidades sueltas siguen ganando). */
+  /* Cifras: importes, saldos, CUIT, códigos de lote, fechas.
+     Van en Obel Mono con el cero distinto de la O (`cv01`), así el 0 no se
+     confunde con la O —el error clásico al leer un lote o un número de
+     comprobante— y con dígitos tabulares, que es lo que hace que una columna
+     de importes se lea de un vistazo. */
+  .cifra {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-variant-ligatures: none;
+    font-feature-settings: "cv01";
+  }
+
+  /* Superficie base de tarjetas y paneles: un pelo más clara que la página en
+     los temas oscuros, con borde de un píxel en vez de sombra pesada. */
+  .tarjeta {
+    background-color: var(--nc-surface);
+    border: 1px solid var(--nc-line);
+    border-radius: var(--radio-panel);
+  }
+
+  /* ── Sistema de componentes ────────────────────────────────────────────────
+     Mismas medidas para todo (ver el bloque «Sistema de diseño» en tokens.css):
+     las vistas usan estas clases en vez de repetir utilidades sueltas. */
+
+  /* Secciones de una tarjeta: encabezado con línea inferior y cuerpo con el
+     padding estándar. `.tarjeta` en sí no lleva padding (hay tablas y listas
+     que van de borde a borde). */
+  .tarjeta-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--esp-interno);
+    min-height: 44px;
+    padding: var(--esp-2) var(--esp-tarjeta);
+    border-bottom: 1px solid var(--nc-line);
+  }
+  .tarjeta-cuerpo {
+    padding: var(--esp-tarjeta);
+  }
+  .tarjeta-titulo {
+    font-size: var(--texto-titulo);
+    line-height: var(--interlineado-titulo);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  /* Rótulo en mayúsculas espaciadas: encabezados de bloque y metadatos
+     (el acento técnico del tablero). */
+  .rotulo-mayus {
+    font-family: var(--font-mono);
+    font-feature-settings: "cv01";
+    font-size: 10px;
+    line-height: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Separador punteado entre filas y secciones de un bloque. */
+  .separador-punteado {
+    border-top: 1px dashed var(--linea-punteada);
+  }
+  .fila-punteada + .fila-punteada {
+    border-top: 1px dashed var(--linea-punteada);
+  }
+
+  /* Bloque del bento: tarjeta con el padding estándar y su encabezado arriba. */
+  .bloque {
+    background-color: var(--nc-surface);
+    border: 1px solid var(--nc-line);
+    border-radius: var(--radio-panel);
+    padding: var(--esp-tarjeta);
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-3);
+    min-width: 0;
+  }
+
+  /* Rótulo: etiqueta chica de campos, ejes y metadatos. */
+  .rotulo {
+    font-size: var(--texto-rotulo);
+    line-height: var(--interlineado-rotulo);
+    color: var(--color-muted);
+  }
+
+  /* Cifra grande de un indicador. */
+  .cifra-kpi {
+    font-family: var(--font-mono);
+    font-size: var(--texto-cifra);
+    line-height: var(--interlineado-cifra);
+    font-weight: 500;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "cv01";
+  }
+
+  /* Vista: columna con separación uniforme entre bloques. */
+  .vista {
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-bloque);
+  }
+
+  /* Botones: misma altura y padding que campos y selectores. */
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--esp-interno);
+    height: var(--alto-control);
+    padding: 0 var(--esp-control);
+    border: 1px solid transparent;
+    border-radius: var(--radio-control);
+    font-size: var(--texto-base);
+    line-height: 1;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 120ms, border-color 120ms, color 120ms;
+  }
+  .boton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .boton svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+  .boton-compacto {
+    height: var(--alto-control-compacto);
+    padding: 0 var(--esp-2);
+  }
+  .boton-primario {
+    background-color: var(--color-strong);
+    color: var(--color-on-strong);
+  }
+  .boton-primario:hover:not(:disabled) {
+    background-color: var(--color-strong-hover);
+  }
+  .boton-secundario {
+    background-color: var(--nc-surface);
+    border-color: var(--nc-line);
+    color: var(--color-ink);
+  }
+  .boton-secundario:hover:not(:disabled) {
+    background-color: var(--color-surface-2);
+  }
+  .boton-fantasma {
+    background-color: transparent;
+    color: var(--color-ink-soft);
+  }
+  .boton-fantasma:hover:not(:disabled) {
+    background-color: var(--color-surface-2);
+    color: var(--color-ink);
+  }
+  .boton-peligro {
+    background-color: var(--color-danger-fill);
+    color: #fff;
+  }
+  .boton-peligro:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+  /* Acción principal con el acento del tema (naranja): igual en claro y oscuro. */
+  .boton-acento {
+    background-color: var(--color-acento);
+    color: #fff;
+  }
+  .boton-acento:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+  /* Botón de sólo ícono: cuadrado, con el mismo alto que el resto. */
+  .boton-icono {
+    width: var(--alto-control);
+    padding: 0;
+  }
+  .boton-icono.boton-compacto {
+    width: var(--alto-control-compacto);
+  }
+
+  /* Campos y selectores. */
+  .campo,
+  .selector {
+    width: 100%;
+    height: var(--alto-control);
+    padding: 0 var(--esp-control);
+    background-color: var(--nc-surface);
+    border: 1px solid var(--nc-line);
+    border-radius: var(--radio-control);
+    font-size: var(--texto-base);
+    color: var(--color-ink);
+    transition: border-color 120ms;
+  }
+  textarea.campo {
+    height: auto;
+    min-height: 72px;
+    padding: var(--esp-2) var(--esp-control);
+    line-height: var(--interlineado-base);
+  }
+  .campo:hover,
+  .selector:hover {
+    border-color: var(--color-muted);
+  }
+  .campo:focus,
+  .selector:focus {
+    outline: none;
+    border-color: var(--color-ink);
+  }
+  .campo:disabled,
+  .selector:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .campo-compacto {
+    height: var(--alto-control-compacto);
+    padding: 0 var(--esp-2);
+  }
+  /* El selector dibuja su propia flecha, igual en todos los navegadores. */
+  .selector {
+    appearance: none;
+    padding-right: calc(var(--esp-control) + 16px);
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position: calc(100% - 15px) 50%, calc(100% - 11px) 50%;
+    background-size: 4px 4px, 4px 4px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+
+  /* Casillas y radios con el color de la casa. */
+  .casilla {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--color-strong);
+    cursor: pointer;
+  }
+
+  /* Insignias: estados y conteos. */
+  .insignia {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-1);
+    height: 20px;
+    padding: 0 var(--esp-2);
+    border: 1px solid var(--nc-line);
+    border-radius: 999px;
+    font-size: var(--texto-rotulo);
+    line-height: 1;
+    color: var(--color-ink-soft);
+    background-color: var(--color-surface-2);
+    white-space: nowrap;
+  }
+  .insignia-exito {
+    color: var(--color-success-soft);
+    background-color: var(--color-success-bg);
+    border-color: var(--color-success-line);
+  }
+  .insignia-alerta {
+    color: var(--color-warning-soft);
+    background-color: var(--color-warning-bg);
+    border-color: var(--color-warning-line);
+  }
+  .insignia-peligro {
+    color: var(--color-danger-soft);
+    background-color: var(--color-danger-bg);
+    border-color: var(--color-danger-line);
+  }
+  .insignia-info {
+    color: var(--color-info-soft);
+    background-color: var(--color-info-bg);
+    border-color: var(--color-info-line);
+  }
+
+  /* Opción seleccionable: tarjeta que se elige entre varias (paletas, modos de
+     descarga, criterios). El estado sale de aria-pressed, así el estilo y la
+     accesibilidad no se separan. */
+  .opcion {
+    display: block;
+    text-align: left;
+    background-color: var(--nc-surface);
+    border: 1px solid var(--nc-line);
+    border-radius: var(--radio-control);
+    color: var(--color-ink-soft);
+    transition: border-color 120ms, box-shadow 120ms, background-color 120ms;
+  }
+  .opcion:hover {
+    border-color: var(--color-muted);
+  }
+  .opcion[aria-pressed="true"] {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 1px var(--color-brand);
+    color: var(--color-ink);
+  }
+  .opcion:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  /* Botón con aspecto de enlace: acciones secundarias dentro de un texto. */
+  .enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-1);
+    font-weight: 500;
+    color: var(--color-primary);
+    text-underline-offset: 2px;
+    transition: color 120ms;
+  }
+  .enlace:hover:not(:disabled) {
+    text-decoration: underline;
+    color: var(--color-primary-hover);
+  }
+  .enlace:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .enlace-peligro {
+    color: var(--color-danger-soft);
+  }
+  .enlace-peligro:hover:not(:disabled) {
+    color: var(--color-danger);
+  }
+
+  /* Ítem de un menú desplegable: fila de control a lo ancho. */
+  .item-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+    width: 100%;
+    min-height: var(--alto-control);
+    padding: 0 var(--esp-3);
+    border-radius: calc(var(--radio-control) - 2px);
+    font-size: var(--texto-base);
+    color: var(--color-ink);
+    text-align: left;
+    transition: background-color 120ms;
+  }
+  .item-menu:hover {
+    background-color: var(--color-surface-2);
+  }
+
+  /* Pestañas segmentadas: un grupo de opciones del mismo alto que un botón. */
+  .pestanas {
+    display: inline-flex;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--nc-line);
+    border-radius: var(--radio-control);
+    background-color: var(--color-surface-2);
+  }
+  .pestana {
+    display: inline-flex;
+    flex-shrink: 0;
+    white-space: nowrap;
+    align-items: center;
+    gap: var(--esp-1);
+    height: calc(var(--alto-control) - 6px);
+    padding: 0 var(--esp-3);
+    border-radius: calc(var(--radio-control) - 2px);
+    font-size: var(--texto-base);
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: background-color 120ms, color 120ms;
+  }
+  .pestana:hover {
+    color: var(--color-ink);
+  }
+  .pestana[aria-selected="true"],
+  .pestana[aria-pressed="true"] {
+    background-color: var(--nc-surface);
+    color: var(--color-ink);
+    box-shadow: 0 0 0 1px var(--nc-line);
+  }
+
+  /* Tabla de datos: encabezado en rótulo, filas de 32, cifras a la derecha. */
+  .tabla-datos {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--texto-base);
+  }
+  .tabla-datos th {
+    height: 32px;
+    padding: 0 var(--esp-3);
+    text-align: left;
+    font-size: var(--texto-rotulo);
+    font-weight: 500;
+    color: var(--color-muted);
+    border-bottom: 1px solid var(--nc-line);
+    white-space: nowrap;
+  }
+  .tabla-datos td {
+    height: 32px;
+    padding: 0 var(--esp-3);
+    color: var(--color-ink);
+    border-bottom: 1px solid var(--nc-line);
+  }
+  .tabla-datos tr:last-child td {
+    border-bottom: 0;
+  }
+  .tabla-datos .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Velo de los modales: liviano sobre el tema claro y denso sobre el oscuro,
+     para que el diálogo se lea igual en los cuatro. */
+  .velo {
+    background-color: var(--nc-overlay);
+    backdrop-filter: blur(3px);
+  }
+
+  /* Panel de modal: mismo borde y radio que las tarjetas, con la sombra del tema. */
+  .modal {
+    background-color: var(--nc-surface);
+    border: 1px solid var(--nc-line);
+    border-radius: 0.75rem;
+    box-shadow: var(--nc-shadow);
+  }
+
+  /* Cajón lateral (detalle de partida, pista de auditoría): sin radio, porque
+     va pegado al borde de la ventana. */
+  .cajon {
+    background-color: var(--nc-surface);
+    border-left: 1px solid var(--nc-line);
+    box-shadow: var(--nc-shadow);
+  }
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Foco visible con teclado. El tema lo dibuja en los campos; acá se suma a
+   botones, enlaces, casillas y todo lo que se puede recorrer con Tab, con el
+   mismo color de foco de cada tema. Sólo aparece navegando con teclado
+   (:focus-visible), no al hacer clic. Va fuera de las capas a propósito: así
+   un `focus:outline-none` heredado no lo apaga.
+   ───────────────────────────────────────────────────────────────────────────── */
+:where(
+    button,
+    a[href],
+    summary,
+    input[type='checkbox'],
+    input[type='radio'],
+    input[type='range'],
+    [role='button'],
+    [role='tab'],
+    [role='menuitem'],
+    [role='option'],
+    [tabindex]:not([tabindex='-1'])
+  ):focus-visible {
+  outline: 2px solid var(--nc-border-focus);
+  outline-offset: 2px;
+}

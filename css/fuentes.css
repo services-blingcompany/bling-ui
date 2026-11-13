@@ -1,0 +1,23 @@
+/* @blingcompany/bling-ui — Tipografías propias, servidas desde el paquete
+   (sin CDN: las apps andan sin internet). */
+
+/* Obel Mono (Typographic Systems, SIL Open Font License 1.1; licencia y autores
+   en src/assets/fonts/obel-mono/). Es la tipografía de los datos: importes,
+   saldos, fechas, CUIT, lotes y comprobantes (`--font-mono`, clases `.cifra` y
+   `font-mono`). Fuente variable 100-900, servida desde el propio paquete para
+   que la app ande sin internet. */
+@font-face {
+  font-family: "Obel Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fuentes/obel-mono/ObelMono-VF.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Obel Mono";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fuentes/obel-mono/ObelMono-Italic-VF.woff2") format("woff2");
+}

@@ -1,0 +1,661 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   @blingcompany/bling-ui — Roles y medidas sobre el tema del ecosistema
+   ─────────────────────────────────────────────────────────────────────────────
+   La paleta NO se define acá: vive en `styles/bling-theme.css`, la fuente de
+   verdad que comparten bling, market, shop y auth. Tener una copia propia fue
+   justo lo que pasó: los grises, los bordes y los semánticos del contable se
+   fueron separando de los del resto del ecosistema hasta no coincidir.
+
+   Este archivo sólo TRADUCE el canónico a lo que el contable necesita, y lo
+   hace UNA vez para los seis temas (antes había un bloque de colores por tema):
+
+     1. `--rama-50 … --rama-950`: la rampa neutra que consumen las utilidades
+        de Tailwind (`text-slate-700`, `bg-gray-100`, `border-slate-200`). Está
+        armada con roles del tema —fondo, superficie, tinta— así que en los
+        temas oscuros se da vuelta sola y en los componentes nunca se escribe
+        `dark:`.
+     2. Los roles que el canónico no tiene: la banda fuerte (`--nc-strong*`), la
+        línea de tarjeta (`--nc-line`) y el relleno sólido de los semánticos
+        (`--sem-*-fill`), que es el que aguanta texto blanco encima.
+     3. El puente a Tailwind (`@theme inline`).
+
+   Dos reglas de esta capa:
+     · si el color existe en el canónico, se usa ESE token —sin copiarle el
+       valor—: cuando el ecosistema cambie un tema, el contable cambia solo;
+     · sólo se deriva con `color-mix()` cuando el canónico no distingue el caso
+       (un borde que se lea sobre negro puro, un relleno que aguante blanco).
+
+   Los seis temas y sus nombres son los del canónico: corporate (el de fábrica
+   de Bling), light, dark, daltonico, horizon y amoled.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ══════════════ Derivación: una sola vez para todos los temas ══════════════
+   El `var()` de una propiedad personalizada se resuelve donde se USA, no donde
+   se declara, así que estas definiciones siguen al tema que esté puesto en el
+   <html> sin repetirse por tema.
+
+   `.isla-clara` entra en la misma regla a propósito: la isla re-declara más
+   abajo los tokens del tema claro y, al ser parte de esta regla, vuelve a
+   derivar su propia rampa en claro sin arrastrar los colores del tema activo. */
+:root,
+.isla-clara {
+  /* ── Rampa neutra (50 = fondo de página … 900 = tinta más fuerte) ── */
+  --rama-50: var(--nc-bg-0);
+  /* El escalón 100 es el velo con que el ecosistema separa superficies: en
+     AMOLED es lo único que se ve, porque ahí todo lo demás es negro puro. */
+  --rama-100: var(--nc-surface-hover);
+  --rama-200: var(--nc-line);
+  --rama-300: color-mix(in srgb, var(--nc-line) 62%, var(--nc-placeholder));
+  --rama-400: color-mix(in srgb, var(--nc-text-muted) 92%, var(--nc-bg-0));
+  --rama-500: var(--nc-text-muted);
+  --rama-600: color-mix(in srgb, var(--nc-text-muted) 45%, var(--nc-text-body));
+  --rama-700: var(--nc-text-body);
+  --rama-800: var(--nc-text-h2);
+  --rama-900: var(--nc-text-h1);
+  --rama-950: var(--nc-text-h1);
+
+  /* ── Superficies con nombre propio (lo que antes era `bg-white`) ── */
+  --nc-surface: var(--nc-surface-0);
+  --nc-surface-2: var(--nc-surface-hover);
+  /* El borde del canónico es finísimo en los temas oscuros (4% de blanco en
+     AMOLED) y muy tenue en el corporativo: mezclado con el gris del propio
+     tema se lee en los seis sin dejar de ser el color del tema. */
+  --nc-line: color-mix(in srgb, var(--nc-border) 90%, var(--nc-text-muted));
+
+  /* ── Banda fuerte: barra lateral y botones neutros ──
+     En los temas oscuros es un panel elevado (la superficie más alta del tema)
+     con la tinta más fuerte encima. En claro lo pisa el bloque de abajo, donde
+     la banda sigue siendo el bloque oscuro de siempre. */
+  --nc-strong: var(--nc-surface-70);
+  --nc-on-strong: var(--nc-text-h1);
+  --nc-strong-hover: color-mix(in srgb, var(--nc-strong) 88%, var(--nc-on-strong));
+  --nc-strong-soft: color-mix(in srgb, var(--nc-strong) 78%, var(--nc-on-strong));
+  --nc-strong-line: color-mix(in srgb, var(--nc-on-strong) 12%, transparent);
+  /* La tinta tenue de la banda fuerte tiene que leerse sobre `--nc-strong-soft`
+     (que es otra mezcla del mismo par): al 70% quedaba en 4:1 en los temas
+     oscuros. Al 86% sigue leyéndose tenue y pasa el mínimo en los seis. */
+  --nc-on-strong-muted: color-mix(in srgb, var(--nc-on-strong) 86%, var(--nc-strong));
+
+  /* ── Acento y marca: los del canónico; los tenues salen del propio acento ── */
+  --nc-primary-soft: color-mix(in srgb, var(--nc-primary) 12%, transparent);
+  --nc-primary-line: color-mix(in srgb, var(--nc-primary) 30%, transparent);
+  --nc-brand-line: color-mix(in srgb, var(--nc-brand) 35%, transparent);
+
+  /* ── Semánticos ──
+     Color, fondo y borde son del canónico, tal cual. El relleno sólido se
+     oscurece porque el verde brillante del tema oscuro no aguanta texto blanco
+     encima; y `-soft` es el mismo tono corrido hacia la tinta del tema, que en
+     claro oscurece y en oscuro aclara.
+
+     `-soft` es la única versión del semántico que se usa como TEXTO (el puente
+     de Tailwind manda ahí los escalones 600 a 900), así que tiene que leerse
+     sobre cualquier fondo de la app, no sólo sobre blanco. Al 78% quedaba en
+     4,07–4,37 sobre los grises y los tintes del tema claro —el chip "LISTO" de
+     la planilla, los globos numerados de Telemetría—: por debajo del 4,5:1 que
+     exige la AA. Al 68% da 4,9–7,9 en los seis temas, y como el 32% que se le
+     suma es la tinta del tema, en claro oscurece y en oscuro aclara: siempre
+     empuja hacia el lado que lee. */
+  --sem-success: var(--bling-success);
+  --sem-success-bg: var(--bling-success-bg);
+  --sem-success-line: var(--bling-success-border);
+  --sem-success-fill: color-mix(in srgb, var(--bling-success) 62%, #000);
+  --sem-success-soft: color-mix(in srgb, var(--bling-success) 68%, var(--nc-text-h1));
+
+  --sem-danger: var(--bling-danger);
+  --sem-danger-bg: var(--bling-danger-bg);
+  --sem-danger-line: var(--bling-danger-border);
+  --sem-danger-fill: color-mix(in srgb, var(--bling-danger) 62%, #000);
+  --sem-danger-soft: color-mix(in srgb, var(--bling-danger) 68%, var(--nc-text-h1));
+
+  --sem-warning: var(--bling-warning);
+  --sem-warning-bg: var(--bling-warning-bg);
+  --sem-warning-line: var(--bling-warning-border);
+  --sem-warning-fill: color-mix(in srgb, var(--bling-warning) 62%, #000);
+  --sem-warning-soft: color-mix(in srgb, var(--bling-warning) 68%, var(--nc-text-h1));
+
+  --sem-info: var(--bling-info);
+  --sem-info-bg: var(--bling-info-bg);
+  --sem-info-line: var(--bling-info-border);
+  --sem-info-fill: color-mix(in srgb, var(--bling-info) 62%, #000);
+  --sem-info-soft: color-mix(in srgb, var(--bling-info) 68%, var(--nc-text-h1));
+
+  /* ── Propinas ──
+     El único color propio del contable: en el ecosistema no hay un tono para
+     "propinas" y el violeta es el que ya usa la app para eso (punto del
+     tablero, chip de la grilla, panel de reportes). Violeta claro sobre fondos
+     oscuros; el profundo, para el claro, está en el bloque de abajo. */
+  --sem-tips: #a78bfa;
+  --sem-tips-bg: color-mix(in srgb, var(--sem-tips) 14%, transparent);
+  --sem-tips-line: color-mix(in srgb, var(--sem-tips) 32%, transparent);
+  --sem-tips-fill: color-mix(in srgb, var(--sem-tips) 62%, #000);
+  /* Igual que los semánticos del ecosistema: el 68% es el que se lee como texto
+     sobre los fondos del tema (y el violeta claro del tema oscuro, mezclado con
+     la tinta clara, aclara todavía más). */
+  --sem-tips-soft: color-mix(in srgb, var(--sem-tips) 68%, var(--nc-text-h1));
+
+  /* ── Velo de modales y sombra ── */
+  --nc-overlay: var(--bling-overlay);
+  --nc-shadow: 0 1px 2px rgba(var(--bling-shadow-rgb), 0.45),
+    0 10px 28px -14px rgba(var(--bling-shadow-rgb), 0.7);
+
+  color-scheme: dark;
+}
+
+/* ═════════════════════════════ Tema claro ═════════════════════════════════ */
+html.light,
+.isla-clara {
+  /* La banda fuerte en claro es el bloque oscuro de siempre: la tinta más
+     fuerte del tema como fondo y el blanco del tema como texto. */
+  --nc-strong: var(--nc-text-h1);
+  --nc-on-strong: var(--nc-bg-100);
+
+  /* Violeta profundo: el claro no se lee sobre blanco. */
+  --sem-tips: #6d28d9;
+
+  --nc-shadow: 0 1px 2px rgba(var(--bling-shadow-rgb), 0.06),
+    0 8px 24px -12px rgba(var(--bling-shadow-rgb), 0.18);
+
+  color-scheme: light;
+}
+
+/* ── Texto sobre la marca ──
+   La marca del ecosistema es amarilla (esmeralda en el corporativo), así que
+   encima va tinta oscura; en el daltónico la marca ES el azul del acento y ahí
+   sí va blanco. El `:where()` deja estas reglas en cero de especificidad para
+   que la isla clara (0,1,0) pueda pisarlas: adentro de la isla la marca vuelve
+   a ser la amarilla del tema claro. */
+:where(html) {
+  --nc-on-brand: #1a1405;
+}
+:where(html.daltonico) {
+  --nc-on-brand: #ffffff;
+}
+
+/* ══════════════════════ La isla clara (visor de Excel) ══════════════════════
+   Una planilla se mira como en Excel, no del color del tema del contable: la
+   isla re-declara los tokens del tema CLARO (espejo del bloque `html.light` de
+   bling-theme.css) y con eso la derivación de arriba arma su propia rampa en
+   claro, sin importar qué tema tenga el <html>.
+
+   Los semánticos también se espejan: la isla es clara, así que adentro valen
+   los verdes, rojos y ámbares del tema claro. Antes se heredaban del tema
+   activo y, en los temas oscuros, el chip "LISTO" de la barra de estado quedaba
+   con el verde brillante del tema oscuro sobre el gris claro de la planilla:
+   1,8:1, ilegible. Como `--sem-*` se derivan de `--bling-*` en la regla de
+   arriba, con estos valores la isla vuelve a calcular su propio relleno y su
+   propia tinta. */
+.isla-clara {
+  --nc-bg-0: #f8f9fa;
+  --nc-bg-100: #ffffff;
+  --nc-surface-0: #ffffff;
+  --nc-surface-70: #eceef0;
+  --nc-surface-hover: #e8eaed;
+  --nc-text-body: #28292b;
+  --nc-text-muted: #66686d;
+  --nc-text-h2: #18191b;
+  --nc-text-h1: #0b0c0d;
+  --nc-border: #e2e4e8;
+  --nc-placeholder: #a1a4aa;
+  --nc-primary: #3b82f6;
+  --nc-primary-hover: #2563eb;
+  --nc-brand: #eab308;
+  --nc-brand-hover: #ca8a04;
+  --nc-on-brand: #1a1405;
+  --bling-thumb: rgba(0, 0, 0, 0.12);
+  --bling-thumb-hover: rgba(0, 0, 0, 0.2);
+  --bling-overlay: rgba(0, 0, 0, 0.2);
+  --bling-shadow-rgb: 0, 0, 0;
+  --bling-success: #16a34a;
+  --bling-success-bg: rgba(22, 163, 74, 0.06);
+  --bling-success-border: rgba(22, 163, 74, 0.12);
+  --bling-danger: #ef4444;
+  --bling-danger-bg: rgba(220, 38, 38, 0.06);
+  --bling-danger-border: rgba(220, 38, 38, 0.12);
+  --bling-warning: #d97706;
+  --bling-warning-bg: rgba(217, 119, 6, 0.05);
+  --bling-warning-border: rgba(217, 119, 6, 0.1);
+  --bling-info: #3b82f6;
+  --bling-info-bg: rgba(59, 130, 246, 0.05);
+  --bling-info-border: rgba(59, 130, 246, 0.1);
+
+  /* Re-declarar las variables no alcanza: el `color` de la página ya bajó
+     resuelto desde un contenedor de afuera, así que el texto quedaría con la
+     tinta del tema activo sobre el fondo claro de la isla. Fijándolo acá, todo
+     lo de adentro vuelve a heredar bien. */
+  color: var(--nc-text-body);
+}
+
+/* ═══════════════════════ Puente a las utilidades ════════════════════════════
+   `inline` hace que cada utilidad salga con el `var()` del tema pegado, así
+   `bg-slate-800` cambia de valor solo cuando cambia la clase del <html>.
+   Nada de acá abajo se vuelve a escribir por tema. */
+:root,
+.isla-clara {
+  /* Rampa neutra: `slate`, `gray` y los grises de Tailwind que no son rampa
+     apuntan todos al mismo gris del tema. */
+  --color-slate-50: var(--rama-50);
+  --color-slate-100: var(--rama-100);
+  --color-slate-200: var(--rama-200);
+  --color-slate-300: var(--rama-300);
+  --color-slate-400: var(--rama-400);
+  --color-slate-500: var(--rama-500);
+  --color-slate-600: var(--rama-600);
+  --color-slate-700: var(--rama-700);
+  --color-slate-800: var(--rama-800);
+  --color-slate-900: var(--rama-900);
+  --color-slate-950: var(--rama-950);
+
+  --color-gray-50: var(--rama-50);
+  --color-gray-100: var(--rama-100);
+  --color-gray-200: var(--rama-200);
+  --color-gray-300: var(--rama-300);
+  --color-gray-400: var(--rama-400);
+  --color-gray-500: var(--rama-500);
+  --color-gray-600: var(--rama-600);
+  --color-gray-700: var(--rama-700);
+  --color-gray-800: var(--rama-800);
+  --color-gray-900: var(--rama-900);
+  --color-gray-950: var(--rama-950);
+
+  --color-zinc-50: var(--rama-50);
+  --color-zinc-100: var(--rama-100);
+  --color-zinc-200: var(--rama-200);
+  --color-zinc-300: var(--rama-300);
+  --color-zinc-400: var(--rama-400);
+  --color-zinc-500: var(--rama-500);
+  --color-zinc-600: var(--rama-600);
+  --color-zinc-700: var(--rama-700);
+  --color-zinc-800: var(--rama-800);
+  --color-zinc-900: var(--rama-900);
+  --color-zinc-950: var(--rama-950);
+
+  --color-stone-50: var(--rama-50);
+  --color-stone-100: var(--rama-100);
+  --color-stone-200: var(--rama-200);
+  --color-stone-300: var(--rama-300);
+  --color-stone-400: var(--rama-400);
+  --color-stone-500: var(--rama-500);
+  --color-stone-600: var(--rama-600);
+  --color-stone-700: var(--rama-700);
+  --color-stone-800: var(--rama-800);
+  --color-stone-900: var(--rama-900);
+  --color-stone-950: var(--rama-950);
+
+  --color-neutral-50: var(--rama-50);
+  --color-neutral-100: var(--rama-100);
+  --color-neutral-200: var(--rama-200);
+  --color-neutral-300: var(--rama-300);
+  --color-neutral-400: var(--rama-400);
+  --color-neutral-500: var(--rama-500);
+  --color-neutral-600: var(--rama-600);
+  --color-neutral-700: var(--rama-700);
+  --color-neutral-800: var(--rama-800);
+  --color-neutral-900: var(--rama-900);
+  --color-neutral-950: var(--rama-950);
+
+  /* Roles con nombre propio: lo que antes era `bg-white` u hovers fijos. */
+  --color-bg: var(--nc-bg-0);
+  --color-bg-soft: var(--nc-bg-70);
+  --color-ink: var(--nc-text-h1);
+  --color-ink-soft: var(--nc-text-body);
+  --color-muted: var(--nc-text-muted);
+  /* `text-placeholder` es el gris tenue de la app (separadores de migas, importes
+     vacíos): va a la rampa, que tiene contraste suficiente. El gris de los
+     `input` sale del canónico y se aplica en `::placeholder` (index.css). */
+  --color-placeholder: var(--rama-400);
+  --color-surface: var(--nc-surface);
+  --color-surface-2: var(--nc-surface-2);
+  --color-line: var(--nc-line);
+  --color-strong: var(--nc-strong);
+  --color-strong-hover: var(--nc-strong-hover);
+  --color-strong-soft: var(--nc-strong-soft);
+  --color-strong-line: var(--nc-strong-line);
+  --color-on-strong: var(--nc-on-strong);
+  --color-on-strong-muted: var(--nc-on-strong-muted);
+  --color-primary: var(--nc-primary);
+  --color-primary-hover: var(--nc-primary-hover);
+  --color-primary-soft: var(--nc-primary-soft);
+  --color-primary-line: var(--nc-primary-line);
+  --color-brand: var(--nc-brand);
+  --color-brand-hover: var(--nc-brand-hover);
+  --color-brand-line: var(--nc-brand-line);
+  --color-on-brand: var(--nc-on-brand);
+
+  /* Semánticos con nombre. */
+  --color-success: var(--sem-success);
+  --color-success-soft: var(--sem-success-soft);
+  --color-success-bg: var(--sem-success-bg);
+  --color-success-line: var(--sem-success-line);
+  /* Los `-fill` son el relleno sólido que aguanta texto blanco en los seis
+     temas: el verde brillante del tema oscuro no sirve como fondo de un botón,
+     así que el relleno tiene su propio valor. */
+  --color-success-fill: var(--sem-success-fill);
+  --color-danger: var(--sem-danger);
+  --color-danger-soft: var(--sem-danger-soft);
+  --color-danger-bg: var(--sem-danger-bg);
+  --color-danger-line: var(--sem-danger-line);
+  --color-danger-fill: var(--sem-danger-fill);
+  --color-warning: var(--sem-warning);
+  --color-warning-soft: var(--sem-warning-soft);
+  --color-warning-bg: var(--sem-warning-bg);
+  --color-warning-line: var(--sem-warning-line);
+  --color-warning-fill: var(--sem-warning-fill);
+  --color-info: var(--sem-info);
+  --color-info-soft: var(--sem-info-soft);
+  --color-info-bg: var(--sem-info-bg);
+  --color-info-line: var(--sem-info-line);
+  --color-info-fill: var(--sem-info-fill);
+  --color-tips: var(--sem-tips);
+  --color-tips-soft: var(--sem-tips-soft);
+  --color-tips-bg: var(--sem-tips-bg);
+  --color-tips-line: var(--sem-tips-line);
+  --color-tips-fill: var(--sem-tips-fill);
+
+  /* Familias de color del código viejo → semánticos del tema.
+     El relevo de las clases dice que estas familias se usan así: 50/100 como
+     fondo tenue, 200/300 como borde, 400/500 como color plano (puntos, anillos
+     de foco) y 600 a 900 SIEMPRE como texto sobre un fondo tenue. Por eso los
+     cuatro últimos van a `-soft` —el tono corrido hacia la tinta del tema, que
+     en claro oscurece y en oscuro aclara— y no al color base ni al `-fill`,
+     que es un relleno sólido y como texto desaparece en los temas oscuros. */
+  --color-blue-50: var(--sem-info-bg);
+  --color-blue-100: var(--sem-info-bg);
+  --color-blue-200: var(--sem-info-line);
+  --color-blue-300: var(--sem-info-line);
+  --color-blue-400: var(--sem-info-soft);
+  --color-blue-500: var(--sem-info);
+  --color-blue-600: var(--sem-info-soft);
+  --color-blue-700: var(--sem-info-soft);
+  --color-blue-800: var(--sem-info-soft);
+  --color-blue-900: var(--sem-info-soft);
+
+  --color-sky-50: var(--sem-info-bg);
+  --color-sky-100: var(--sem-info-bg);
+  --color-sky-200: var(--sem-info-line);
+  --color-sky-300: var(--sem-info-line);
+  --color-sky-400: var(--sem-info-soft);
+  --color-sky-500: var(--sem-info);
+  --color-sky-600: var(--sem-info-soft);
+  --color-sky-700: var(--sem-info-soft);
+  --color-sky-800: var(--sem-info-soft);
+  --color-sky-900: var(--sem-info-soft);
+
+  --color-cyan-50: var(--sem-info-bg);
+  --color-cyan-100: var(--sem-info-bg);
+  --color-cyan-200: var(--sem-info-line);
+  --color-cyan-300: var(--sem-info-line);
+  --color-cyan-400: var(--sem-info-soft);
+  --color-cyan-500: var(--sem-info);
+  --color-cyan-600: var(--sem-info-soft);
+  --color-cyan-700: var(--sem-info-soft);
+  --color-cyan-800: var(--sem-info-soft);
+  --color-cyan-900: var(--sem-info-soft);
+
+  --color-indigo-50: var(--sem-info-bg);
+  --color-indigo-100: var(--sem-info-bg);
+  --color-indigo-200: var(--sem-info-line);
+  --color-indigo-300: var(--sem-info-line);
+  --color-indigo-400: var(--sem-info-soft);
+  --color-indigo-500: var(--sem-info);
+  --color-indigo-600: var(--sem-info-soft);
+  --color-indigo-700: var(--sem-info-soft);
+  --color-indigo-800: var(--sem-info-soft);
+  --color-indigo-900: var(--sem-info-soft);
+
+  --color-violet-50: var(--sem-tips-bg);
+  --color-violet-100: var(--sem-tips-bg);
+  --color-violet-200: var(--sem-tips-line);
+  --color-violet-300: var(--sem-tips-line);
+  --color-violet-400: var(--sem-tips-soft);
+  --color-violet-500: var(--sem-tips);
+  --color-violet-600: var(--sem-tips-soft);
+  --color-violet-700: var(--sem-tips-soft);
+  --color-violet-800: var(--sem-tips-soft);
+  --color-violet-900: var(--sem-tips-soft);
+
+  --color-purple-50: var(--sem-tips-bg);
+  --color-purple-100: var(--sem-tips-bg);
+  --color-purple-200: var(--sem-tips-line);
+  --color-purple-300: var(--sem-tips-line);
+  --color-purple-400: var(--sem-tips-soft);
+  --color-purple-500: var(--sem-tips);
+  --color-purple-600: var(--sem-tips-soft);
+  --color-purple-700: var(--sem-tips-soft);
+  --color-purple-800: var(--sem-tips-soft);
+  --color-purple-900: var(--sem-tips-soft);
+
+  --color-fuchsia-50: var(--sem-tips-bg);
+  --color-fuchsia-100: var(--sem-tips-bg);
+  --color-fuchsia-200: var(--sem-tips-line);
+  --color-fuchsia-300: var(--sem-tips-line);
+  --color-fuchsia-400: var(--sem-tips-soft);
+  --color-fuchsia-500: var(--sem-tips);
+  --color-fuchsia-600: var(--sem-tips-soft);
+  --color-fuchsia-700: var(--sem-tips-soft);
+  --color-fuchsia-800: var(--sem-tips-soft);
+  --color-fuchsia-900: var(--sem-tips-soft);
+
+  --color-emerald-50: var(--sem-success-bg);
+  --color-emerald-100: var(--sem-success-bg);
+  --color-emerald-200: var(--sem-success-line);
+  --color-emerald-300: var(--sem-success-line);
+  --color-emerald-400: var(--sem-success-soft);
+  --color-emerald-500: var(--sem-success);
+  --color-emerald-600: var(--sem-success-soft);
+  --color-emerald-700: var(--sem-success-soft);
+  --color-emerald-800: var(--sem-success-soft);
+  --color-emerald-900: var(--sem-success-soft);
+
+  --color-teal-50: var(--sem-success-bg);
+  --color-teal-100: var(--sem-success-bg);
+  --color-teal-200: var(--sem-success-line);
+  --color-teal-300: var(--sem-success-line);
+  --color-teal-400: var(--sem-success-soft);
+  --color-teal-500: var(--sem-success);
+  --color-teal-600: var(--sem-success-soft);
+  --color-teal-700: var(--sem-success-soft);
+  --color-teal-800: var(--sem-success-soft);
+  --color-teal-900: var(--sem-success-soft);
+
+  --color-green-50: var(--sem-success-bg);
+  --color-green-100: var(--sem-success-bg);
+  --color-green-200: var(--sem-success-line);
+  --color-green-300: var(--sem-success-line);
+  --color-green-400: var(--sem-success-soft);
+  --color-green-500: var(--sem-success);
+  --color-green-600: var(--sem-success-soft);
+  --color-green-700: var(--sem-success-soft);
+  --color-green-800: var(--sem-success-soft);
+  --color-green-900: var(--sem-success-soft);
+
+  --color-lime-50: var(--sem-success-bg);
+  --color-lime-100: var(--sem-success-bg);
+  --color-lime-200: var(--sem-success-line);
+  --color-lime-300: var(--sem-success-line);
+  --color-lime-400: var(--sem-success-soft);
+  --color-lime-500: var(--sem-success);
+  --color-lime-600: var(--sem-success-soft);
+  --color-lime-700: var(--sem-success-soft);
+  --color-lime-800: var(--sem-success-soft);
+  --color-lime-900: var(--sem-success-soft);
+
+  --color-rose-50: var(--sem-danger-bg);
+  --color-rose-100: var(--sem-danger-bg);
+  --color-rose-200: var(--sem-danger-line);
+  --color-rose-300: var(--sem-danger-line);
+  --color-rose-400: var(--sem-danger-soft);
+  --color-rose-500: var(--sem-danger);
+  --color-rose-600: var(--sem-danger-soft);
+  --color-rose-700: var(--sem-danger-soft);
+  --color-rose-800: var(--sem-danger-soft);
+  --color-rose-900: var(--sem-danger-soft);
+
+  --color-red-50: var(--sem-danger-bg);
+  --color-red-100: var(--sem-danger-bg);
+  --color-red-200: var(--sem-danger-line);
+  --color-red-300: var(--sem-danger-line);
+  --color-red-400: var(--sem-danger-soft);
+  --color-red-500: var(--sem-danger);
+  --color-red-600: var(--sem-danger-soft);
+  --color-red-700: var(--sem-danger-soft);
+  --color-red-800: var(--sem-danger-soft);
+  --color-red-900: var(--sem-danger-soft);
+
+  --color-pink-50: var(--sem-danger-bg);
+  --color-pink-100: var(--sem-danger-bg);
+  --color-pink-200: var(--sem-danger-line);
+  --color-pink-300: var(--sem-danger-line);
+  --color-pink-400: var(--sem-danger-soft);
+  --color-pink-500: var(--sem-danger);
+  --color-pink-600: var(--sem-danger-soft);
+  --color-pink-700: var(--sem-danger-soft);
+  --color-pink-800: var(--sem-danger-soft);
+  --color-pink-900: var(--sem-danger-soft);
+
+  --color-amber-50: var(--sem-warning-bg);
+  --color-amber-100: var(--sem-warning-bg);
+  --color-amber-200: var(--sem-warning-line);
+  --color-amber-300: var(--sem-warning-line);
+  --color-amber-400: var(--sem-warning-soft);
+  --color-amber-500: var(--sem-warning);
+  --color-amber-600: var(--sem-warning-soft);
+  --color-amber-700: var(--sem-warning-soft);
+  --color-amber-800: var(--sem-warning-soft);
+  --color-amber-900: var(--sem-warning-soft);
+
+  --color-orange-50: var(--sem-warning-bg);
+  --color-orange-100: var(--sem-warning-bg);
+  --color-orange-200: var(--sem-warning-line);
+  --color-orange-300: var(--sem-warning-line);
+  --color-orange-400: var(--sem-warning-soft);
+  --color-orange-500: var(--sem-warning);
+  --color-orange-600: var(--sem-warning-soft);
+  --color-orange-700: var(--sem-warning-soft);
+  --color-orange-800: var(--sem-warning-soft);
+  --color-orange-900: var(--sem-warning-soft);
+
+  /* En el tema claro la marca es un amarillo oscuro y en los oscuros es el
+     amarillo de Bling; `yellow` apunta a la marca en los seis. */
+  --color-yellow-50: var(--sem-warning-bg);
+  --color-yellow-100: var(--sem-warning-bg);
+  --color-yellow-200: var(--sem-warning-line);
+  --color-yellow-300: var(--sem-warning-line);
+  --color-yellow-400: var(--nc-brand);
+  --color-yellow-500: var(--nc-brand);
+  --color-yellow-600: var(--sem-warning-soft);
+  --color-yellow-700: var(--sem-warning-soft);
+  --color-yellow-800: var(--sem-warning-soft);
+  --color-yellow-900: var(--sem-warning-soft);
+
+  /* Tipografía: la interfaz en Montserrat (la de la casa) y los datos en Obel
+     Mono (`--font-mono`, ver styles/obel-mono.css): cifras, importes, fechas,
+     códigos y rótulos chicos en mayúsculas. */
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Obel Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  --shadow-tarjeta: var(--nc-shadow);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Sistema de diseño: un solo ritmo para toda la app.
+
+   Espaciado en una escala de 4 px y con nombre por uso, así cada bloque,
+   tarjeta y control respira igual y nada queda pegado a un borde:
+   - página: margen del contenido contra la ventana (24 / 16 en móvil);
+   - bloque: separación entre tarjetas y secciones (16);
+   - tarjeta: padding interno de tarjetas y paneles (16);
+   - control: padding horizontal de botones, campos y selectores (12);
+   - interno: separación entre elementos dentro de un bloque (8).
+
+   Tipografía en cuatro tamaños: rótulo 11, base 12, título 14, cifra 20.
+   Radio en dos valores: control 6, panel 10.
+   Alturas de control: 32 (28 compacto), iguales para botón, campo, selector
+   y pestaña, así quedan alineados en la misma fila.
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-6: 24px;
+  --esp-8: 32px;
+
+  /* Todo flota: sidebar, barra y bloques quedan a 12 px de la pantalla y
+     12 px entre sí (el «aire» del bento); el padding interno es más generoso. */
+  --esp-marco: var(--esp-3);
+  --esp-pagina: var(--esp-3);
+  --esp-bloque: var(--esp-3);
+  --esp-tarjeta: var(--esp-4);
+  --esp-control: var(--esp-3);
+  --esp-interno: var(--esp-2);
+
+  --texto-rotulo: 11px;
+  --texto-base: 12px;
+  --texto-titulo: 14px;
+  --texto-cifra: 20px;
+  --interlineado-rotulo: 16px;
+  --interlineado-base: 18px;
+  --interlineado-titulo: 20px;
+  --interlineado-cifra: 26px;
+
+  --radio-control: 8px;
+  --radio-panel: 16px;
+  --radio-pildora: 999px;
+
+  --alto-control: 32px;
+  --alto-control-compacto: 28px;
+
+  /* Acento: un naranja para detalles mínimos (rótulos, el punto del ítem
+     activo, el día de hoy, el dato destacado de una gráfica). No reemplaza a
+     los semánticos ni a la paleta institucional: cada tema define el suyo.
+     `-texto` es el tono que aguanta texto chico con contraste suficiente. */
+  --acento: #ff7a1f;
+  --acento-texto: #ff9147;
+  --acento-bg: rgba(255, 122, 31, 0.1);
+
+  /* Lienzo: el fondo detrás de los paneles flotantes. */
+  --lienzo: var(--nc-bg-0);
+  /* Punto apagado de las matrices y ticks de las gráficas. */
+  --punto: color-mix(in srgb, var(--nc-text-muted) 22%, transparent);
+  --linea-punteada: color-mix(in srgb, var(--nc-text-muted) 28%, transparent);
+}
+
+html.light,
+.isla-clara {
+  /* #ea580c: el relleno llega a 3:1 sobre blanco (marcas de gráficas). */
+  --acento: #ea580c;
+  --acento-texto: #c2410c;
+  --acento-bg: rgba(234, 88, 12, 0.08);
+  /* En claro el lienzo es un gris apenas más oscuro que las tarjetas blancas,
+     así los paneles se despegan sin sombras pesadas. */
+  --lienzo: color-mix(in srgb, var(--nc-bg-0) 94%, var(--nc-text-h1));
+  --punto: color-mix(in srgb, var(--nc-text-muted) 18%, transparent);
+}
+
+:root,
+.isla-clara {
+  --color-acento: var(--acento);
+  --color-acento-texto: var(--acento-texto);
+  --color-acento-bg: var(--acento-bg);
+  --color-lienzo: var(--lienzo);
+  --color-punto: var(--punto);
+
+  /* Utilidades del sistema: text-rotulo/cuerpo/titulo/cifra y rounded-control/panel,
+     para que las vistas usen la escala en vez de valores sueltos. */
+  --text-rotulo: var(--texto-rotulo);
+  --text-rotulo--line-height: var(--interlineado-rotulo);
+  --text-cuerpo: var(--texto-base);
+  --text-cuerpo--line-height: var(--interlineado-base);
+  --text-titulo: var(--texto-titulo);
+  --text-titulo--line-height: var(--interlineado-titulo);
+  --text-cifra: var(--texto-cifra);
+  --text-cifra--line-height: var(--interlineado-cifra);
+  --radius-control: var(--radio-control);
+  --radius-panel: var(--radio-panel);
+}
+
+@media (max-width: 639px) {
+  :root {
+    --esp-tarjeta: var(--esp-4);
+  }
+}

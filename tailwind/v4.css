@@ -1,0 +1,358 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   @blingcompany/bling-ui — Puente a Tailwind 4
+   ─────────────────────────────────────────────────────────────────────────────
+   Uso (después de `@import "tailwindcss";`):
+     @import "@blingcompany/bling-ui/index.css";
+     @import "@blingcompany/bling-ui/tailwind/v4.css";
+   Expone los roles como utilidades (bg-surface, text-ink, border-line,
+   bg-strong, text-success-soft…), hace que los grises y las familias de color
+   de Tailwind sigan al tema activo y agrega la escala del sistema
+   (text-rotulo/cuerpo/titulo/cifra, rounded-control/panel).
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@theme inline {
+  /* Rampa neutra: `slate`, `gray` y los grises de Tailwind que no son rampa
+     apuntan todos al mismo gris del tema. */
+  --color-slate-50: var(--rama-50);
+  --color-slate-100: var(--rama-100);
+  --color-slate-200: var(--rama-200);
+  --color-slate-300: var(--rama-300);
+  --color-slate-400: var(--rama-400);
+  --color-slate-500: var(--rama-500);
+  --color-slate-600: var(--rama-600);
+  --color-slate-700: var(--rama-700);
+  --color-slate-800: var(--rama-800);
+  --color-slate-900: var(--rama-900);
+  --color-slate-950: var(--rama-950);
+
+  --color-gray-50: var(--rama-50);
+  --color-gray-100: var(--rama-100);
+  --color-gray-200: var(--rama-200);
+  --color-gray-300: var(--rama-300);
+  --color-gray-400: var(--rama-400);
+  --color-gray-500: var(--rama-500);
+  --color-gray-600: var(--rama-600);
+  --color-gray-700: var(--rama-700);
+  --color-gray-800: var(--rama-800);
+  --color-gray-900: var(--rama-900);
+  --color-gray-950: var(--rama-950);
+
+  --color-zinc-50: var(--rama-50);
+  --color-zinc-100: var(--rama-100);
+  --color-zinc-200: var(--rama-200);
+  --color-zinc-300: var(--rama-300);
+  --color-zinc-400: var(--rama-400);
+  --color-zinc-500: var(--rama-500);
+  --color-zinc-600: var(--rama-600);
+  --color-zinc-700: var(--rama-700);
+  --color-zinc-800: var(--rama-800);
+  --color-zinc-900: var(--rama-900);
+  --color-zinc-950: var(--rama-950);
+
+  --color-stone-50: var(--rama-50);
+  --color-stone-100: var(--rama-100);
+  --color-stone-200: var(--rama-200);
+  --color-stone-300: var(--rama-300);
+  --color-stone-400: var(--rama-400);
+  --color-stone-500: var(--rama-500);
+  --color-stone-600: var(--rama-600);
+  --color-stone-700: var(--rama-700);
+  --color-stone-800: var(--rama-800);
+  --color-stone-900: var(--rama-900);
+  --color-stone-950: var(--rama-950);
+
+  --color-neutral-50: var(--rama-50);
+  --color-neutral-100: var(--rama-100);
+  --color-neutral-200: var(--rama-200);
+  --color-neutral-300: var(--rama-300);
+  --color-neutral-400: var(--rama-400);
+  --color-neutral-500: var(--rama-500);
+  --color-neutral-600: var(--rama-600);
+  --color-neutral-700: var(--rama-700);
+  --color-neutral-800: var(--rama-800);
+  --color-neutral-900: var(--rama-900);
+  --color-neutral-950: var(--rama-950);
+
+  /* Roles con nombre propio: lo que antes era `bg-white` u hovers fijos. */
+  --color-bg: var(--nc-bg-0);
+  --color-bg-soft: var(--nc-bg-70);
+  --color-ink: var(--nc-text-h1);
+  --color-ink-soft: var(--nc-text-body);
+  --color-muted: var(--nc-text-muted);
+  /* `text-placeholder` es el gris tenue de la app (separadores de migas, importes
+     vacíos): va a la rampa, que tiene contraste suficiente. El gris de los
+     `input` sale del canónico y se aplica en `::placeholder` (index.css). */
+  --color-placeholder: var(--rama-400);
+  --color-surface: var(--nc-surface);
+  --color-surface-2: var(--nc-surface-2);
+  --color-line: var(--nc-line);
+  --color-strong: var(--nc-strong);
+  --color-strong-hover: var(--nc-strong-hover);
+  --color-strong-soft: var(--nc-strong-soft);
+  --color-strong-line: var(--nc-strong-line);
+  --color-on-strong: var(--nc-on-strong);
+  --color-on-strong-muted: var(--nc-on-strong-muted);
+  --color-primary: var(--nc-primary);
+  --color-primary-hover: var(--nc-primary-hover);
+  --color-primary-soft: var(--nc-primary-soft);
+  --color-primary-line: var(--nc-primary-line);
+  --color-brand: var(--nc-brand);
+  --color-brand-hover: var(--nc-brand-hover);
+  --color-brand-line: var(--nc-brand-line);
+  --color-on-brand: var(--nc-on-brand);
+
+  /* Semánticos con nombre. */
+  --color-success: var(--sem-success);
+  --color-success-soft: var(--sem-success-soft);
+  --color-success-bg: var(--sem-success-bg);
+  --color-success-line: var(--sem-success-line);
+  /* Los `-fill` son el relleno sólido que aguanta texto blanco en los seis
+     temas: el verde brillante del tema oscuro no sirve como fondo de un botón,
+     así que el relleno tiene su propio valor. */
+  --color-success-fill: var(--sem-success-fill);
+  --color-danger: var(--sem-danger);
+  --color-danger-soft: var(--sem-danger-soft);
+  --color-danger-bg: var(--sem-danger-bg);
+  --color-danger-line: var(--sem-danger-line);
+  --color-danger-fill: var(--sem-danger-fill);
+  --color-warning: var(--sem-warning);
+  --color-warning-soft: var(--sem-warning-soft);
+  --color-warning-bg: var(--sem-warning-bg);
+  --color-warning-line: var(--sem-warning-line);
+  --color-warning-fill: var(--sem-warning-fill);
+  --color-info: var(--sem-info);
+  --color-info-soft: var(--sem-info-soft);
+  --color-info-bg: var(--sem-info-bg);
+  --color-info-line: var(--sem-info-line);
+  --color-info-fill: var(--sem-info-fill);
+  --color-tips: var(--sem-tips);
+  --color-tips-soft: var(--sem-tips-soft);
+  --color-tips-bg: var(--sem-tips-bg);
+  --color-tips-line: var(--sem-tips-line);
+  --color-tips-fill: var(--sem-tips-fill);
+
+  /* Familias de color del código viejo → semánticos del tema.
+     El relevo de las clases dice que estas familias se usan así: 50/100 como
+     fondo tenue, 200/300 como borde, 400/500 como color plano (puntos, anillos
+     de foco) y 600 a 900 SIEMPRE como texto sobre un fondo tenue. Por eso los
+     cuatro últimos van a `-soft` —el tono corrido hacia la tinta del tema, que
+     en claro oscurece y en oscuro aclara— y no al color base ni al `-fill`,
+     que es un relleno sólido y como texto desaparece en los temas oscuros. */
+  --color-blue-50: var(--sem-info-bg);
+  --color-blue-100: var(--sem-info-bg);
+  --color-blue-200: var(--sem-info-line);
+  --color-blue-300: var(--sem-info-line);
+  --color-blue-400: var(--sem-info-soft);
+  --color-blue-500: var(--sem-info);
+  --color-blue-600: var(--sem-info-soft);
+  --color-blue-700: var(--sem-info-soft);
+  --color-blue-800: var(--sem-info-soft);
+  --color-blue-900: var(--sem-info-soft);
+
+  --color-sky-50: var(--sem-info-bg);
+  --color-sky-100: var(--sem-info-bg);
+  --color-sky-200: var(--sem-info-line);
+  --color-sky-300: var(--sem-info-line);
+  --color-sky-400: var(--sem-info-soft);
+  --color-sky-500: var(--sem-info);
+  --color-sky-600: var(--sem-info-soft);
+  --color-sky-700: var(--sem-info-soft);
+  --color-sky-800: var(--sem-info-soft);
+  --color-sky-900: var(--sem-info-soft);
+
+  --color-cyan-50: var(--sem-info-bg);
+  --color-cyan-100: var(--sem-info-bg);
+  --color-cyan-200: var(--sem-info-line);
+  --color-cyan-300: var(--sem-info-line);
+  --color-cyan-400: var(--sem-info-soft);
+  --color-cyan-500: var(--sem-info);
+  --color-cyan-600: var(--sem-info-soft);
+  --color-cyan-700: var(--sem-info-soft);
+  --color-cyan-800: var(--sem-info-soft);
+  --color-cyan-900: var(--sem-info-soft);
+
+  --color-indigo-50: var(--sem-info-bg);
+  --color-indigo-100: var(--sem-info-bg);
+  --color-indigo-200: var(--sem-info-line);
+  --color-indigo-300: var(--sem-info-line);
+  --color-indigo-400: var(--sem-info-soft);
+  --color-indigo-500: var(--sem-info);
+  --color-indigo-600: var(--sem-info-soft);
+  --color-indigo-700: var(--sem-info-soft);
+  --color-indigo-800: var(--sem-info-soft);
+  --color-indigo-900: var(--sem-info-soft);
+
+  --color-violet-50: var(--sem-tips-bg);
+  --color-violet-100: var(--sem-tips-bg);
+  --color-violet-200: var(--sem-tips-line);
+  --color-violet-300: var(--sem-tips-line);
+  --color-violet-400: var(--sem-tips-soft);
+  --color-violet-500: var(--sem-tips);
+  --color-violet-600: var(--sem-tips-soft);
+  --color-violet-700: var(--sem-tips-soft);
+  --color-violet-800: var(--sem-tips-soft);
+  --color-violet-900: var(--sem-tips-soft);
+
+  --color-purple-50: var(--sem-tips-bg);
+  --color-purple-100: var(--sem-tips-bg);
+  --color-purple-200: var(--sem-tips-line);
+  --color-purple-300: var(--sem-tips-line);
+  --color-purple-400: var(--sem-tips-soft);
+  --color-purple-500: var(--sem-tips);
+  --color-purple-600: var(--sem-tips-soft);
+  --color-purple-700: var(--sem-tips-soft);
+  --color-purple-800: var(--sem-tips-soft);
+  --color-purple-900: var(--sem-tips-soft);
+
+  --color-fuchsia-50: var(--sem-tips-bg);
+  --color-fuchsia-100: var(--sem-tips-bg);
+  --color-fuchsia-200: var(--sem-tips-line);
+  --color-fuchsia-300: var(--sem-tips-line);
+  --color-fuchsia-400: var(--sem-tips-soft);
+  --color-fuchsia-500: var(--sem-tips);
+  --color-fuchsia-600: var(--sem-tips-soft);
+  --color-fuchsia-700: var(--sem-tips-soft);
+  --color-fuchsia-800: var(--sem-tips-soft);
+  --color-fuchsia-900: var(--sem-tips-soft);
+
+  --color-emerald-50: var(--sem-success-bg);
+  --color-emerald-100: var(--sem-success-bg);
+  --color-emerald-200: var(--sem-success-line);
+  --color-emerald-300: var(--sem-success-line);
+  --color-emerald-400: var(--sem-success-soft);
+  --color-emerald-500: var(--sem-success);
+  --color-emerald-600: var(--sem-success-soft);
+  --color-emerald-700: var(--sem-success-soft);
+  --color-emerald-800: var(--sem-success-soft);
+  --color-emerald-900: var(--sem-success-soft);
+
+  --color-teal-50: var(--sem-success-bg);
+  --color-teal-100: var(--sem-success-bg);
+  --color-teal-200: var(--sem-success-line);
+  --color-teal-300: var(--sem-success-line);
+  --color-teal-400: var(--sem-success-soft);
+  --color-teal-500: var(--sem-success);
+  --color-teal-600: var(--sem-success-soft);
+  --color-teal-700: var(--sem-success-soft);
+  --color-teal-800: var(--sem-success-soft);
+  --color-teal-900: var(--sem-success-soft);
+
+  --color-green-50: var(--sem-success-bg);
+  --color-green-100: var(--sem-success-bg);
+  --color-green-200: var(--sem-success-line);
+  --color-green-300: var(--sem-success-line);
+  --color-green-400: var(--sem-success-soft);
+  --color-green-500: var(--sem-success);
+  --color-green-600: var(--sem-success-soft);
+  --color-green-700: var(--sem-success-soft);
+  --color-green-800: var(--sem-success-soft);
+  --color-green-900: var(--sem-success-soft);
+
+  --color-lime-50: var(--sem-success-bg);
+  --color-lime-100: var(--sem-success-bg);
+  --color-lime-200: var(--sem-success-line);
+  --color-lime-300: var(--sem-success-line);
+  --color-lime-400: var(--sem-success-soft);
+  --color-lime-500: var(--sem-success);
+  --color-lime-600: var(--sem-success-soft);
+  --color-lime-700: var(--sem-success-soft);
+  --color-lime-800: var(--sem-success-soft);
+  --color-lime-900: var(--sem-success-soft);
+
+  --color-rose-50: var(--sem-danger-bg);
+  --color-rose-100: var(--sem-danger-bg);
+  --color-rose-200: var(--sem-danger-line);
+  --color-rose-300: var(--sem-danger-line);
+  --color-rose-400: var(--sem-danger-soft);
+  --color-rose-500: var(--sem-danger);
+  --color-rose-600: var(--sem-danger-soft);
+  --color-rose-700: var(--sem-danger-soft);
+  --color-rose-800: var(--sem-danger-soft);
+  --color-rose-900: var(--sem-danger-soft);
+
+  --color-red-50: var(--sem-danger-bg);
+  --color-red-100: var(--sem-danger-bg);
+  --color-red-200: var(--sem-danger-line);
+  --color-red-300: var(--sem-danger-line);
+  --color-red-400: var(--sem-danger-soft);
+  --color-red-500: var(--sem-danger);
+  --color-red-600: var(--sem-danger-soft);
+  --color-red-700: var(--sem-danger-soft);
+  --color-red-800: var(--sem-danger-soft);
+  --color-red-900: var(--sem-danger-soft);
+
+  --color-pink-50: var(--sem-danger-bg);
+  --color-pink-100: var(--sem-danger-bg);
+  --color-pink-200: var(--sem-danger-line);
+  --color-pink-300: var(--sem-danger-line);
+  --color-pink-400: var(--sem-danger-soft);
+  --color-pink-500: var(--sem-danger);
+  --color-pink-600: var(--sem-danger-soft);
+  --color-pink-700: var(--sem-danger-soft);
+  --color-pink-800: var(--sem-danger-soft);
+  --color-pink-900: var(--sem-danger-soft);
+
+  --color-amber-50: var(--sem-warning-bg);
+  --color-amber-100: var(--sem-warning-bg);
+  --color-amber-200: var(--sem-warning-line);
+  --color-amber-300: var(--sem-warning-line);
+  --color-amber-400: var(--sem-warning-soft);
+  --color-amber-500: var(--sem-warning);
+  --color-amber-600: var(--sem-warning-soft);
+  --color-amber-700: var(--sem-warning-soft);
+  --color-amber-800: var(--sem-warning-soft);
+  --color-amber-900: var(--sem-warning-soft);
+
+  --color-orange-50: var(--sem-warning-bg);
+  --color-orange-100: var(--sem-warning-bg);
+  --color-orange-200: var(--sem-warning-line);
+  --color-orange-300: var(--sem-warning-line);
+  --color-orange-400: var(--sem-warning-soft);
+  --color-orange-500: var(--sem-warning);
+  --color-orange-600: var(--sem-warning-soft);
+  --color-orange-700: var(--sem-warning-soft);
+  --color-orange-800: var(--sem-warning-soft);
+  --color-orange-900: var(--sem-warning-soft);
+
+  /* En el tema claro la marca es un amarillo oscuro y en los oscuros es el
+     amarillo de Bling; `yellow` apunta a la marca en los seis. */
+  --color-yellow-50: var(--sem-warning-bg);
+  --color-yellow-100: var(--sem-warning-bg);
+  --color-yellow-200: var(--sem-warning-line);
+  --color-yellow-300: var(--sem-warning-line);
+  --color-yellow-400: var(--nc-brand);
+  --color-yellow-500: var(--nc-brand);
+  --color-yellow-600: var(--sem-warning-soft);
+  --color-yellow-700: var(--sem-warning-soft);
+  --color-yellow-800: var(--sem-warning-soft);
+  --color-yellow-900: var(--sem-warning-soft);
+
+  /* Tipografía: la interfaz en Montserrat (la de la casa) y los datos en Obel
+     Mono (`--font-mono`, ver styles/obel-mono.css): cifras, importes, fechas,
+     códigos y rótulos chicos en mayúsculas. */
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Obel Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  --shadow-tarjeta: var(--nc-shadow);
+}
+
+@theme inline {
+  --color-acento: var(--acento);
+  --color-acento-texto: var(--acento-texto);
+  --color-acento-bg: var(--acento-bg);
+  --color-lienzo: var(--lienzo);
+  --color-punto: var(--punto);
+
+  /* Utilidades del sistema: text-rotulo/cuerpo/titulo/cifra y rounded-control/panel,
+     para que las vistas usen la escala en vez de valores sueltos. */
+  --text-rotulo: var(--texto-rotulo);
+  --text-rotulo--line-height: var(--interlineado-rotulo);
+  --text-cuerpo: var(--texto-base);
+  --text-cuerpo--line-height: var(--interlineado-base);
+  --text-titulo: var(--texto-titulo);
+  --text-titulo--line-height: var(--interlineado-titulo);
+  --text-cifra: var(--texto-cifra);
+  --text-cifra--line-height: var(--interlineado-cifra);
+  --radius-control: var(--radio-control);
+  --radius-panel: var(--radio-panel);
+}
