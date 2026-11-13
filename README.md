@@ -17,10 +17,11 @@ CSS que nacieron en Bling Contable.
 
 ## Instalación
 
-Dependencia de git con versión fija (sin registro de paquetes):
+Repo público. Se instala como tarball del tag (sin git ni token, anda igual en
+los builds de Cloudflare):
 
 ```bash
-npm install github:services-blingcompany/bling-ui#v0.1.0
+npm install "@blingcompany/bling-ui@https://codeload.github.com/services-blingcompany/bling-ui/tar.gz/refs/tags/v0.1.0"
 ```
 
 ### Tailwind 3 (dashboard, shop, internal)
