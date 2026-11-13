@@ -8,7 +8,7 @@ CSS que nacieron en Bling Contable.
 |---|---|
 | `css/tema.css` | Los 6 temas del ecosistema (corporate, light, dark, daltonico, horizon, amoled) como variables `--nc-*` / `--bling-*` sobre la clase del `<html>` |
 | `css/tokens.css` | Roles derivados (rampa neutra `--rama-*`, `--color-ink/surface/line/strong…`, semánticos `--color-success-*`…), medidas (`--esp-*`, `--radio-*`, `--texto-*`) y el acento |
-| `css/componentes.css` | `.tarjeta`, `.boton-*`, `.insignia-*`, `.campo`, `.selector`, `.pestana(s)`, `.cifra`, `.rotulo-mayus`, `.item-menu`, `.modal`, `.barra-lateral` y `.menu-flotante`, foco visible con teclado |
+| `css/componentes.css` | `.tarjeta`, `.boton-*`, `.insignia-*`, `.campo`, `.selector`, `.pestana(s)`, `.cifra`, `.rotulo-mayus`, `.item-menu`, `.modal`, `.barra-lateral` y `.menu-flotante`, cargadores (`.cargador-*`) y `.esqueleto`, foco visible con teclado |
 | `css/fuentes.css` + `fuentes/` | Obel Mono (cifras y rótulos), servida desde el paquete |
 | `tailwind/preset.cjs` | Preset para **Tailwind 3**: roles como utilidades (`bg-surface`, `text-ink`, `border-line`, `bg-strong`…), grises y familias de color que siguen al tema, escala del sistema |
 | `tailwind/v4.css` | Lo mismo para **Tailwind 4** (`@theme inline`) |
@@ -21,7 +21,7 @@ Repo público. Se instala como tarball del tag (sin git ni token, anda igual en
 los builds de Cloudflare):
 
 ```bash
-npm install "@blingcompany/bling-ui@https://codeload.github.com/services-blingcompany/bling-ui/tar.gz/refs/tags/v0.2.0"
+npm install "@blingcompany/bling-ui@https://codeload.github.com/services-blingcompany/bling-ui/tar.gz/refs/tags/v0.3.0"
 ```
 
 ### Tailwind 3 (dashboard, shop, internal)
@@ -82,6 +82,30 @@ React, en HTML o en cualquier framework; cada app pone sus enlaces:
   así que cada ítem lleva `title` o `aria-label`.
 - El menú de la cuenta va en `.menu-flotante` con filas `.item-menu`.
 - Fondo blanco en el tema claro (`--nc-bg-100`); el alto lo da el contenedor.
+
+## Cargadores
+
+Varios estilos para que esperar no sea siempre el mismo círculo. Toman el
+color del texto; `.cargador-marca` los pinta con el amarillo de Bling, y
+`.cargador-sm` / `.cargador-lg` cambian el tamaño.
+
+| Clase | Hijos `<i>` | Qué hace |
+|---|---|---|
+| `cargador-rayas` | 12 | Rayitas en ronda que se van apagando |
+| `cargador-barras` | 5 | Barras que suben y bajan en ola |
+| `cargador-puntos` | 3 | Puntos que saltan |
+| `cargador-anillo` | 0 | Arco que gira |
+| `cargador-onda` | 2 | Círculos que se expanden desde el centro |
+| `cargador-linea` | 0 | Avance indeterminado a lo ancho |
+
+```html
+<span class="cargador cargador-rayas cargador-lg" role="status" aria-label="Cargando">
+  <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+</span>
+```
+
+`.esqueleto` marca el lugar de un dato que todavía no llegó, con un brillo que
+pasa. Con «reducir movimiento» todo sigue animando, más lento.
 
 ## Reglas del sistema
 

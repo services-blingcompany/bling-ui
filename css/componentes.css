@@ -1,5 +1,5 @@
 /* @blingcompany/bling-ui — Componentes (.tarjeta, .boton-*, .insignia-*, .campo,
-   .selector, .pestana, .cifra, .rotulo-mayus, .item-menu, .modal, .barra-lateral…). CSS común:
+   .selector, .pestana, .cifra, .rotulo-mayus, .item-menu, .modal, .barra-lateral, .cargador-*, .esqueleto…). CSS común:
    funciona con Tailwind 3 y 4. Importarlo ANTES que las utilidades de
    Tailwind para que las clases sueltas (h-8, px-2) sigan ganando. */
 
@@ -629,6 +629,199 @@
     margin: 4px 0;
     border: 0;
     border-top: 1px solid var(--color-line);
+  }
+  /* ── Cargadores ──────────────────────────────────────────────────────────
+     Varios estilos para que esperar no sea siempre el mismo círculo. Toman
+     el color del texto (currentColor); .cargador-marca los pinta con el
+     amarillo de Bling. Tamaño con .cargador-sm / .cargador-lg o
+     --cargador-tam.
+
+       <span class="cargador cargador-rayas" role="status" aria-label="Cargando">
+         <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+       </span>
+
+     · cargador-rayas   12 rayitas en ronda que se van apagando
+     · cargador-barras  4 barras que suben y bajan (5 <i>, la del medio guía)
+     · cargador-puntos  3 puntos que saltan en ola
+     · cargador-anillo  arco que gira (sin hijos)
+     · cargador-onda    círculos que se expanden desde el centro (2 <i>)
+     · cargador-linea   línea de avance indeterminado, a lo ancho (sin hijos)
+
+     Con «reducir movimiento» siguen animando, más lento: la espera tiene que
+     notarse igual. */
+  .cargador {
+    --cargador-tam: 24px;
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    width: var(--cargador-tam);
+    height: var(--cargador-tam);
+    color: var(--color-ink);
+  }
+  .cargador-sm {
+    --cargador-tam: 16px;
+  }
+  .cargador-lg {
+    --cargador-tam: 40px;
+  }
+  .cargador-marca {
+    color: var(--color-brand);
+  }
+
+  /* Rayitas */
+  .cargador-rayas > i {
+    position: absolute;
+    top: 0;
+    left: calc(50% - var(--cargador-tam) / 24);
+    width: calc(var(--cargador-tam) / 12);
+    height: 28%;
+    border-radius: 999px;
+    background: currentColor;
+    transform-origin: 50% calc(var(--cargador-tam) / 2);
+    animation: cargador-apagar 1s linear infinite;
+  }
+  .cargador-rayas > i:nth-child(1) { transform: rotate(0deg); animation-delay: -0.917s; }
+  .cargador-rayas > i:nth-child(2) { transform: rotate(30deg); animation-delay: -0.833s; }
+  .cargador-rayas > i:nth-child(3) { transform: rotate(60deg); animation-delay: -0.75s; }
+  .cargador-rayas > i:nth-child(4) { transform: rotate(90deg); animation-delay: -0.667s; }
+  .cargador-rayas > i:nth-child(5) { transform: rotate(120deg); animation-delay: -0.583s; }
+  .cargador-rayas > i:nth-child(6) { transform: rotate(150deg); animation-delay: -0.5s; }
+  .cargador-rayas > i:nth-child(7) { transform: rotate(180deg); animation-delay: -0.417s; }
+  .cargador-rayas > i:nth-child(8) { transform: rotate(210deg); animation-delay: -0.333s; }
+  .cargador-rayas > i:nth-child(9) { transform: rotate(240deg); animation-delay: -0.25s; }
+  .cargador-rayas > i:nth-child(10) { transform: rotate(270deg); animation-delay: -0.167s; }
+  .cargador-rayas > i:nth-child(11) { transform: rotate(300deg); animation-delay: -0.083s; }
+  .cargador-rayas > i:nth-child(12) { transform: rotate(330deg); animation-delay: 0s; }
+  @keyframes cargador-apagar {
+    from { opacity: 1; }
+    to { opacity: 0.15; }
+  }
+
+  /* Barras */
+  .cargador-barras {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cargador-barras > i {
+    width: 14%;
+    height: 100%;
+    border-radius: 999px;
+    background: currentColor;
+    transform: scaleY(0.35);
+    animation: cargador-subir 0.9s ease-in-out infinite;
+  }
+  .cargador-barras > i:nth-child(2) { animation-delay: 0.1s; }
+  .cargador-barras > i:nth-child(3) { animation-delay: 0.2s; }
+  .cargador-barras > i:nth-child(4) { animation-delay: 0.3s; }
+  .cargador-barras > i:nth-child(5) { animation-delay: 0.4s; }
+  @keyframes cargador-subir {
+    0%, 100% { transform: scaleY(0.35); opacity: 0.5; }
+    40% { transform: scaleY(1); opacity: 1; }
+  }
+
+  /* Puntos */
+  .cargador-puntos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(var(--cargador-tam) * 1.5);
+  }
+  .cargador-puntos > i {
+    width: 24%;
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: currentColor;
+    animation: cargador-saltar 1.1s ease-in-out infinite;
+  }
+  .cargador-puntos > i:nth-child(2) { animation-delay: 0.15s; }
+  .cargador-puntos > i:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes cargador-saltar {
+    0%, 70%, 100% { transform: translateY(0); opacity: 0.4; }
+    35% { transform: translateY(-40%); opacity: 1; }
+  }
+
+  /* Anillo */
+  .cargador-anillo {
+    border-radius: 999px;
+    border: calc(var(--cargador-tam) / 10) solid color-mix(in srgb, currentColor 15%, transparent);
+    border-top-color: currentColor;
+    animation: cargador-girar 0.8s linear infinite;
+  }
+  @keyframes cargador-girar {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Onda */
+  .cargador-onda > i {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    border: calc(var(--cargador-tam) / 14) solid currentColor;
+    opacity: 0;
+    animation: cargador-expandir 1.6s ease-out infinite;
+  }
+  .cargador-onda > i:nth-child(2) { animation-delay: 0.8s; }
+  .cargador-onda::after {
+    content: '';
+    position: absolute;
+    inset: 38%;
+    border-radius: 999px;
+    background: currentColor;
+  }
+  @keyframes cargador-expandir {
+    from { transform: scale(0.3); opacity: 0.8; }
+    to { transform: scale(1); opacity: 0; }
+  }
+
+  /* Línea indeterminada */
+  .cargador-linea {
+    width: 100%;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+  .cargador-linea::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+    border-radius: inherit;
+    background: currentColor;
+    animation: cargador-recorrer 1.2s ease-in-out infinite;
+  }
+  @keyframes cargador-recorrer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(250%); }
+  }
+
+  /* Esqueleto: el lugar de un dato que todavía no llegó, con un brillo que pasa. */
+  .esqueleto {
+    border-radius: var(--radio-control);
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        color-mix(in srgb, var(--nc-bg-100) 60%, transparent) 50%,
+        transparent 100%
+      )
+      var(--color-surface-2);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: cargador-brillo 1.4s ease-in-out infinite;
+  }
+  @keyframes cargador-brillo {
+    from { background-position: 150% 0; }
+    to { background-position: -50% 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cargador,
+    .cargador > i,
+    .cargador::before,
+    .esqueleto {
+      animation-duration: 2.4s !important;
+    }
   }
 
 /* ─────────────────────────────────────────────────────────────────────────────
