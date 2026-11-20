@@ -1,6 +1,6 @@
 {
   "name": "@blingcompany/bling-ui",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "type": "module",
   "description": "Sistema visual y marca común del ecosistema Bling: tema, roles, componentes CSS y React, íconos, tipografías y puentes a Tailwind 3 y 4.",

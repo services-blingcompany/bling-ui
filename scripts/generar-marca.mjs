@@ -47,6 +47,7 @@ const archivos = {
 for (const [nombre, datos] of Object.entries(archivos)) writeFileSync(join(salida, nombre), datos);
 
 writeFileSync(join(salida, 'favicon.ico'), await pngToIco([archivos['favicon-16x16.png'], archivos['favicon-32x32.png'], png(svgIcono(), 48)]));
+// Las rutas del manifest son relativas a él: andan igual en apps con basePath (auth vive en /auth).
 // SVG para navegadores modernos, con la campana reducida a 256 px (la fuente
 // pesa >100 KB y el favicon no tiene por qué).
 const campanaChica = 'data:image/png;base64,' + png(
@@ -62,9 +63,9 @@ writeFileSync(
       name: marca.nombre,
       short_name: marca.nombreCorto,
       icons: [
-        { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-        { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-        { src: '/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+        { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+        { src: 'icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
       ],
       theme_color: marca.colorTema,
       background_color: marca.colorTema,

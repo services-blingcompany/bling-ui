@@ -24,7 +24,7 @@ Repo público. Se instala como tarball del tag (sin git ni token, anda igual en
 los builds de Cloudflare):
 
 ```bash
-npm install "@blingcompany/bling-ui@https://codeload.github.com/services-blingcompany/bling-ui/tar.gz/refs/tags/v0.4.0"
+npm install "@blingcompany/bling-ui@https://codeload.github.com/services-blingcompany/bling-ui/tar.gz/refs/tags/v0.4.1"
 ```
 
 ### Tailwind 3 (dashboard, shop, internal)
