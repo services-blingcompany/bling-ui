@@ -1,6 +1,6 @@
 # @blingcompany/bling-ui
 
-Sistema visual común del ecosistema Bling. Es la **fuente de verdad** del tema
+Sistema visual y **núcleo de marca** del ecosistema Bling. Es la **fuente de verdad** del tema
 (antes se copiaba desde el repo `bling` con `theme:sync`) y de los componentes
 CSS que nacieron en Bling Contable.
 
@@ -13,6 +13,9 @@ CSS que nacieron en Bling Contable.
 | `tailwind/preset.cjs` | Preset para **Tailwind 3**: roles como utilidades (`bg-surface`, `text-ink`, `border-line`, `bg-strong`…), grises y familias de color que siguen al tema, escala del sistema |
 | `tailwind/v4.css` | Lo mismo para **Tailwind 4** (`@theme inline`) |
 | `colors.cjs` | Paleta institucional `BlingColors` (`bling-*`, `nc-*`); antes en `internal/packages/ui` |
+| `marca/` | **Fuente única de la marca**: `marca.json` (nombre, colores), `campana.png` y `logo.svg`. `marca/iconos/` son los favicons y el manifest generados |
+| `tema/` | Los temas en JS: `TEMAS`, `aplicarTema`, `temaGuardado`/`guardarTema` (`localStorage['bling-theme']`) y `scriptTemaInicial` para el `<head>` sin destello |
+| `react/` | Componentes React comunes: `<Logo>`, `<Cargador>`, `<PantallaDeCarga>`, `<ReportarProblema>` + `crearClienteReportes` |
 | `assets/logos/` | `BlingBellNoBg.png` y los logos `BlingLogoBlack/White.svg` |
 
 ## Instalación
@@ -21,7 +24,7 @@ Repo público. Se instala como tarball del tag (sin git ni token, anda igual en
 los builds de Cloudflare):
 
 ```bash
-npm install "@blingcompany/bling-ui@https://codeload.github.com/services-blingcompany/bling-ui/tar.gz/refs/tags/v0.3.0"
+npm install "@blingcompany/bling-ui@https://codeload.github.com/services-blingcompany/bling-ui/tar.gz/refs/tags/v0.4.0"
 ```
 
 ### Tailwind 3 (dashboard, shop, internal)
@@ -106,6 +109,54 @@ color del texto; `.cargador-marca` los pinta con el amarillo de Bling, y
 
 `.esqueleto` marca el lugar de un dato que todavía no llegó, con un brillo que
 pasa. Con «reducir movimiento» todo sigue animando, más lento.
+
+## Marca: íconos, logo, tema y reportes
+
+Todas las apps usan lo mismo; nadie guarda su propia copia a mano.
+
+**Favicons.** Copiar los íconos a la carpeta pública (y sumar el chequeo a las pruebas):
+
+```bash
+node node_modules/@blingcompany/bling-ui/scripts/instalar-marca.mjs public
+node node_modules/@blingcompany/bling-ui/scripts/instalar-marca.mjs public --comprobar
+```
+
+En el `<head>` (en Next, `metadata.icons` + `manifest`):
+
+```html
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+```
+
+**Tema.** `scriptTemaInicial('light')` en el `<head>` y, al cambiar, `aplicarTema(t)` + `guardarTema(t)`.
+La lista `TEMAS` trae nombre, detalle y colores de muestra para el selector.
+
+**Reportes.** El mismo modal en todas las apps, contra `/api/v1/reports`:
+
+```tsx
+import { ReportarProblema, crearClienteReportes } from '@blingcompany/bling-ui/react';
+const cliente = crearClienteReportes(process.env.NEXT_PUBLIC_API_URL ?? '');
+<ReportarProblema abierto={abierto} onCerrar={() => setAbierto(false)} app="dashboard" cliente={cliente} />
+```
+
+`pedirEmail` suma el campo de correo para quien no inició sesión. Se manda solo
+la ruta, el navegador, la resolución y el tema en `meta` (con `meta.app`).
+
+**Logo y cargadores.** `<Logo alto={28} />` (texto en el color del tema, campana
+en `--nc-brand`), `<Cargador variante="rayas" />`, `<PantallaDeCarga mensaje="…" />`.
+
+## Cómo hacer un rebrand
+
+1. Cambiar lo que corresponda en `marca/`: `marca.json` (nombre, colores),
+   `campana.png` (cuadrada, fondo transparente, ≥ 512 px) y/o `logo.svg`
+   (formas del texto en blanco `#fff`, las de marca en `#fc0`).
+2. Si cambia el color de marca, también `--nc-brand` en `css/tema.css`.
+3. `npm run build` (regenera íconos, logo y el bundle de React) y `npm run verificar`.
+4. Mirar `marca/iconos/`, subir `version`, commit y tag `vX.Y.Z`.
+5. En cada app: subir el tag de bling-ui, correr `instalar-marca.mjs public`
+   (o `vendorizar.mjs` en contable) y desplegar.
 
 ## Reglas del sistema
 

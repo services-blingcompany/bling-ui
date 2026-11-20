@@ -1,0 +1,10 @@
+{
+  "$comentario": "Fuente única de la marca. Para un rebrand: cambiá estos valores y/o marca/campana.png, corré `npm run marca` y publicá un tag nuevo de bling-ui.",
+  "nombre": "Bling",
+  "nombreCorto": "Bling",
+  "colorMarca": "#ffcc00",
+  "fondoIcono": "#09090b",
+  "colorTema": "#000000",
+  "campana": "campana.png",
+  "logo": "logo.svg"
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Copia bling-ui dentro de un repo que no puede sumar dependencias (el
- * contable lo prohíbe): css/, fuentes/ y tailwind/v4.css quedan en
+ * contable lo prohíbe): css/, fuentes/, tailwind/v4.css, tema/, react/ y marca/iconos/ quedan en
  * <destino>/bling-ui/, con un archivo VERSION para saber de qué versión vino.
  *
  *   node scripts/vendorizar.mjs ../contable/src/styles
@@ -23,7 +23,7 @@ if (!destinoArg) {
 const destino = join(resolve(destinoArg), 'bling-ui');
 const comprobar = banderas.includes('--comprobar');
 const { version } = JSON.parse(readFileSync(join(raiz, 'package.json'), 'utf8'));
-const PIEZAS = ['index.css', 'css', 'fuentes', 'tailwind/v4.css'];
+const PIEZAS = ['index.css', 'css', 'fuentes', 'tailwind/v4.css', 'tema', 'react', 'marca/iconos'];
 
 const listar = (ruta) =>
   statSync(ruta).isDirectory()
