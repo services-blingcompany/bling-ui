@@ -29,11 +29,15 @@ if (!destinoArg) {
 const destino = resolve(destinoArg);
 const comprobar = bandera === '--comprobar';
 const archivos = readdirSync(origen);
+// En Windows git puede pasar los de texto a CRLF al hacer checkout: se comparan
+// sin los \r para que eso no cuente como ícono desactualizado.
+const TEXTO = /\.(svg|webmanifest)$/;
+const contenido = (ruta, f) => (TEXTO.test(f) ? Buffer.from(readFileSync(ruta, 'utf8').replace(/\r\n/g, '\n')) : readFileSync(ruta));
 
 if (comprobar) {
   const distintos = archivos.filter((f) => {
     const enApp = join(destino, f);
-    return !existsSync(enApp) || !readFileSync(enApp).equals(readFileSync(join(origen, f)));
+    return !existsSync(enApp) || !contenido(enApp, f).equals(contenido(join(origen, f), f));
   });
   if (distintos.length) {
     console.error(`Íconos desactualizados en ${destinoArg}: ${distintos.join(', ')}. Corré instalar-marca.mjs ${destinoArg}.`);
