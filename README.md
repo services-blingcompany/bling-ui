@@ -155,8 +155,15 @@ en `--nc-brand`), `<Cargador variante="rayas" />`, `<PantallaDeCarga mensaje="�
 2. Si cambia el color de marca, también `--nc-brand` en `css/tema.css`.
 3. `npm run build` (regenera íconos, logo y el bundle de React) y `npm run verificar`.
 4. Mirar `marca/iconos/`, subir `version`, commit y tag `vX.Y.Z`.
-5. En cada app: subir el tag de bling-ui, correr `instalar-marca.mjs public`
-   (o `vendorizar.mjs` en contable) y desplegar.
+5. En cada app web (auth, dashboard, jobs, internal, presentations): subir el
+   tag de bling-ui, correr `instalar-marca.mjs` sobre su carpeta pública (sus
+   pruebas fallan hasta hacerlo) y desplegar. auth, dashboard e internal llevan
+   basePath en `metadata.icons`; presentations usa `public/favicon`.
+6. Escritorio: en launcher, copiar la campana nueva a `assets/BlingBellNoBg.png`
+   y correr `npm run icons` (mismo cuadrado que acá); copiar `assets/icon.png`
+   e `icon.ico` a `contable/assets/`. En contable, además, copiar
+   `favicon.ico`, `favicon.svg` y `apple-touch-icon.png` a `src/assets/marca/`
+   (contable no suma dependencias).
 
 ## Reglas del sistema
 
