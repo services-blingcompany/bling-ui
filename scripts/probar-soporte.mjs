@@ -10,6 +10,8 @@ import {
   pedidoPendiente,
   TEXTO_DIAGNOSTICO_ENVIADO,
   TIPO_PEDIDO_DIAGNOSTICO,
+  puedeEditar,
+  textoEditado,
 } from '../soporte/soporte.js';
 
 // Resuelto se reabre; cerrado es definitivo.
@@ -38,5 +40,16 @@ assert.deepEqual(
 
 const d = datosDiagnostico({ aplicacion: 'X 1.0', sistema: '', errores: ['e1'] });
 assert.deepEqual(d, { Aplicación: 'X 1.0', 'Últimos errores': ['e1'] });
+
+// Editar: sólo lo propio, con el ticket abierto, y nunca el aviso automático.
+const mio = { sender_id: 1, content: 'Hola', created_at: '2026-01-01T10:00:00Z' };
+assert.equal(puedeEditar(mio, 1, 'open'), true);
+assert.equal(puedeEditar(mio, 2, 'open'), false);
+assert.equal(puedeEditar(mio, 1, 'resolved'), false);
+assert.equal(puedeEditar({ ...mio, content: TEXTO_DIAGNOSTICO_ENVIADO }, 1, 'open'), false);
+const ahora = new Date('2026-01-01T15:00:00');
+assert.equal(textoEditado(mio, ahora), '');
+assert.match(textoEditado({ ...mio, is_edited: true, edited_at: '2026-01-01T14:32:00' }, ahora), /^editado \d{2}:\d{2}$/);
+assert.match(textoEditado({ ...mio, is_edited: true, edited_at: '2025-12-30T09:05:00' }, ahora), /^editado 30\/12 \d{2}:\d{2}$/);
 
 console.log('soporte: ok');

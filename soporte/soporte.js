@@ -73,6 +73,32 @@ export function pedidoPendiente(mensajes, miId) {
   return ultimoPedido > ultimoEnvio;
 }
 
+/**
+ * ¿El usuario puede editar este mensaje? Sólo los suyos, con el ticket abierto
+ * (en uno resuelto o cerrado lo dicho queda como estaba; el backend también lo
+ * impide) y nunca el aviso automático de «información del sistema enviada».
+ */
+export function puedeEditar(mensaje, miId, estadoTicket) {
+  if (!mensaje || mensaje.is_deleted || miId === null || miId === undefined) return false;
+  if (mensaje.sender_id !== miId) return false;
+  if (!acciones(estadoTicket).responder) return false;
+  if ((mensaje.content ?? '').trim() === TEXTO_DIAGNOSTICO_ENVIADO) return false;
+  return true;
+}
+
+/**
+ * Marca de edición para mostrar junto al mensaje («editado 14:32», o con la
+ * fecha si no fue hoy). '' si el mensaje no se editó.
+ */
+export function textoEditado(mensaje, ahora = new Date()) {
+  if (!mensaje?.is_edited || !mensaje.edited_at) return '';
+  const fecha = new Date(mensaje.edited_at);
+  if (isNaN(fecha.getTime())) return 'editado';
+  const hora = fecha.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+  const mismoDia = fecha.toDateString() === ahora.toDateString();
+  return mismoDia ? `editado ${hora}` : `editado ${fecha.toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit' })} ${hora}`;
+}
+
 /** Mensajes en orden de llegada, sin borrados ni vacíos. */
 export function ordenarMensajes(mensajes) {
   return [...(mensajes ?? [])]

@@ -16,6 +16,8 @@ export interface MensajeSoporte {
   attachments?: AdjuntoSoporte[] | null;
   created_at: string;
   is_deleted?: boolean;
+  is_edited?: boolean;
+  edited_at?: string | null;
 }
 
 export const MAX_CAPTURAS: number;
@@ -30,6 +32,8 @@ export function esPedidoDiagnostico(adjunto: unknown): boolean;
 export function adjuntosVisibles<A extends AdjuntoSoporte>(mensaje: { attachments?: A[] | null } | null | undefined): A[];
 export function traePedido(mensaje: { attachments?: AdjuntoSoporte[] | null } | null | undefined): boolean;
 export function pedidoPendiente(mensajes: MensajeSoporte[] | null | undefined, miId: number | null): boolean;
+export function puedeEditar(mensaje: MensajeSoporte | null | undefined, miId: number | null | undefined, estadoTicket: string): boolean;
+export function textoEditado(mensaje: MensajeSoporte | null | undefined, ahora?: Date): string;
 export function ordenarMensajes<M extends MensajeSoporte>(mensajes: M[] | null | undefined): M[];
 
 export interface EntradaDiagnostico {
