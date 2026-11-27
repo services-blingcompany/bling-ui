@@ -131,6 +131,8 @@ En el `<head>` (en Next, `metadata.icons` + `manifest`):
 ```
 
 **Tema.** `scriptTemaInicial('light')` en el `<head>` y, al cambiar, `aplicarTema(t)` + `guardarTema(t)`.
+El tema elegido se guarda en la cookie `bling-theme` de `.bling.uy`: lo comparten www, dashboard, jobs e
+internal (localStorage es por subdominio y queda sólo de respaldo).
 La lista `TEMAS` trae nombre, detalle y colores de muestra para el selector.
 
 **Reportes.** El mismo modal en todas las apps, contra `/api/v1/reports`:

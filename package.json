@@ -1,6 +1,6 @@
 {
   "name": "@blingcompany/bling-ui",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "private": true,
   "type": "module",
   "description": "Sistema visual y marca común del ecosistema Bling: tema, roles, componentes CSS y React, íconos, tipografías y puentes a Tailwind 3 y 4.",
@@ -54,7 +54,7 @@
     "marca": "node scripts/generar-marca.mjs",
     "build:react": "esbuild react-src/index.jsx --bundle --format=esm --jsx=automatic --external:react --external:react/jsx-runtime --outfile=react/index.js",
     "build": "npm run marca && npm run build:react",
-    "test": "node scripts/probar-soporte.mjs"
+    "test": "node scripts/probar-soporte.mjs && node scripts/probar-tema.mjs"
   },
   "peerDependencies": {
     "react": ">=18"

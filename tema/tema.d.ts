@@ -16,6 +16,7 @@ export declare function normalizarTema(valor: string | null | undefined): Tema |
 export declare function resolverTema(tema: Tema): TemaOficial;
 export declare function esTemaClaro(tema: Tema): boolean;
 export declare function aplicarTema(tema: Tema | string | null | undefined, html?: HTMLElement | null): void;
+export declare function dominioCompartido(host?: string): '.bling.uy' | '';
 export declare function temaGuardado(): Tema | null;
 export declare function guardarTema(tema: Tema): void;
 export declare function scriptTemaInicial(porDefecto?: TemaOficial): string;

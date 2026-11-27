@@ -6,7 +6,9 @@
  *   aplicarTema(temaGuardado() ?? 'light');
  *
  * El tema se aplica como clase en <html> (lo que lee css/tema.css) y se guarda
- * en localStorage['bling-theme'] (compartido por las apps del mismo dominio).
+ * en una cookie `bling-theme` para todo `.bling.uy` (así www, dashboard, jobs e
+ * internal muestran el mismo) y en localStorage['bling-theme'] de respaldo.
+ * Ojo: localStorage es por subdominio, no se comparte entre apps.
  */
 
 /** Los 6 temas oficiales, en el orden en que se muestran. */
@@ -48,7 +50,24 @@ export function aplicarTema(tema, html = typeof document !== 'undefined' ? docum
   html.style.colorScheme = esTemaClaro(resuelto) ? 'light' : 'dark';
 }
 
+/** Dominio de la cookie compartida: `.bling.uy` en producción; en local, ninguno (sólo ese host). */
+export function dominioCompartido(host = typeof location !== 'undefined' ? location.hostname : '') {
+  return host === 'bling.uy' || host.endsWith('.bling.uy') ? '.bling.uy' : '';
+}
+
+function leerCookie() {
+  try {
+    const m = document.cookie.match(/(?:^|;\s*)bling-theme=([^;]+)/);
+    return m ? decodeURIComponent(m[1]) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** El tema elegido: primero la cookie compartida, después el localStorage de esta app. */
 export function temaGuardado() {
+  const deCookie = normalizarTema(leerCookie());
+  if (deCookie) return deCookie;
   try {
     return normalizarTema(localStorage.getItem(CLAVE_GUARDADO));
   } catch {
@@ -56,9 +75,19 @@ export function temaGuardado() {
   }
 }
 
+/** Lo guarda para todas las apps de Bling (cookie de un año) y en esta (localStorage). */
 export function guardarTema(tema) {
+  const valor = normalizarTema(tema);
+  if (!valor) return;
   try {
-    localStorage.setItem(CLAVE_GUARDADO, tema);
+    const dominio = dominioCompartido();
+    const seguro = typeof location !== 'undefined' && location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `${CLAVE_GUARDADO}=${valor}; Path=/; Max-Age=31536000; SameSite=Lax${dominio ? `; Domain=${dominio}` : ''}${seguro}`;
+  } catch {
+    /* sin cookies */
+  }
+  try {
+    localStorage.setItem(CLAVE_GUARDADO, valor);
   } catch {
     /* sin almacenamiento: sólo esta pestaña */
   }
@@ -66,9 +95,9 @@ export function guardarTema(tema) {
 
 /**
  * Script para el <head>, ANTES de que pinte la página: aplica el tema guardado
- * y evita el destello del tema equivocado al cargar.
+ * (cookie compartida o localStorage) y evita el destello del tema equivocado.
  *   <script dangerouslySetInnerHTML={{ __html: scriptTemaInicial('light') }} />
  */
 export function scriptTemaInicial(porDefecto = 'light') {
-  return `(function(){try{var t=localStorage.getItem('${CLAVE_GUARDADO}');if(t==='black')t='amoled';var ids=${JSON.stringify(IDS_TEMAS)};if(t!=='system'&&ids.indexOf(t)<0)t=null;t=t||'${porDefecto}';if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';var h=document.documentElement;ids.forEach(function(i){h.classList.remove(i)});h.classList.add(t);h.style.colorScheme=t==='light'?'light':'dark';}catch(e){}})();`;
+  return `(function(){try{var t=null,m=document.cookie.match(/(?:^|; *)${CLAVE_GUARDADO}=([^;]+)/);if(m)t=decodeURIComponent(m[1]);if(!t)t=localStorage.getItem('${CLAVE_GUARDADO}');if(t==='black')t='amoled';var ids=${JSON.stringify(IDS_TEMAS)};if(t!=='system'&&ids.indexOf(t)<0)t=null;t=t||'${porDefecto}';if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';var h=document.documentElement;ids.forEach(function(i){h.classList.remove(i)});h.classList.add(t);h.style.colorScheme=t==='light'?'light':'dark';}catch(e){}})();`;
 }
