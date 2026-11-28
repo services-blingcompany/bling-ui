@@ -29,21 +29,92 @@
       <symbol id="i-alerta" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01" /></symbol>
       <symbol id="i-izq" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></symbol>
       <symbol id="i-der" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></symbol>
+      <symbol id="i-cerrar" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12" /></symbol>
+      <symbol id="i-menos" viewBox="0 0 24 24"><path d="M5 12h14" /></symbol>
+      <symbol id="i-candado" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
+      <symbol id="i-ojo" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" /></symbol>
       <symbol id="i-estrella" viewBox="0 0 24 24"><path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6l-5.4 2.9 1.2-6-4.5-4.2 6.1-.7z" /></symbol>
     </defs>
   </svg>
 
-  <header class="demo-cabecera">
-    <div>
-      <h1 class="demo-titulo">bling-ui <span class="rotulo cifra" id="version"></span></h1>
-      <p class="rotulo">Los componentes del paquete con sus CSS reales. Cambiá el tema para ver los seis.</p>
-    </div>
-    <div class="pestanas" role="tablist" aria-label="Tema" id="temas"></div>
-  </header>
+  <div class="demo-app">
+    <aside class="barra-lateral demo-nav" id="lateral" data-compacta="false" aria-label="Componentes">
+      <div class="barra-lateral-marca">
+        <span class="barra-lateral-texto demo-marca">bling-ui <span class="rotulo cifra" id="version"></span></span>
+        <button class="boton boton-fantasma boton-icono boton-sm" id="plegar" aria-label="Plegar la barra" data-pista="Plegar"><svg><use href="#i-panel" /></svg></button>
+      </div>
+      <div class="barra-lateral-buscar" id="buscador-lateral" data-buscador="Buscar componente"></div>
+      <nav class="barra-lateral-nav sidebar-scroll">
+        <details class="barra-lateral-grupo" open>
+          <summary class="barra-lateral-titulo">Fundamentos</summary>
+          <a class="barra-lateral-item" href="#densidad" title="Densidad y tamaños"><svg><use href="#i-ajustes" /></svg><span class="barra-lateral-texto">Densidad y tamaños</span></a>
+          <a class="barra-lateral-item" href="#colores" title="Colores en pares"><svg><use href="#i-estrella" /></svg><span class="barra-lateral-texto">Colores en pares</span></a>
+          <a class="barra-lateral-item" href="#pildoras" title="Precisión óptica"><svg><use href="#i-ok" /></svg><span class="barra-lateral-texto">Precisión óptica</span></a>
+        </details>
+        <details class="barra-lateral-grupo" open>
+          <summary class="barra-lateral-titulo">Acciones</summary>
+          <a class="barra-lateral-item" href="#botones" title="Botones"><svg><use href="#i-mas" /></svg><span class="barra-lateral-texto">Botones</span><span class="contador">9</span></a>
+          <div class="barra-lateral-sub">
+            <a class="barra-lateral-item" href="#botones-grupos"><span class="barra-lateral-texto">Grupos y contadores</span></a>
+          </div>
+          <a class="barra-lateral-item" href="#insignias" title="Insignias"><svg><use href="#i-info" /></svg><span class="barra-lateral-texto">Insignias</span></a>
+          <a class="barra-lateral-item" href="#menu" title="Menú flotante"><svg><use href="#i-salir" /></svg><span class="barra-lateral-texto">Menú flotante</span></a>
+        </details>
+        <details class="barra-lateral-grupo" open>
+          <summary class="barra-lateral-titulo">Formularios</summary>
+          <a class="barra-lateral-item" href="#campos" title="Campos"><svg><use href="#i-persona" /></svg><span class="barra-lateral-texto">Campos</span></a>
+          <a class="barra-lateral-item" href="#compuesto" title="Campo compuesto"><svg><use href="#i-buscar" /></svg><span class="barra-lateral-texto">Campo compuesto</span></a>
+          <a class="barra-lateral-item" href="#select" title="Select"><svg><use href="#i-der" /></svg><span class="barra-lateral-texto">Select</span><span class="contador">5</span></a>
+          <a class="barra-lateral-item" href="#grupos" title="Grupos de campo"><svg><use href="#i-alerta" /></svg><span class="barra-lateral-texto">Grupos de campo</span></a>
+        </details>
+        <details class="barra-lateral-grupo" open>
+          <summary class="barra-lateral-titulo">Navegación</summary>
+          <a class="barra-lateral-item" href="#buscador" title="Buscador"><svg><use href="#i-buscar" /></svg><span class="barra-lateral-texto">Buscador y paleta</span></a>
+          <a class="barra-lateral-item" href="#pestanas" title="Pestañas y opciones"><svg><use href="#i-panel" /></svg><span class="barra-lateral-texto">Pestañas y opciones</span></a>
+          <a class="barra-lateral-item" href="#navegacion" title="Migas, páginas y chips"><svg><use href="#i-izq" /></svg><span class="barra-lateral-texto">Migas, páginas y chips</span></a>
+          <a class="barra-lateral-item" href="#acordeon" title="Acordeón"><svg><use href="#i-der" /></svg><span class="barra-lateral-texto">Acordeón</span></a>
+        </details>
+        <details class="barra-lateral-grupo" open>
+          <summary class="barra-lateral-titulo">Datos y estado</summary>
+          <a class="barra-lateral-item" href="#tabla" title="Tarjeta y tabla"><svg><use href="#i-inicio" /></svg><span class="barra-lateral-texto">Tarjeta y tabla</span></a>
+          <a class="barra-lateral-item" href="#bloque" title="Bloque"><svg><use href="#i-panel" /></svg><span class="barra-lateral-texto">Bloque e interactivas</span></a>
+          <a class="barra-lateral-item" href="#estado" title="Avatar, progreso y vacío"><svg><use href="#i-persona" /></svg><span class="barra-lateral-texto">Avatar, progreso y vacío</span></a>
+          <a class="barra-lateral-item" href="#avisos" title="Avisos"><svg><use href="#i-alerta" /></svg><span class="barra-lateral-texto">Avisos y notificaciones</span><span class="contador">5</span></a>
+          <a class="barra-lateral-item" href="#cargadores" title="Cargadores"><svg><use href="#i-ajustes" /></svg><span class="barra-lateral-texto">Cargadores</span></a>
+          <a class="barra-lateral-item" href="#modal" title="Modal"><svg><use href="#i-panel" /></svg><span class="barra-lateral-texto">Modal y velo</span></a>
+        </details>
+      </nav>
+    </aside>
+
+    <div class="demo-contenido">
+      <header class="barra-superior demo-barra">
+        <div>
+          <p class="barra-superior-titulo">Componentes</p>
+          <p class="rotulo">Los CSS reales del paquete. Probá la densidad, los seis temas y la paleta con Ctrl K.</p>
+        </div>
+        <div class="barra-superior-acciones">
+          <div class="pestanas" role="tablist" aria-label="Densidad" id="densidades">
+            <button class="pestana" role="tab" aria-selected="true" data-densidad="compacta">Compacta</button>
+            <button class="pestana" role="tab" aria-selected="false" data-densidad="comoda">Cómoda</button>
+          </div>
+          <div class="pestanas" role="tablist" aria-label="Tema" id="temas"></div>
+        </div>
+      </header>
 
   <main class="demo-grilla">
+    <!-- Densidad y tamaños -->
+    <section id="densidad" class="bloque demo-ancho">
+      <p class="rotulo-mayus">Densidad y tamaños</p>
+      <p class="rotulo">Compacta (por defecto) para paneles y tablas; cómoda con data-densidad="comoda". Los paddings salen de los tokens: cambiá la densidad arriba y mirá cómo se ajusta todo.</p>
+      <div class="demo-tamanos">
+        <div class="demo-fila"><span class="rotulo demo-ancho-rotulo">sm</span><button class="boton boton-secundario boton-sm"><svg><use href="#i-mas" /></svg>Chico</button><label class="campo-compuesto demo-campo-corto"><svg><use href="#i-buscar" /></svg><input placeholder="Buscar" /></label></div>
+        <div class="demo-fila"><span class="rotulo demo-ancho-rotulo">md</span><button class="boton boton-secundario"><svg><use href="#i-mas" /></svg>Normal</button><label class="campo-compuesto demo-campo-corto"><svg><use href="#i-buscar" /></svg><input placeholder="Buscar" /></label></div>
+        <div class="demo-fila"><span class="rotulo demo-ancho-rotulo">lg</span><button class="boton boton-primario boton-lg"><svg><use href="#i-mas" /></svg>Grande</button><label class="campo-compuesto campo-lg demo-campo-corto"><svg><use href="#i-buscar" /></svg><input placeholder="Buscar" /></label></div>
+      </div>
+    </section>
+
     <!-- Botones -->
-    <section class="bloque">
+    <section id="botones" class="bloque">
       <p class="rotulo-mayus">Botones</p>
       <div class="demo-fila">
         <button class="boton boton-primario"><svg><use href="#i-mas" /></svg>Nueva vacante</button>
@@ -72,10 +143,20 @@
         <button class="boton boton-secundario boton-pildora"><svg><use href="#i-estrella" /></svg>Patrocinar</button>
         <button class="boton boton-secundario boton-pildora boton-compacto"><svg><use href="#i-mas" /></svg>Compacto</button>
       </div>
+      <p class="rotulo" id="botones-grupos">Grupos y contadores.</p>
+      <div class="demo-fila">
+        <div class="grupo-botones" role="group" aria-label="Vista">
+          <button class="boton boton-secundario">Día</button>
+          <button class="boton boton-secundario">Semana</button>
+          <button class="boton boton-secundario">Mes</button>
+        </div>
+        <button class="boton boton-secundario">Postulaciones <span class="contador">12</span></button>
+        <button class="boton boton-primario">Pendientes <span class="contador">3</span></button>
+      </div>
     </section>
 
     <!-- Insignias -->
-    <section class="bloque">
+    <section id="insignias" class="bloque">
       <p class="rotulo-mayus">Insignias</p>
       <div class="demo-fila">
         <span class="insignia">Borrador</span>
@@ -87,7 +168,7 @@
     </section>
 
     <!-- Campos -->
-    <section class="bloque">
+    <section id="campos" class="bloque">
       <p class="rotulo-mayus">Campos</p>
       <label class="demo-campo"><span class="rotulo">Correo</span><input class="campo" placeholder="nombre@empresa.uy" /></label>
       <label class="demo-campo"><span class="rotulo">Departamento</span>
@@ -106,8 +187,46 @@
       </div>
     </section>
 
+    <!-- Campo compuesto -->
+    <section id="compuesto" class="bloque">
+      <p class="rotulo-mayus">Campo compuesto</p>
+      <label class="campo-compuesto"><svg><use href="#i-buscar" /></svg><input placeholder="Buscar puesto o empresa" value="Contador" /><button type="button" class="campo-accion" aria-label="Limpiar"><svg><use href="#i-cerrar" /></svg></button></label>
+      <label class="campo-compuesto"><span class="campo-prefijo">$</span><input class="cifra" value="45.000" aria-label="Sueldo" /><span class="campo-sufijo">UYU / mes</span></label>
+      <label class="campo-compuesto"><svg><use href="#i-candado" /></svg><input type="password" value="secreta" aria-label="Contraseña" id="clave" /><button type="button" class="campo-accion" aria-label="Ver la contraseña" id="ver-clave"><svg><use href="#i-ojo" /></svg></button></label>
+      <div class="campo-compuesto demo-numero"><button type="button" class="campo-accion" aria-label="Uno menos" data-paso="-1"><svg><use href="#i-menos" /></svg></button><input class="cifra" value="7" aria-label="Días" id="dias" /><span class="campo-sufijo">días</span><button type="button" class="campo-accion" aria-label="Uno más" data-paso="1"><svg><use href="#i-mas" /></svg></button></div>
+      <div class="grupo-campo">
+        <label class="campo-compuesto"><svg><use href="#i-persona" /></svg><input value="ana@" aria-invalid="true" aria-label="Correo" /></label>
+        <span class="ayuda ayuda-error">Falta el dominio del correo.</span>
+      </div>
+      <label class="campo-compuesto"><svg><use href="#i-candado" /></svg><input value="No se puede editar" disabled aria-label="Bloqueado" /></label>
+    </section>
+
+    <!-- Select -->
+    <section id="select" class="bloque">
+      <p class="rotulo-mayus">Select (React)</p>
+      <div class="grupo-campo"><span class="rotulo">Simple, con detalle y una opción deshabilitada</span><div id="r-select-simple"></div></div>
+      <div class="grupo-campo"><span class="rotulo">Con buscador y grupos</span><div id="r-select-buscable"></div></div>
+      <div class="grupo-campo"><span class="rotulo">Múltiple</span><div id="r-select-multiple"></div></div>
+      <div class="grupo-campo"><span class="rotulo">Con error</span><div id="r-select-invalido"></div><span class="ayuda ayuda-error">Elegí una jornada.</span></div>
+      <div class="grupo-campo"><span class="rotulo">Deshabilitado</span><div id="r-select-deshabilitado"></div></div>
+      <p class="ayuda">Teclado: flechas, Inicio, Fin, Enter, Esc y la primera letra.</p>
+    </section>
+
+    <!-- Buscador -->
+    <section id="buscador" class="bloque">
+      <p class="rotulo-mayus">Buscador y paleta de comandos (React)</p>
+      <p class="rotulo">Abrí la paleta con el buscador o con Ctrl K (⌘ K en Mac): secciones, densidad y temas, todo con el teclado.</p>
+      <div id="buscador-seccion" data-buscador="Buscar en bling-ui"></div>
+      <p class="rotulo">Pestañas subrayadas, para navegar dentro de una página:</p>
+      <div class="pestanas-linea" role="tablist">
+        <button class="pestana-linea" role="tab" aria-selected="true">Resumen</button>
+        <button class="pestana-linea" role="tab" aria-selected="false">Postulaciones <span class="contador">12</span></button>
+        <button class="pestana-linea" role="tab" aria-selected="false">Ajustes</button>
+      </div>
+    </section>
+
     <!-- Campos: grupos, ayuda y error -->
-    <section class="bloque">
+    <section id="grupos" class="bloque">
       <p class="rotulo-mayus">Grupos de campo</p>
       <label class="campo-con-icono"><svg><use href="#i-buscar" /></svg><input class="campo" placeholder="Buscar puesto o empresa" /></label>
       <div class="grupo-campo">
@@ -127,7 +246,7 @@
     </section>
 
     <!-- Avisos y notificaciones -->
-    <section class="bloque">
+    <section id="avisos" class="bloque">
       <p class="rotulo-mayus">Avisos y notificaciones</p>
       <div class="aviso"><svg><use href="#i-info" /></svg><div><p class="aviso-titulo">Neutro</p><p>Un dato para tener en cuenta.</p></div></div>
       <div class="aviso aviso-info"><svg><use href="#i-info" /></svg><p>Mercado Pago todavía no confirmó el pago.</p></div>
@@ -138,7 +257,7 @@
     </section>
 
     <!-- Navegación -->
-    <section class="bloque">
+    <section id="navegacion" class="bloque">
       <p class="rotulo-mayus">Navegación</p>
       <nav class="migas" aria-label="Ubicación"><a href="#">Inicio</a><a href="#">Vacantes</a><span aria-current="page">Contador/a junior</span></nav>
       <nav class="paginacion" aria-label="Páginas">
@@ -160,7 +279,7 @@
     </section>
 
     <!-- Personas, progreso y vacío -->
-    <section class="bloque">
+    <section id="estado" class="bloque">
       <p class="rotulo-mayus">Avatar, progreso y vacío</p>
       <div class="demo-fila">
         <span class="avatar avatar-sm">AP</span>
@@ -182,7 +301,7 @@
     </section>
 
     <!-- Acordeón -->
-    <section class="bloque">
+    <section id="acordeon" class="bloque">
       <p class="rotulo-mayus">Acordeón</p>
       <div>
         <details class="acordeon" open><summary>¿Cuánto cuesta publicar?</summary><p>Publicar es gratis. El patrocinio se paga aparte.</p></details>
@@ -192,7 +311,7 @@
     </section>
 
     <!-- Pestañas y opciones -->
-    <section class="bloque">
+    <section id="pestanas" class="bloque">
       <p class="rotulo-mayus">Pestañas y opciones</p>
       <div class="pestanas" role="tablist">
         <button class="pestana" role="tab" aria-selected="true">Ofertas</button>
@@ -206,7 +325,7 @@
     </section>
 
     <!-- Tarjeta y cifras -->
-    <section class="tarjeta demo-ancho">
+    <section id="tabla" class="tarjeta demo-ancho">
       <div class="tarjeta-encabezado">
         <span class="tarjeta-titulo">Tarjeta con tabla</span>
         <span class="insignia insignia-exito">Al día</span>
@@ -227,7 +346,7 @@
     </section>
 
     <!-- Bloque con filas punteadas -->
-    <section class="bloque">
+    <section id="bloque" class="bloque">
       <p class="rotulo-mayus">Bloque y filas punteadas</p>
       <div>
         <div class="fila-punteada demo-par"><span>Plan</span><span class="cifra">Estudio</span></div>
@@ -236,10 +355,14 @@
       </div>
       <div class="separador-punteado"></div>
       <p class="rotulo">Debajo del separador punteado.</p>
+      <div class="demo-interactivas">
+        <div class="tarjeta tarjeta-interactiva tarjeta-cuerpo"><p class="rotulo">Vacantes activas</p><p class="cifra-kpi">1.284</p><p class="ayuda">Pasá el puntero: la tarjeta responde.</p></div>
+        <div class="tarjeta tarjeta-interactiva tarjeta-cuerpo"><p class="rotulo">Postulaciones</p><p class="cifra-kpi">5.902</p><p class="ayuda">Tarjeta interactiva.</p></div>
+      </div>
     </section>
 
     <!-- Menú flotante -->
-    <section class="bloque">
+    <section id="menu" class="bloque">
       <p class="rotulo-mayus">Menú flotante</p>
       <div class="menu-flotante demo-menu" role="menu">
         <button class="item-menu" role="menuitem"><svg><use href="#i-persona" /></svg>Mi perfil</button>
@@ -250,7 +373,7 @@
     </section>
 
     <!-- Cargadores -->
-    <section class="bloque">
+    <section id="cargadores" class="bloque">
       <p class="rotulo-mayus">Cargadores</p>
       <div class="demo-fila demo-cargadores">
         <span class="cargador cargador-rayas" role="status" aria-label="Cargando"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
@@ -265,40 +388,14 @@
     </section>
 
     <!-- Modal -->
-    <section class="bloque">
+    <section id="modal" class="bloque">
       <p class="rotulo-mayus">Modal y velo</p>
       <p class="rotulo">El velo es liviano en el tema claro y denso en los oscuros.</p>
       <div><button class="boton boton-secundario" id="abrir-modal">Abrir modal</button></div>
     </section>
 
-    <!-- Barra lateral -->
-    <section class="bloque demo-ancho">
-      <div class="demo-par">
-        <p class="rotulo-mayus">Barra lateral</p>
-        <button class="boton boton-secundario boton-compacto" id="plegar"><svg><use href="#i-panel" /></svg>Plegar</button>
-      </div>
-      <div class="demo-lateral">
-        <aside class="barra-lateral" data-compacta="false" id="lateral">
-          <div class="barra-lateral-marca"><strong class="barra-lateral-texto">Bling</strong></div>
-          <nav class="barra-lateral-nav sidebar-scroll">
-            <div class="barra-lateral-grupo">
-              <p class="barra-lateral-titulo">General</p>
-              <a class="barra-lateral-item" href="#" aria-current="page" title="Inicio"><svg><use href="#i-inicio" /></svg><span class="barra-lateral-texto">Inicio</span></a>
-              <a class="barra-lateral-item" href="#" title="Destacados"><svg><use href="#i-estrella" /></svg><span class="barra-lateral-texto">Destacados</span></a>
-            </div>
-            <div class="barra-lateral-grupo">
-              <p class="barra-lateral-titulo">Cuenta</p>
-              <a class="barra-lateral-item" href="#" title="Mi perfil"><svg><use href="#i-persona" /></svg><span class="barra-lateral-texto">Mi perfil</span></a>
-              <a class="barra-lateral-item" href="#" title="Configuración"><svg><use href="#i-ajustes" /></svg><span class="barra-lateral-texto">Configuración</span></a>
-            </div>
-          </nav>
-        </aside>
-        <div class="demo-lateral-contenido rotulo">Contenido de la app</div>
-      </div>
-    </section>
-
     <!-- Colores en pares -->
-    <section class="bloque demo-ancho">
+    <section id="colores" class="bloque demo-ancho">
       <p class="rotulo-mayus">Colores en pares</p>
       <p class="rotulo">Cada fondo con su tinta. El último es el error que tenía el dashboard: tinta común sobre la banda fuerte.</p>
       <div class="demo-pares">
@@ -339,7 +436,9 @@
         </div>
       </div>
     </section>
-  </main>
+      </main>
+    </div>
+  </div>
 
   <!-- Modal real -->
   <div class="velo demo-velo" id="velo" hidden>
@@ -356,6 +455,8 @@
 
   <div class="notificaciones" id="notificaciones" aria-live="polite"></div>
 
+  <div id="r-paleta"></div>
   <script type="module" src="demo.js"></script>
+  <script type="module" src="demo-react.js"></script>
 </body>
 </html>

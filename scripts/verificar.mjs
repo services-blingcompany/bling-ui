@@ -45,7 +45,7 @@ comprobar(colores.gray?.[900]?.includes('--rama-900') && colores.blue?.[950], 'p
 comprobar('bling-yellow' in colores && 'nc-surface' in colores, 'preset: paleta institucional');
 
 const tokens = readFileSync(join(raiz, 'css/tokens.css'), 'utf8');
-const componentes = readFileSync(join(raiz, 'css/componentes.css'), 'utf8');
+const componentes = ['css/componentes.css', 'css/controles.css'].map((f) => readFileSync(join(raiz, f), 'utf8')).join('\n');
 const definidas = new Set([...tokens.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
 const tema = readFileSync(join(raiz, 'css/tema.css'), 'utf8');
 for (const m of tema.matchAll(/(--[a-z0-9-]+)\s*:/g)) definidas.add(m[1]);
@@ -53,7 +53,7 @@ for (const m of tema.matchAll(/(--[a-z0-9-]+)\s*:/g)) definidas.add(m[1]);
 for (const m of componentes.matchAll(/(--[a-z0-9-]+)\s*:/g)) definidas.add(m[1]);
 const usadas = new Set([...componentes.matchAll(/var\((--[a-z0-9-]+)/g)].map((m) => m[1]));
 const faltan = [...usadas].filter((v) => !definidas.has(v));
-comprobar(faltan.length === 0, `componentes: todas las variables definidas${faltan.length ? ` (faltan ${faltan.join(', ')})` : ''}`);
+comprobar(faltan.length === 0, `componentes y controles: todas las variables definidas${faltan.length ? ` (faltan ${faltan.join(', ')})` : ''}`);
 
 console.log(fallas ? `\n${fallas} comprobación(es) fallaron` : '\nbling-ui verificado');
 process.exit(fallas ? 1 : 0);

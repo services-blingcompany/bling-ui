@@ -141,10 +141,49 @@ paginación y las migas.
 | `.atajo` | Atajo de teclado (`<kbd>`) |
 | `.separador`, `.item-menu-peligro` | Línea sólida; ítem de menú de peligro |
 
-**Demo.** `npm run demo` abre http://localhost:4173/demo/ con todos los
-componentes, sus estados y los seis temas. `npm test` comprueba que cada clase
+**Demo.** `npm run demo` compila la parte React y abre http://localhost:4173/demo/:
+un catálogo con la barra lateral nueva, todos los componentes, sus estados, las
+dos densidades y los seis temas. `npm test` comprueba que cada clase
 de la demo exista en `css/componentes.css`. Las correcciones ópticas siguen
 `docs/precision-grafica.md`.
+
+## Densidad y controles (0.7)
+
+**Dos densidades.** Compacta por defecto (controles de 32 px, texto de 12 px)
+para paneles y tablas; cómoda con `data-densidad="comoda"` en `<html>` o en un
+contenedor (40 px, texto de 14 px). Los paddings, alturas e íconos salen de los
+tokens (`--alto-control`, `--alto-control-compacto`, `--alto-control-lg`,
+`--esp-control`, `--icono-control`, `--alto-fila`), nunca de números sueltos.
+Tamaños: `.boton-sm` / `.boton-lg`, `.campo-lg`.
+
+**Foco y elegido.** Foco: borde y anillo con el color de foco del tema
+(`--anillo-campo`). Elegido: la tinta del tema. Están en `css/controles.css`,
+que `index.css` ya importa.
+
+| Clase | Para qué |
+|---|---|
+| `.grupo-botones`, `.contador` | Botones pegados; contador dentro de botones, pestañas o la barra lateral |
+| `.campo-compuesto` (+ `.campo-prefijo`, `.campo-sufijo`, `.campo-accion`) | Campo con ícono, prefijo, sufijo y acciones (limpiar, ver contraseña, ±) |
+| `.select-*` | Las piezas del `<Select>` de React |
+| `.buscador`, `.paleta-*` | Disparador de búsqueda y paleta de comandos |
+| `.barra-lateral-buscar`, `.barra-lateral-sub`, `summary.barra-lateral-titulo` | Barra lateral con buscador, subítems y grupos que se pliegan; el activo lleva una barrita |
+| `.barra-superior` (+ `-titulo`, `-acciones`) | Barra de arriba de cada vista |
+| `.pestanas-linea`, `.pestana-linea` | Pestañas subrayadas |
+| `.tarjeta-interactiva` | Tarjeta que responde al puntero |
+
+**React** (`@blingcompany/bling-ui/react`, sin dependencias nuevas):
+
+```tsx
+<Select opciones={[{ valor: 'mvd', etiqueta: 'Montevideo', grupo: 'Área metropolitana' }]} valor={v} onCambio={setV} buscable />
+<Select multiple opciones={idiomas} valor={elegidos} onCambio={setElegidos} />
+<Buscador onAbrir={() => setAbierta(true)} />
+<PaletaComandos abierta={abierta} onCerrar={() => setAbierta(false)} grupos={[{ titulo: 'Secciones', items }]} />
+usarAtajo('k', () => setAbierta(true)); // Ctrl K (⌘ K en Mac)
+```
+
+El select se maneja con el teclado (flechas, Inicio, Fin, Enter, Esc y la
+primera letra), busca sin importar los acentos y se abre hacia arriba si no hay
+lugar abajo.
 
 ## Marca: íconos, logo, tema y reportes
 

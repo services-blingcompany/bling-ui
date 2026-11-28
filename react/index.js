@@ -1,5 +1,5 @@
 // react-src/index.jsx
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect as useEffect2, useId as useId2, useRef as useRef2, useState as useState2 } from "react";
 
 // react-src/logoTrazos.js
 var VIEWBOX = "0 0 108.42 43.42";
@@ -17,11 +17,419 @@ var marca_default = {
   logo: "logo.svg"
 };
 
+// react-src/controles.jsx
+import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { Fragment as Fragment2, jsx, jsxs } from "react/jsx-runtime";
+var normalizar = (t) => String(t ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+function Icono({ trazos, className }) {
+  return /* @__PURE__ */ jsx(
+    "svg",
+    {
+      className,
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      "aria-hidden": "true",
+      children: trazos.map((d) => /* @__PURE__ */ jsx("path", { d }, d))
+    }
+  );
+}
+var FLECHA = ["m6 9 6 6 6-6"];
+var TILDE = ["M20 6 9 17l-5-5"];
+var LUPA = ["m21 21-4.3-4.3", "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"];
+var esMac = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || "");
+function usarAtajo(tecla, accion, { conModificador = true } = {}) {
+  const ultima = useRef(accion);
+  useEffect(() => {
+    ultima.current = accion;
+  });
+  useEffect(() => {
+    const alApretar = (e) => {
+      if (String(e.key).toLowerCase() !== tecla.toLowerCase()) return;
+      if (conModificador && !(e.metaKey || e.ctrlKey)) return;
+      e.preventDefault();
+      ultima.current(e);
+    };
+    window.addEventListener("keydown", alApretar);
+    return () => window.removeEventListener("keydown", alApretar);
+  }, [tecla, conModificador]);
+}
+function Select({
+  opciones = [],
+  valor,
+  onCambio,
+  multiple = false,
+  buscable = false,
+  placeholder = "Eleg\xED una opci\xF3n",
+  sinResultados = "Sin resultados",
+  deshabilitado = false,
+  invalido = false,
+  id,
+  className = "",
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby
+}) {
+  const [abierto, setAbierto] = useState(false);
+  const [filtro, setFiltro] = useState("");
+  const [activa, setActiva] = useState(-1);
+  const [arriba, setArriba] = useState(false);
+  const raiz = useRef(null);
+  const disparador = useRef(null);
+  const buscador = useRef(null);
+  const idBase = useId();
+  const idLista = `${idBase}-lista`;
+  const idOpcion = (i) => `${idBase}-op-${i}`;
+  const elegidos = useMemo(
+    () => new Set(multiple ? valor ?? [] : valor == null ? [] : [valor]),
+    [multiple, valor]
+  );
+  const visibles = useMemo(() => {
+    const f = normalizar(filtro.trim());
+    if (!f) return opciones;
+    return opciones.filter((o) => normalizar(o.etiqueta).includes(f) || normalizar(o.detalle).includes(f));
+  }, [opciones, filtro]);
+  const primeraHabilitada = (lista) => lista.findIndex((o) => !o.deshabilitada);
+  const cerrar = useCallback((devolverFoco = true) => {
+    setAbierto(false);
+    setFiltro("");
+    if (devolverFoco) disparador.current?.focus();
+  }, []);
+  const abrir = () => {
+    if (deshabilitado) return;
+    const caja = raiz.current?.getBoundingClientRect();
+    const abajo = caja ? window.innerHeight - caja.bottom : 999;
+    setArriba(Boolean(caja) && abajo < 300 && caja.top > abajo);
+    const i = opciones.findIndex((o) => elegidos.has(o.valor));
+    setActiva(i >= 0 ? i : primeraHabilitada(opciones));
+    setAbierto(true);
+  };
+  useEffect(() => {
+    if (!abierto) return void 0;
+    if (buscable) buscador.current?.focus();
+    const fuera = (e) => {
+      if (!raiz.current?.contains(e.target)) cerrar(false);
+    };
+    document.addEventListener("mousedown", fuera);
+    return () => document.removeEventListener("mousedown", fuera);
+  }, [abierto, buscable, cerrar]);
+  useEffect(() => {
+    if (abierto) setActiva(primeraHabilitada(visibles));
+  }, [filtro]);
+  useEffect(() => {
+    if (!abierto || activa < 0) return;
+    document.getElementById(idOpcion(activa))?.scrollIntoView({ block: "nearest" });
+  }, [activa, abierto]);
+  const elegir = (o) => {
+    if (!o || o.deshabilitada) return;
+    if (!multiple) {
+      onCambio?.(o.valor);
+      cerrar();
+      return;
+    }
+    const nuevos = new Set(elegidos);
+    if (nuevos.has(o.valor)) nuevos.delete(o.valor);
+    else nuevos.add(o.valor);
+    onCambio?.(opciones.filter((x) => nuevos.has(x.valor)).map((x) => x.valor));
+  };
+  const mover = (paso) => {
+    if (!visibles.length) return;
+    let i = activa;
+    for (let n = 0; n < visibles.length; n += 1) {
+      i = (i + paso + visibles.length) % visibles.length;
+      if (!visibles[i].deshabilitada) break;
+    }
+    setActiva(i);
+  };
+  const alApretar = (e) => {
+    if (!abierto) {
+      if (["ArrowDown", "ArrowUp", "Enter", " "].includes(e.key)) {
+        e.preventDefault();
+        abrir();
+      }
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      mover(1);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      mover(-1);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setActiva(primeraHabilitada(visibles));
+    } else if (e.key === "End") {
+      e.preventDefault();
+      const desdeAtras = [...visibles].reverse().findIndex((o) => !o.deshabilitada);
+      setActiva(desdeAtras < 0 ? -1 : visibles.length - 1 - desdeAtras);
+    } else if (e.key === "Enter" || e.key === " " && !buscable) {
+      e.preventDefault();
+      elegir(visibles[activa]);
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      cerrar();
+    } else if (e.key === "Tab") {
+      cerrar(false);
+    } else if (!buscable && e.key.length === 1) {
+      const letra = normalizar(e.key);
+      const desde = activa + 1;
+      const orden = [...visibles.slice(desde), ...visibles.slice(0, desde)];
+      const hallada = orden.find((o) => !o.deshabilitada && normalizar(o.etiqueta).startsWith(letra));
+      if (hallada) setActiva(visibles.indexOf(hallada));
+    }
+  };
+  const seleccion = opciones.filter((o) => elegidos.has(o.valor));
+  let contenido = placeholder;
+  if (seleccion.length && !multiple) contenido = seleccion[0].etiqueta;
+  if (seleccion.length && multiple) {
+    contenido = /* @__PURE__ */ jsxs(Fragment2, { children: [
+      seleccion.slice(0, 2).map((o) => /* @__PURE__ */ jsx("span", { className: "select-etiqueta", children: o.etiqueta }, String(o.valor))),
+      seleccion.length > 2 && /* @__PURE__ */ jsxs("span", { className: "select-etiqueta", children: [
+        "+",
+        seleccion.length - 2
+      ] })
+    ] });
+  }
+  const activaId = abierto && activa >= 0 && visibles[activa] ? idOpcion(activa) : void 0;
+  return /* @__PURE__ */ jsxs("div", { className: `select ${className}`.trim(), ref: raiz, children: [
+    /* @__PURE__ */ jsxs(
+      "button",
+      {
+        ref: disparador,
+        type: "button",
+        id,
+        className: "select-disparador",
+        "aria-haspopup": "listbox",
+        "aria-expanded": abierto,
+        "aria-controls": abierto ? idLista : void 0,
+        "aria-activedescendant": buscable ? void 0 : activaId,
+        "aria-invalid": invalido || void 0,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledby,
+        disabled: deshabilitado,
+        onClick: () => abierto ? cerrar() : abrir(),
+        onKeyDown: alApretar,
+        children: [
+          /* @__PURE__ */ jsx("span", { className: "select-valor", "data-vacio": seleccion.length ? void 0 : "", children: contenido }),
+          /* @__PURE__ */ jsx(Icono, { className: "select-flecha", trazos: FLECHA })
+        ]
+      }
+    ),
+    abierto && /* @__PURE__ */ jsxs("div", { className: "select-lista", "data-arriba": arriba ? "" : void 0, children: [
+      buscable && /* @__PURE__ */ jsxs("div", { className: "select-buscar", children: [
+        /* @__PURE__ */ jsx(Icono, { trazos: LUPA }),
+        /* @__PURE__ */ jsx(
+          "input",
+          {
+            ref: buscador,
+            value: filtro,
+            onChange: (e) => setFiltro(e.target.value),
+            onKeyDown: alApretar,
+            placeholder: "Buscar",
+            "aria-label": "Buscar",
+            role: "combobox",
+            "aria-expanded": "true",
+            "aria-autocomplete": "list",
+            "aria-controls": idLista,
+            "aria-activedescendant": activaId
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "select-opciones", role: "listbox", id: idLista, "aria-multiselectable": multiple || void 0, children: visibles.length === 0 ? /* @__PURE__ */ jsx("p", { className: "select-vacio", children: sinResultados }) : visibles.map((o, i) => /* @__PURE__ */ jsxs(Fragment, { children: [
+        o.grupo && o.grupo !== visibles[i - 1]?.grupo && /* @__PURE__ */ jsx("p", { className: "select-grupo", role: "presentation", children: o.grupo }),
+        /* @__PURE__ */ jsxs(
+          "div",
+          {
+            id: idOpcion(i),
+            role: "option",
+            className: "select-opcion",
+            "aria-selected": elegidos.has(o.valor),
+            "aria-disabled": o.deshabilitada || void 0,
+            "data-activa": i === activa ? "true" : void 0,
+            onMouseEnter: () => {
+              if (!o.deshabilitada) setActiva(i);
+            },
+            onMouseDown: (e) => e.preventDefault(),
+            onClick: () => elegir(o),
+            children: [
+              /* @__PURE__ */ jsx(Icono, { className: "select-check", trazos: TILDE }),
+              /* @__PURE__ */ jsx("span", { children: o.etiqueta }),
+              o.detalle && /* @__PURE__ */ jsx("span", { className: "select-detalle", children: o.detalle })
+            ]
+          }
+        )
+      ] }, String(o.valor))) })
+    ] })
+  ] });
+}
+function Buscador({ onAbrir, texto = "Buscar", atajo, className = "" }) {
+  const [mac, setMac] = useState(false);
+  useEffect(() => {
+    setMac(esMac());
+  }, []);
+  const tecla = atajo === void 0 ? mac ? "\u2318 K" : "Ctrl K" : atajo;
+  return /* @__PURE__ */ jsxs(
+    "button",
+    {
+      type: "button",
+      className: `buscador ${className}`.trim(),
+      onClick: onAbrir,
+      "aria-keyshortcuts": mac ? "Meta+K" : "Control+K",
+      children: [
+        /* @__PURE__ */ jsx(Icono, { trazos: LUPA }),
+        /* @__PURE__ */ jsx("span", { className: "buscador-texto", children: texto }),
+        tecla && /* @__PURE__ */ jsx("kbd", { className: "atajo", children: tecla })
+      ]
+    }
+  );
+}
+function PaletaComandos({
+  abierta,
+  onCerrar,
+  grupos = [],
+  placeholder = "Busc\xE1 una secci\xF3n o una acci\xF3n",
+  sinResultados = "No encontramos nada con eso"
+}) {
+  const [filtro, setFiltro] = useState("");
+  const [activa, setActiva] = useState(0);
+  const entrada = useRef(null);
+  const anterior = useRef(null);
+  const idBase = useId();
+  const idItem = (i) => `${idBase}-it-${i}`;
+  const lista = useMemo(() => {
+    const f = normalizar(filtro.trim());
+    const salida = [];
+    for (const g of grupos) {
+      const items = (g.items ?? []).filter(
+        (it) => !f || normalizar(it.etiqueta).includes(f) || normalizar(it.detalle).includes(f) || (it.palabras ?? []).some((p) => normalizar(p).includes(f))
+      );
+      if (items.length) salida.push({ titulo: g.titulo, items });
+    }
+    return salida;
+  }, [grupos, filtro]);
+  const planos = useMemo(() => lista.flatMap((g) => g.items), [lista]);
+  useEffect(() => {
+    if (!abierta) return void 0;
+    anterior.current = document.activeElement;
+    setFiltro("");
+    setActiva(0);
+    const t = setTimeout(() => entrada.current?.focus(), 0);
+    return () => {
+      clearTimeout(t);
+      anterior.current?.focus?.();
+    };
+  }, [abierta]);
+  useEffect(() => {
+    setActiva(0);
+  }, [filtro]);
+  useEffect(() => {
+    if (!abierta) return;
+    document.getElementById(idItem(activa))?.scrollIntoView({ block: "nearest" });
+  }, [activa, abierta]);
+  if (!abierta) return null;
+  const ejecutar = (it) => {
+    if (!it) return;
+    onCerrar?.();
+    it.onElegir?.();
+  };
+  const alApretar = (e) => {
+    const total = planos.length;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiva((i) => total ? (i + 1) % total : 0);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiva((i) => total ? (i - 1 + total) % total : 0);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      ejecutar(planos[activa]);
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      onCerrar?.();
+    }
+  };
+  let n = -1;
+  return /* @__PURE__ */ jsx(
+    "div",
+    {
+      className: "velo paleta-velo",
+      onMouseDown: (e) => {
+        if (e.target === e.currentTarget) onCerrar?.();
+      },
+      children: /* @__PURE__ */ jsxs("div", { className: "paleta", role: "dialog", "aria-modal": "true", "aria-label": "Buscar", children: [
+        /* @__PURE__ */ jsxs("div", { className: "paleta-buscar", children: [
+          /* @__PURE__ */ jsx(Icono, { trazos: LUPA }),
+          /* @__PURE__ */ jsx(
+            "input",
+            {
+              ref: entrada,
+              value: filtro,
+              onChange: (e) => setFiltro(e.target.value),
+              onKeyDown: alApretar,
+              placeholder,
+              role: "combobox",
+              "aria-expanded": "true",
+              "aria-autocomplete": "list",
+              "aria-controls": `${idBase}-lista`,
+              "aria-activedescendant": planos.length ? idItem(activa) : void 0
+            }
+          ),
+          /* @__PURE__ */ jsx("kbd", { className: "atajo", children: "Esc" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "paleta-resultados", role: "listbox", id: `${idBase}-lista`, children: planos.length === 0 ? /* @__PURE__ */ jsx("p", { className: "paleta-vacio", children: sinResultados }) : lista.map((g) => /* @__PURE__ */ jsxs("div", { role: "group", "aria-label": g.titulo, children: [
+          /* @__PURE__ */ jsx("p", { className: "paleta-grupo", children: g.titulo }),
+          g.items.map((it) => {
+            n += 1;
+            const i = n;
+            return /* @__PURE__ */ jsxs(
+              "div",
+              {
+                id: idItem(i),
+                role: "option",
+                "aria-selected": i === activa,
+                className: "paleta-item",
+                "data-activa": i === activa ? "true" : void 0,
+                onMouseMove: () => setActiva(i),
+                onMouseDown: (e) => e.preventDefault(),
+                onClick: () => ejecutar(it),
+                children: [
+                  it.icono,
+                  /* @__PURE__ */ jsx("span", { children: it.etiqueta }),
+                  it.detalle && /* @__PURE__ */ jsx("span", { className: "paleta-item-detalle", children: it.detalle }),
+                  it.atajo && /* @__PURE__ */ jsx("kbd", { className: "atajo", children: it.atajo })
+                ]
+              },
+              it.id ?? it.etiqueta
+            );
+          })
+        ] }, g.titulo)) }),
+        /* @__PURE__ */ jsxs("div", { className: "paleta-pie", children: [
+          /* @__PURE__ */ jsxs("span", { children: [
+            /* @__PURE__ */ jsx("kbd", { className: "atajo", children: "\u2191" }),
+            /* @__PURE__ */ jsx("kbd", { className: "atajo", children: "\u2193" }),
+            " para moverte"
+          ] }),
+          /* @__PURE__ */ jsxs("span", { children: [
+            /* @__PURE__ */ jsx("kbd", { className: "atajo", children: "Enter" }),
+            " para abrir"
+          ] }),
+          /* @__PURE__ */ jsxs("span", { children: [
+            /* @__PURE__ */ jsx("kbd", { className: "atajo", children: "Esc" }),
+            " para cerrar"
+          ] })
+        ] })
+      ] })
+    }
+  );
+}
+
 // react-src/index.jsx
-import { jsx, jsxs } from "react/jsx-runtime";
+import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 function Logo({ alto = 28, titulo = marca_default.nombre, className, style }) {
   const [, , w, h] = VIEWBOX.split(" ").map(Number);
-  return /* @__PURE__ */ jsx(
+  return /* @__PURE__ */ jsx2(
     "svg",
     {
       viewBox: VIEWBOX,
@@ -38,19 +446,19 @@ function Logo({ alto = 28, titulo = marca_default.nombre, className, style }) {
 var HIJOS = { rayas: 12, barras: 5, puntos: 3, onda: 2, anillo: 0, linea: 0 };
 function Cargador({ variante = "rayas", tam = "md", deMarca = false, etiqueta = "Cargando", className = "" }) {
   const clases = ["cargador", `cargador-${variante}`, tam === "sm" && "cargador-sm", tam === "lg" && "cargador-lg", deMarca && "cargador-marca", className].filter(Boolean).join(" ");
-  return /* @__PURE__ */ jsx("span", { className: clases, role: "status", "aria-label": etiqueta, children: Array.from({ length: HIJOS[variante] ?? 0 }, (_, i) => /* @__PURE__ */ jsx("i", {}, i)) });
+  return /* @__PURE__ */ jsx2("span", { className: clases, role: "status", "aria-label": etiqueta, children: Array.from({ length: HIJOS[variante] ?? 0 }, (_, i) => /* @__PURE__ */ jsx2("i", {}, i)) });
 }
 function PantallaDeCarga({ mensaje, variante = "rayas" }) {
-  return /* @__PURE__ */ jsxs(
+  return /* @__PURE__ */ jsxs2(
     "div",
     {
       role: "status",
       "aria-live": "polite",
       style: { minHeight: "100dvh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20, background: "var(--color-bg)", color: "var(--color-ink)" },
       children: [
-        /* @__PURE__ */ jsx(Logo, { alto: 36 }),
-        /* @__PURE__ */ jsx(Cargador, { variante, tam: "lg", deMarca: true, etiqueta: mensaje || "Cargando" }),
-        mensaje ? /* @__PURE__ */ jsx("p", { style: { fontSize: 14, color: "var(--color-muted)", margin: 0 }, children: mensaje }) : null
+        /* @__PURE__ */ jsx2(Logo, { alto: 36 }),
+        /* @__PURE__ */ jsx2(Cargador, { variante, tam: "lg", deMarca: true, etiqueta: mensaje || "Cargando" }),
+        mensaje ? /* @__PURE__ */ jsx2("p", { style: { fontSize: 14, color: "var(--color-muted)", margin: 0 }, children: mensaje }) : null
       ]
     }
   );
@@ -113,19 +521,19 @@ function crearClienteReportes(apiBase = "") {
   };
 }
 function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug", pedirEmail = false, emailInicial = "" }) {
-  const id = useId();
-  const [tipo, setTipo] = useState(tipoInicial);
-  const [titulo, setTitulo] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [email, setEmail] = useState(emailInicial);
-  const [imagen, setImagen] = useState(null);
-  const [vista, setVista] = useState(null);
-  const [error, setError] = useState("");
-  const [enviando, setEnviando] = useState(false);
-  const [enviado, setEnviado] = useState(false);
-  const archivoRef = useRef(null);
-  const primerCampo = useRef(null);
-  useEffect(() => {
+  const id = useId2();
+  const [tipo, setTipo] = useState2(tipoInicial);
+  const [titulo, setTitulo] = useState2("");
+  const [descripcion, setDescripcion] = useState2("");
+  const [email, setEmail] = useState2(emailInicial);
+  const [imagen, setImagen] = useState2(null);
+  const [vista, setVista] = useState2(null);
+  const [error, setError] = useState2("");
+  const [enviando, setEnviando] = useState2(false);
+  const [enviado, setEnviado] = useState2(false);
+  const archivoRef = useRef2(null);
+  const primerCampo = useRef2(null);
+  useEffect2(() => {
     if (!abierto) return void 0;
     const alTeclear = (e) => e.key === "Escape" && !enviando && cerrar();
     document.addEventListener("keydown", alTeclear);
@@ -135,7 +543,7 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
       clearTimeout(t);
     };
   });
-  useEffect(() => () => vista && URL.revokeObjectURL(vista), [vista]);
+  useEffect2(() => () => vista && URL.revokeObjectURL(vista), [vista]);
   if (!abierto) return null;
   function reiniciar() {
     setTipo(tipoInicial);
@@ -188,13 +596,13 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
   }
   const etiqueta = { display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6, color: "var(--color-ink)" };
   const ayuda = { fontSize: 12, color: "var(--color-muted)", marginTop: 4 };
-  return /* @__PURE__ */ jsx(
+  return /* @__PURE__ */ jsx2(
     "div",
     {
       className: "velo",
       style: { position: "fixed", inset: 0, zIndex: 1e3, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 },
       onMouseDown: (e) => e.target === e.currentTarget && !enviando && cerrar(),
-      children: /* @__PURE__ */ jsxs(
+      children: /* @__PURE__ */ jsxs2(
         "div",
         {
           className: "modal",
@@ -203,18 +611,18 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
           "aria-labelledby": `${id}-t`,
           style: { boxSizing: "border-box", width: "100%", maxWidth: 480, maxHeight: "calc(100dvh - 32px)", overflowY: "auto", padding: 20, color: "var(--color-ink)" },
           children: [
-            /* @__PURE__ */ jsxs("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16 }, children: [
-              /* @__PURE__ */ jsx("h2", { id: `${id}-t`, style: { margin: 0, fontSize: 17, fontWeight: 600 }, children: enviado ? "\xA1Gracias!" : "Reportar un problema" }),
-              /* @__PURE__ */ jsx("button", { type: "button", className: "boton boton-fantasma boton-icono boton-compacto", onClick: cerrar, disabled: enviando, "aria-label": "Cerrar", children: /* @__PURE__ */ jsx("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", "aria-hidden": "true", children: /* @__PURE__ */ jsx("path", { d: "M18 6 6 18M6 6l12 12" }) }) })
+            /* @__PURE__ */ jsxs2("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16 }, children: [
+              /* @__PURE__ */ jsx2("h2", { id: `${id}-t`, style: { margin: 0, fontSize: 17, fontWeight: 600 }, children: enviado ? "\xA1Gracias!" : "Reportar un problema" }),
+              /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-fantasma boton-icono boton-compacto", onClick: cerrar, disabled: enviando, "aria-label": "Cerrar", children: /* @__PURE__ */ jsx2("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", "aria-hidden": "true", children: /* @__PURE__ */ jsx2("path", { d: "M18 6 6 18M6 6l12 12" }) }) })
             ] }),
-            enviado ? /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("p", { style: { margin: "0 0 16px", fontSize: 14 }, children: "Recibimos tu reporte. Lo revisa el equipo y, si dejaste un correo o ten\xE9s sesi\xF3n iniciada, te escribimos cuando haya novedades." }),
-              /* @__PURE__ */ jsxs("div", { style: { display: "flex", justifyContent: "flex-end", gap: 8 }, children: [
-                /* @__PURE__ */ jsx("button", { type: "button", className: "boton boton-secundario", onClick: reiniciar, children: "Enviar otro" }),
-                /* @__PURE__ */ jsx("button", { type: "button", className: "boton boton-primario", onClick: cerrar, children: "Listo" })
+            enviado ? /* @__PURE__ */ jsxs2("div", { children: [
+              /* @__PURE__ */ jsx2("p", { style: { margin: "0 0 16px", fontSize: 14 }, children: "Recibimos tu reporte. Lo revisa el equipo y, si dejaste un correo o ten\xE9s sesi\xF3n iniciada, te escribimos cuando haya novedades." }),
+              /* @__PURE__ */ jsxs2("div", { style: { display: "flex", justifyContent: "flex-end", gap: 8 }, children: [
+                /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-secundario", onClick: reiniciar, children: "Enviar otro" }),
+                /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-primario", onClick: cerrar, children: "Listo" })
               ] })
-            ] }) : /* @__PURE__ */ jsxs("form", { onSubmit: enviar, noValidate: true, children: [
-              /* @__PURE__ */ jsx("div", { role: "radiogroup", "aria-label": "Tipo de reporte", style: { display: "flex", gap: 6, marginBottom: 14 }, children: TIPOS.map((t) => /* @__PURE__ */ jsx(
+            ] }) : /* @__PURE__ */ jsxs2("form", { onSubmit: enviar, noValidate: true, children: [
+              /* @__PURE__ */ jsx2("div", { role: "radiogroup", "aria-label": "Tipo de reporte", style: { display: "flex", gap: 6, marginBottom: 14 }, children: TIPOS.map((t) => /* @__PURE__ */ jsx2(
                 "button",
                 {
                   type: "button",
@@ -227,9 +635,9 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
                 },
                 t.id
               )) }),
-              /* @__PURE__ */ jsxs("div", { style: { marginBottom: 12 }, children: [
-                /* @__PURE__ */ jsx("label", { htmlFor: `${id}-titulo`, style: etiqueta, children: "T\xEDtulo" }),
-                /* @__PURE__ */ jsx(
+              /* @__PURE__ */ jsxs2("div", { style: { marginBottom: 12 }, children: [
+                /* @__PURE__ */ jsx2("label", { htmlFor: `${id}-titulo`, style: etiqueta, children: "T\xEDtulo" }),
+                /* @__PURE__ */ jsx2(
                   "input",
                   {
                     ref: primerCampo,
@@ -243,9 +651,9 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs("div", { style: { marginBottom: 12 }, children: [
-                /* @__PURE__ */ jsx("label", { htmlFor: `${id}-desc`, style: etiqueta, children: "Detalle" }),
-                /* @__PURE__ */ jsx(
+              /* @__PURE__ */ jsxs2("div", { style: { marginBottom: 12 }, children: [
+                /* @__PURE__ */ jsx2("label", { htmlFor: `${id}-desc`, style: etiqueta, children: "Detalle" }),
+                /* @__PURE__ */ jsx2(
                   "textarea",
                   {
                     id: `${id}-desc`,
@@ -257,17 +665,17 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
                     placeholder: tipo === "suggestion" ? "Qu\xE9 te gustar\xEDa y para qu\xE9 lo usar\xEDas" : "Qu\xE9 hiciste, qu\xE9 esperabas y qu\xE9 pas\xF3"
                   }
                 ),
-                /* @__PURE__ */ jsxs("p", { style: ayuda, children: [
+                /* @__PURE__ */ jsxs2("p", { style: ayuda, children: [
                   descripcion.length,
                   "/1000"
                 ] })
               ] }),
-              /* @__PURE__ */ jsxs("div", { style: { marginBottom: 12 }, children: [
-                /* @__PURE__ */ jsx("span", { style: etiqueta, children: "Captura (opcional)" }),
-                vista ? /* @__PURE__ */ jsxs("div", { style: { display: "flex", alignItems: "center", gap: 10 }, children: [
-                  /* @__PURE__ */ jsx("img", { src: vista, alt: "Captura adjunta", style: { width: 64, height: 48, objectFit: "cover", borderRadius: 6, border: "1px solid var(--nc-line)" } }),
-                  /* @__PURE__ */ jsx("span", { style: { fontSize: 13, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, children: imagen?.name }),
-                  /* @__PURE__ */ jsx(
+              /* @__PURE__ */ jsxs2("div", { style: { marginBottom: 12 }, children: [
+                /* @__PURE__ */ jsx2("span", { style: etiqueta, children: "Captura (opcional)" }),
+                vista ? /* @__PURE__ */ jsxs2("div", { style: { display: "flex", alignItems: "center", gap: 10 }, children: [
+                  /* @__PURE__ */ jsx2("img", { src: vista, alt: "Captura adjunta", style: { width: 64, height: 48, objectFit: "cover", borderRadius: 6, border: "1px solid var(--nc-line)" } }),
+                  /* @__PURE__ */ jsx2("span", { style: { fontSize: 13, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, children: imagen?.name }),
+                  /* @__PURE__ */ jsx2(
                     "button",
                     {
                       type: "button",
@@ -279,20 +687,20 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
                       children: "Quitar"
                     }
                   )
-                ] }) : /* @__PURE__ */ jsx("button", { type: "button", className: "boton boton-secundario boton-compacto", onClick: () => archivoRef.current?.click(), children: "Adjuntar imagen" }),
-                /* @__PURE__ */ jsx("input", { ref: archivoRef, type: "file", accept: FORMATOS.join(","), hidden: true, onChange: elegirImagen }),
-                /* @__PURE__ */ jsx("p", { style: ayuda, children: "JPG, PNG o WebP, hasta 5 MB." })
+                ] }) : /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-secundario boton-compacto", onClick: () => archivoRef.current?.click(), children: "Adjuntar imagen" }),
+                /* @__PURE__ */ jsx2("input", { ref: archivoRef, type: "file", accept: FORMATOS.join(","), hidden: true, onChange: elegirImagen }),
+                /* @__PURE__ */ jsx2("p", { style: ayuda, children: "JPG, PNG o WebP, hasta 5 MB." })
               ] }),
-              pedirEmail ? /* @__PURE__ */ jsxs("div", { style: { marginBottom: 12 }, children: [
-                /* @__PURE__ */ jsx("label", { htmlFor: `${id}-email`, style: etiqueta, children: "Correo para responderte (opcional)" }),
-                /* @__PURE__ */ jsx("input", { id: `${id}-email`, type: "email", className: "campo", style: { width: "100%", boxSizing: "border-box" }, value: email, onChange: (e) => setEmail(e.target.value), placeholder: "tu@correo.com" })
+              pedirEmail ? /* @__PURE__ */ jsxs2("div", { style: { marginBottom: 12 }, children: [
+                /* @__PURE__ */ jsx2("label", { htmlFor: `${id}-email`, style: etiqueta, children: "Correo para responderte (opcional)" }),
+                /* @__PURE__ */ jsx2("input", { id: `${id}-email`, type: "email", className: "campo", style: { width: "100%", boxSizing: "border-box" }, value: email, onChange: (e) => setEmail(e.target.value), placeholder: "tu@correo.com" })
               ] }) : null,
-              error ? /* @__PURE__ */ jsx("p", { role: "alert", style: { fontSize: 13, margin: "0 0 12px", padding: "8px 10px", borderRadius: 8, color: "var(--bling-danger)", background: "var(--bling-danger-bg)", border: "1px solid var(--bling-danger-border)" }, children: error }) : null,
-              /* @__PURE__ */ jsx("p", { style: { ...ayuda, marginBottom: 14 }, children: "Mandamos tambi\xE9n la p\xE1gina, el navegador y el tema que us\xE1s, para poder reproducirlo." }),
-              /* @__PURE__ */ jsxs("div", { style: { display: "flex", justifyContent: "flex-end", gap: 8 }, children: [
-                /* @__PURE__ */ jsx("button", { type: "button", className: "boton boton-secundario", onClick: cerrar, disabled: enviando, children: "Cancelar" }),
-                /* @__PURE__ */ jsxs("button", { type: "submit", className: "boton boton-primario", disabled: !listo, children: [
-                  enviando ? /* @__PURE__ */ jsx(Cargador, { variante: "anillo", tam: "sm", etiqueta: "Enviando" }) : null,
+              error ? /* @__PURE__ */ jsx2("p", { role: "alert", style: { fontSize: 13, margin: "0 0 12px", padding: "8px 10px", borderRadius: 8, color: "var(--bling-danger)", background: "var(--bling-danger-bg)", border: "1px solid var(--bling-danger-border)" }, children: error }) : null,
+              /* @__PURE__ */ jsx2("p", { style: { ...ayuda, marginBottom: 14 }, children: "Mandamos tambi\xE9n la p\xE1gina, el navegador y el tema que us\xE1s, para poder reproducirlo." }),
+              /* @__PURE__ */ jsxs2("div", { style: { display: "flex", justifyContent: "flex-end", gap: 8 }, children: [
+                /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-secundario", onClick: cerrar, disabled: enviando, children: "Cancelar" }),
+                /* @__PURE__ */ jsxs2("button", { type: "submit", className: "boton boton-primario", disabled: !listo, children: [
+                  enviando ? /* @__PURE__ */ jsx2(Cargador, { variante: "anillo", tam: "sm", etiqueta: "Enviando" }) : null,
                   enviando ? "Enviando\u2026" : "Enviar"
                 ] })
               ] })
@@ -304,10 +712,14 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
   );
 }
 export {
+  Buscador,
   Cargador,
   Logo,
+  PaletaComandos,
   PantallaDeCarga,
   ReportarProblema,
+  Select,
   crearClienteReportes,
-  metaDelEntorno
+  metaDelEntorno,
+  usarAtajo
 };

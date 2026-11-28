@@ -48,29 +48,82 @@ svg {
   display: none !important;
 }
 
-.demo-cabecera {
+/* Layout del catálogo: barra lateral fija y contenido que se desplaza. */
+.demo-app {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--esp-4);
-  padding: var(--esp-6) var(--esp-6) var(--esp-3);
+  gap: var(--esp-marco);
+  height: 100vh;
+  padding: var(--esp-marco);
 }
-.demo-titulo {
+.demo-nav {
+  flex: none;
+}
+.demo-marca {
   display: flex;
   align-items: baseline;
   gap: var(--esp-2);
-  margin: 0 0 4px;
-  font-size: 20px;
-  line-height: 26px;
+  font-size: 15px;
   font-weight: 600;
+  color: var(--color-ink);
+}
+.demo-contenido {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px;
+}
+.demo-barra {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex-wrap: wrap;
+}
+.demo-barra p {
+  margin: 0;
 }
 
 .demo-grilla {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: var(--esp-bloque);
-  padding: var(--esp-3) var(--esp-6) var(--esp-8);
+  padding: var(--esp-bloque) 0 var(--esp-8);
+}
+.demo-tamanos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+}
+.demo-ancho-rotulo {
+  width: 24px;
+}
+.demo-campo-corto {
+  max-width: 260px;
+}
+.demo-interactivas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-2);
+}
+.demo-interactivas p {
+  margin: 0;
+}
+.demo-numero > input {
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .demo-app {
+    height: auto;
+    flex-direction: column;
+  }
+  .demo-nav {
+    width: 100%;
+    height: 320px;
+  }
+  .demo-contenido {
+    overflow: visible;
+  }
 }
 .demo-ancho {
   grid-column: 1 / -1;

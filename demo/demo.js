@@ -6,6 +6,12 @@ const contenedor = document.getElementById('temas');
 const opciones = [...TEMAS.map((t) => ({ id: t.id, nombre: t.nombre })), { id: 'system', nombre: 'Sistema' }];
 let actual = temaGuardado() ?? 'light';
 
+function elegirTema(id) {
+  actual = id;
+  aplicarTema(id);
+  guardarTema(id);
+  pintarTemas();
+}
 function pintarTemas() {
   contenedor.replaceChildren(
     ...opciones.map((o) => {
@@ -14,18 +20,69 @@ function pintarTemas() {
       b.setAttribute('role', 'tab');
       b.setAttribute('aria-selected', String(o.id === actual));
       b.textContent = o.nombre;
-      b.addEventListener('click', () => {
-        actual = o.id;
-        aplicarTema(o.id);
-        guardarTema(o.id);
-        pintarTemas();
-      });
+      b.addEventListener('click', () => elegirTema(o.id));
       return b;
     })
   );
 }
 aplicarTema(actual);
 pintarTemas();
+window.addEventListener('demo-tema', (e) => elegirTema(e.detail));
+
+// Densidad: compacta (por defecto) o cómoda, recordada en este navegador.
+const densidades = document.getElementById('densidades');
+function elegirDensidad(d) {
+  if (d === 'comoda') document.documentElement.dataset.densidad = 'comoda';
+  else delete document.documentElement.dataset.densidad;
+  densidades.querySelectorAll('.pestana').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.densidad === d)));
+  try {
+    localStorage.setItem('bling-ui-demo-densidad', d);
+  } catch {
+    /* sin almacenamiento */
+  }
+}
+densidades.addEventListener('click', (e) => {
+  const b = e.target.closest('.pestana');
+  if (b) elegirDensidad(b.dataset.densidad);
+});
+window.addEventListener('demo-densidad', (e) => elegirDensidad(e.detail));
+try {
+  elegirDensidad(localStorage.getItem('bling-ui-demo-densidad') || 'compacta');
+} catch {
+  elegirDensidad('compacta');
+}
+
+// Sección activa en la barra lateral mientras se desplaza.
+const enlaces = new Map([...document.querySelectorAll('.demo-nav a.barra-lateral-item')].map((a) => [a.getAttribute('href').slice(1), a]));
+const observador = new IntersectionObserver(
+  (entradas) => {
+    const visible = entradas.filter((x) => x.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+    if (!visible) return;
+    const enlace = enlaces.get(visible.target.id);
+    if (!enlace) return;
+    enlaces.forEach((a) => a.removeAttribute('aria-current'));
+    enlace.setAttribute('aria-current', 'page');
+  },
+  { root: document.querySelector('.demo-contenido'), rootMargin: '-90px 0px -60% 0px' }
+);
+enlaces.forEach((_, id) => {
+  const seccion = document.getElementById(id);
+  if (seccion) observador.observe(seccion);
+});
+
+// Campo compuesto: ver la contraseña y sumar o restar días.
+const clave = document.getElementById('clave');
+document.getElementById('ver-clave').addEventListener('click', (e) => {
+  const ver = clave.type === 'password';
+  clave.type = ver ? 'text' : 'password';
+  e.currentTarget.setAttribute('aria-label', ver ? 'Ocultar la contraseña' : 'Ver la contraseña');
+});
+const dias = document.getElementById('dias');
+document.querySelectorAll('[data-paso]').forEach((b) => {
+  b.addEventListener('click', () => {
+    dias.value = String(Math.min(90, Math.max(1, (Number(dias.value) || 0) + Number(b.dataset.paso))));
+  });
+});
 
 fetch('../package.json')
   .then((r) => r.json())
