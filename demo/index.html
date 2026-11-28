@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="es" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>bling-ui · componentes</title>
+  <link rel="icon" href="../marca/iconos/favicon.svg" type="image/svg+xml" />
+  <!-- La sans la carga cada app; acá, Montserrat desde Google Fonts (sin internet cae a la del sistema). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="../index.css" />
+  <link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+  <!-- Íconos (formas de Lucide, trazo 2) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-mas" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14" /></symbol>
+      <symbol id="i-ok" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+      <symbol id="i-bajar" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></symbol>
+      <symbol id="i-borrar" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></symbol>
+      <symbol id="i-buscar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></symbol>
+      <symbol id="i-inicio" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M9 22V12h6v10" /></symbol>
+      <symbol id="i-persona" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></symbol>
+      <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" /></symbol>
+      <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 3v18" /></symbol>
+      <symbol id="i-salir" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></symbol>
+      <symbol id="i-alerta" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01" /></symbol>
+      <symbol id="i-izq" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></symbol>
+      <symbol id="i-der" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></symbol>
+      <symbol id="i-estrella" viewBox="0 0 24 24"><path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6l-5.4 2.9 1.2-6-4.5-4.2 6.1-.7z" /></symbol>
+    </defs>
+  </svg>
+
+  <header class="demo-cabecera">
+    <div>
+      <h1 class="demo-titulo">bling-ui <span class="rotulo cifra" id="version"></span></h1>
+      <p class="rotulo">Los componentes del paquete con sus CSS reales. Cambiá el tema para ver los seis.</p>
+    </div>
+    <div class="pestanas" role="tablist" aria-label="Tema" id="temas"></div>
+  </header>
+
+  <main class="demo-grilla">
+    <!-- Botones -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Botones</p>
+      <div class="demo-fila">
+        <button class="boton boton-primario"><svg><use href="#i-mas" /></svg>Nueva vacante</button>
+        <button class="boton boton-secundario">Secundario</button>
+        <button class="boton boton-fantasma">Fantasma</button>
+        <button class="boton boton-acento">Acento</button>
+        <button class="boton boton-peligro"><svg><use href="#i-borrar" /></svg>Borrar</button>
+      </div>
+      <div class="demo-fila">
+        <button class="boton boton-secundario boton-compacto"><svg><use href="#i-bajar" /></svg>Compacto</button>
+        <button class="boton boton-secundario boton-icono" aria-label="Buscar"><svg><use href="#i-buscar" /></svg></button>
+        <button class="boton boton-primario" disabled>Deshabilitado</button>
+        <button class="enlace">Enlace</button>
+        <button class="enlace enlace-peligro">Enlace de peligro</button>
+      </div>
+      <p class="rotulo">Cargando (aria-busy): conserva el ancho.</p>
+      <div class="demo-fila">
+        <button class="boton boton-primario" aria-busy="true">Guardar cambios</button>
+        <button class="boton boton-secundario" aria-busy="true">Exportar</button>
+        <button class="boton boton-peligro" aria-busy="true">Borrar</button>
+        <button class="boton boton-secundario" id="probar-carga">Probar 2 segundos</button>
+      </div>
+      <p class="rotulo">Píldora: extremos con compensación óptica.</p>
+      <div class="demo-fila">
+        <button class="boton boton-primario boton-pildora">Postularme</button>
+        <button class="boton boton-secundario boton-pildora"><svg><use href="#i-estrella" /></svg>Patrocinar</button>
+        <button class="boton boton-secundario boton-pildora boton-compacto"><svg><use href="#i-mas" /></svg>Compacto</button>
+      </div>
+    </section>
+
+    <!-- Insignias -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Insignias</p>
+      <div class="demo-fila">
+        <span class="insignia">Borrador</span>
+        <span class="insignia insignia-exito">Activa</span>
+        <span class="insignia insignia-alerta">Pendiente</span>
+        <span class="insignia insignia-peligro">Suspendida</span>
+        <span class="insignia insignia-info">Nueva</span>
+      </div>
+    </section>
+
+    <!-- Campos -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Campos</p>
+      <label class="demo-campo"><span class="rotulo">Correo</span><input class="campo" placeholder="nombre@empresa.uy" /></label>
+      <label class="demo-campo"><span class="rotulo">Departamento</span>
+        <select class="selector"><option>Montevideo</option><option>Canelones</option><option>Maldonado</option></select>
+      </label>
+      <label class="demo-campo"><span class="rotulo">Compacto</span><input class="campo campo-compacto" value="Con valor" /></label>
+      <div class="demo-fila">
+        <label class="demo-check"><input type="checkbox" class="casilla" checked /> Recordarme</label>
+        <label class="demo-check"><input type="radio" class="casilla" name="r" checked /> Mensual</label>
+        <label class="demo-check"><input type="radio" class="casilla" name="r" /> Anual</label>
+      </div>
+      <div class="demo-fila">
+        <label class="demo-check"><input type="checkbox" role="switch" class="interruptor" checked /> Avisos por correo</label>
+        <label class="demo-check"><input type="checkbox" role="switch" class="interruptor" /> Modo compacto</label>
+        <label class="demo-check"><input type="checkbox" role="switch" class="interruptor" disabled /> Deshabilitado</label>
+      </div>
+    </section>
+
+    <!-- Campos: grupos, ayuda y error -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Grupos de campo</p>
+      <label class="campo-con-icono"><svg><use href="#i-buscar" /></svg><input class="campo" placeholder="Buscar puesto o empresa" /></label>
+      <div class="grupo-campo">
+        <label class="rotulo" for="sueldo">Sueldo mínimo</label>
+        <input class="campo cifra" id="sueldo" value="45.000" />
+        <span class="ayuda">En pesos, por mes. Se muestra en la vacante.</span>
+      </div>
+      <div class="grupo-campo">
+        <label class="rotulo" for="rut">RUT</label>
+        <input class="campo cifra" id="rut" value="21000000" aria-invalid="true" aria-describedby="rut-error" />
+        <span class="ayuda ayuda-error" id="rut-error">El RUT tiene 12 dígitos.</span>
+      </div>
+      <div class="grupo-campo">
+        <label class="rotulo" for="mensaje">Mensaje</label>
+        <textarea class="campo" id="mensaje" placeholder="Contale a la empresa por qué te interesa"></textarea>
+      </div>
+    </section>
+
+    <!-- Avisos y notificaciones -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Avisos y notificaciones</p>
+      <div class="aviso"><svg><use href="#i-info" /></svg><div><p class="aviso-titulo">Neutro</p><p>Un dato para tener en cuenta.</p></div></div>
+      <div class="aviso aviso-info"><svg><use href="#i-info" /></svg><p>Mercado Pago todavía no confirmó el pago.</p></div>
+      <div class="aviso aviso-exito"><svg><use href="#i-ok" /></svg><p>Tu vacante ya está patrocinada.</p></div>
+      <div class="aviso aviso-alerta"><svg><use href="#i-alerta" /></svg><p>Te quedan 3 días de patrocinio.</p></div>
+      <div class="aviso aviso-peligro"><svg><use href="#i-alerta" /></svg><p>No pudimos guardar los cambios.</p></div>
+      <div><button class="boton boton-secundario" id="notificar">Mostrar una notificación</button></div>
+    </section>
+
+    <!-- Navegación -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Navegación</p>
+      <nav class="migas" aria-label="Ubicación"><a href="#">Inicio</a><a href="#">Vacantes</a><span aria-current="page">Contador/a junior</span></nav>
+      <nav class="paginacion" aria-label="Páginas">
+        <button aria-label="Anterior" disabled><svg><use href="#i-izq" /></svg></button>
+        <button aria-current="page">1</button><button>2</button><button>3</button><button>12</button>
+        <button aria-label="Siguiente"><svg><use href="#i-der" /></svg></button>
+      </nav>
+      <div class="demo-fila demo-chips">
+        <button class="chip" aria-pressed="true">Montevideo</button>
+        <button class="chip" aria-pressed="false">Remoto</button>
+        <button class="chip" aria-pressed="false"><svg><use href="#i-estrella" /></svg>Destacadas</button>
+      </div>
+      <p class="rotulo">Buscar en el panel: <kbd class="atajo">Ctrl</kbd> <kbd class="atajo">K</kbd></p>
+      <div class="demo-fila">
+        <button class="boton boton-secundario boton-icono" data-pista="Descargar"><svg><use href="#i-bajar" /></svg></button>
+        <button class="boton boton-secundario boton-icono" data-pista="Ajustes"><svg><use href="#i-ajustes" /></svg></button>
+        <span class="rotulo">Pista al pasar el puntero o con Tab.</span>
+      </div>
+    </section>
+
+    <!-- Personas, progreso y vacío -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Avatar, progreso y vacío</p>
+      <div class="demo-fila">
+        <span class="avatar avatar-sm">AP</span>
+        <span class="avatar">MR</span>
+        <span class="avatar avatar-lg">BL</span>
+      </div>
+      <div class="grupo-campo">
+        <span class="rotulo">Perfil completo: 67 %</span>
+        <progress class="progreso" value="67" max="100">67 %</progress>
+      </div>
+      <progress class="progreso progreso-exito" value="100" max="100">100 %</progress>
+      <hr class="separador" />
+      <div class="vacio">
+        <span class="vacio-icono"><svg><use href="#i-buscar" /></svg></span>
+        <p class="vacio-titulo">No hay vacantes que coincidan</p>
+        <p class="vacio-texto">Probá con otro departamento o sacá algún filtro.</p>
+        <button class="boton boton-secundario boton-compacto">Sacar filtros</button>
+      </div>
+    </section>
+
+    <!-- Acordeón -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Acordeón</p>
+      <div>
+        <details class="acordeon" open><summary>¿Cuánto cuesta publicar?</summary><p>Publicar es gratis. El patrocinio se paga aparte.</p></details>
+        <details class="acordeon"><summary>¿Quién ve mi CV?</summary><p>Sólo las empresas a las que les das permiso.</p></details>
+        <details class="acordeon"><summary>¿Puedo pausar una vacante?</summary><p>Sí, desde Mis vacantes.</p></details>
+      </div>
+    </section>
+
+    <!-- Pestañas y opciones -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Pestañas y opciones</p>
+      <div class="pestanas" role="tablist">
+        <button class="pestana" role="tab" aria-selected="true">Ofertas</button>
+        <button class="pestana" role="tab" aria-selected="false">Denuncias</button>
+        <button class="pestana" role="tab" aria-selected="false">Precios</button>
+      </div>
+      <div class="demo-opciones">
+        <button class="opcion demo-opcion" aria-pressed="true"><strong>Destacada</strong><span class="rotulo">Antes que las comunes</span></button>
+        <button class="opcion demo-opcion" aria-pressed="false"><strong>Urgente</strong><span class="rotulo">Primeras posiciones</span></button>
+      </div>
+    </section>
+
+    <!-- Tarjeta y cifras -->
+    <section class="tarjeta demo-ancho">
+      <div class="tarjeta-encabezado">
+        <span class="tarjeta-titulo">Tarjeta con tabla</span>
+        <span class="insignia insignia-exito">Al día</span>
+      </div>
+      <div class="demo-kpis tarjeta-cuerpo">
+        <div><p class="rotulo">Vacantes activas</p><p class="cifra-kpi">1.284</p></div>
+        <div><p class="rotulo">Saldo</p><p class="cifra-kpi">$ 45.090,00</p></div>
+        <div><p class="rotulo">Lote</p><p class="cifra-kpi">OB-0010</p></div>
+      </div>
+      <table class="tabla-datos">
+        <thead><tr><th>Fecha</th><th>Concepto</th><th class="num">Importe</th></tr></thead>
+        <tbody>
+          <tr><td class="cifra">27/11/2026</td><td>Patrocinio destacada</td><td class="num cifra">390,00</td></tr>
+          <tr><td class="cifra">26/11/2026</td><td>Plan Estudio (trimestral)</td><td class="num cifra">7.950,00</td></tr>
+          <tr><td class="cifra">25/11/2026</td><td>Devolución</td><td class="num cifra">-1.000,00</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Bloque con filas punteadas -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Bloque y filas punteadas</p>
+      <div>
+        <div class="fila-punteada demo-par"><span>Plan</span><span class="cifra">Estudio</span></div>
+        <div class="fila-punteada demo-par"><span>Licencias</span><span class="cifra">3 / 5</span></div>
+        <div class="fila-punteada demo-par"><span>Próximo cobro</span><span class="cifra">27/12/2026</span></div>
+      </div>
+      <div class="separador-punteado"></div>
+      <p class="rotulo">Debajo del separador punteado.</p>
+    </section>
+
+    <!-- Menú flotante -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Menú flotante</p>
+      <div class="menu-flotante demo-menu" role="menu">
+        <button class="item-menu" role="menuitem"><svg><use href="#i-persona" /></svg>Mi perfil</button>
+        <button class="item-menu" role="menuitem"><svg><use href="#i-ajustes" /></svg>Configuración</button>
+        <hr />
+        <button class="item-menu item-menu-peligro" role="menuitem"><svg><use href="#i-salir" /></svg>Salir</button>
+      </div>
+    </section>
+
+    <!-- Cargadores -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Cargadores</p>
+      <div class="demo-fila demo-cargadores">
+        <span class="cargador cargador-rayas" role="status" aria-label="Cargando"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <span class="cargador cargador-barras" role="status" aria-label="Cargando"><i></i><i></i><i></i><i></i><i></i></span>
+        <span class="cargador cargador-puntos" role="status" aria-label="Cargando"><i></i><i></i><i></i></span>
+        <span class="cargador cargador-anillo" role="status" aria-label="Cargando"></span>
+        <span class="cargador cargador-onda cargador-marca" role="status" aria-label="Cargando"><i></i><i></i></span>
+        <span class="cargador cargador-rayas cargador-lg cargador-marca" role="status" aria-label="Cargando"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      </div>
+      <span class="cargador cargador-linea" role="status" aria-label="Cargando"></span>
+      <div class="demo-fila"><span class="esqueleto demo-esqueleto"></span><span class="esqueleto demo-esqueleto demo-corto"></span></div>
+    </section>
+
+    <!-- Modal -->
+    <section class="bloque">
+      <p class="rotulo-mayus">Modal y velo</p>
+      <p class="rotulo">El velo es liviano en el tema claro y denso en los oscuros.</p>
+      <div><button class="boton boton-secundario" id="abrir-modal">Abrir modal</button></div>
+    </section>
+
+    <!-- Barra lateral -->
+    <section class="bloque demo-ancho">
+      <div class="demo-par">
+        <p class="rotulo-mayus">Barra lateral</p>
+        <button class="boton boton-secundario boton-compacto" id="plegar"><svg><use href="#i-panel" /></svg>Plegar</button>
+      </div>
+      <div class="demo-lateral">
+        <aside class="barra-lateral" data-compacta="false" id="lateral">
+          <div class="barra-lateral-marca"><strong class="barra-lateral-texto">Bling</strong></div>
+          <nav class="barra-lateral-nav sidebar-scroll">
+            <div class="barra-lateral-grupo">
+              <p class="barra-lateral-titulo">General</p>
+              <a class="barra-lateral-item" href="#" aria-current="page" title="Inicio"><svg><use href="#i-inicio" /></svg><span class="barra-lateral-texto">Inicio</span></a>
+              <a class="barra-lateral-item" href="#" title="Destacados"><svg><use href="#i-estrella" /></svg><span class="barra-lateral-texto">Destacados</span></a>
+            </div>
+            <div class="barra-lateral-grupo">
+              <p class="barra-lateral-titulo">Cuenta</p>
+              <a class="barra-lateral-item" href="#" title="Mi perfil"><svg><use href="#i-persona" /></svg><span class="barra-lateral-texto">Mi perfil</span></a>
+              <a class="barra-lateral-item" href="#" title="Configuración"><svg><use href="#i-ajustes" /></svg><span class="barra-lateral-texto">Configuración</span></a>
+            </div>
+          </nav>
+        </aside>
+        <div class="demo-lateral-contenido rotulo">Contenido de la app</div>
+      </div>
+    </section>
+
+    <!-- Colores en pares -->
+    <section class="bloque demo-ancho">
+      <p class="rotulo-mayus">Colores en pares</p>
+      <p class="rotulo">Cada fondo con su tinta. El último es el error que tenía el dashboard: tinta común sobre la banda fuerte.</p>
+      <div class="demo-pares">
+        <div class="demo-par-color" style="background:var(--color-surface);color:var(--color-ink)"><svg><use href="#i-ok" /></svg>surface + ink</div>
+        <div class="demo-par-color" style="background:var(--color-surface-2);color:var(--color-muted)"><svg><use href="#i-ok" /></svg>surface-2 + muted</div>
+        <div class="demo-par-color" style="background:var(--color-strong);color:var(--color-on-strong)"><svg><use href="#i-ok" /></svg>strong + on-strong</div>
+        <div class="demo-par-color" style="background:var(--color-strong-soft);color:var(--color-on-strong)"><svg><use href="#i-ok" /></svg>strong-soft + on-strong</div>
+        <div class="demo-par-color" style="background:var(--color-primary-soft);color:var(--color-primary)"><svg><use href="#i-ok" /></svg>primary-soft + primary</div>
+        <div class="demo-par-color" style="background:var(--color-success-bg);color:var(--color-success-soft)"><svg><use href="#i-ok" /></svg>success-bg + success-soft</div>
+        <div class="demo-par-color" style="background:var(--color-danger-bg);color:var(--color-danger-soft)"><svg><use href="#i-ok" /></svg>danger-bg + danger-soft</div>
+        <div class="demo-par-color demo-mal" style="background:var(--color-strong-soft);color:var(--color-ink)"><svg><use href="#i-ok" /></svg>strong-soft + ink (mal)</div>
+      </div>
+    </section>
+
+    <!-- Píldoras: antes y después -->
+    <section class="bloque demo-ancho" id="pildoras">
+      <div class="demo-par">
+        <p class="rotulo-mayus">Píldoras: antes y después (guía de precisión gráfica)</p>
+        <label class="demo-check"><input type="checkbox" class="casilla" id="ver-cajas" /> Ver cajas</label>
+      </div>
+      <p class="rotulo">Los extremos curvos le quitan aire al contenido. La corrección suma 1 - π/4 (≈ 0,2146) del radio a cada lado y, con ícono al inicio, lo deja concéntrico con la curva. «Después» son las clases del paquete (.boton-pildora e .insignia).</p>
+      <div class="demo-comparar">
+        <div>
+          <p class="rotulo">Antes</p>
+          <div class="demo-fila">
+            <span class="insignia demo-sin-optica">Pendiente</span>
+            <button class="boton boton-primario demo-pildora-cruda">Postularme</button>
+            <button class="boton boton-secundario demo-pildora-cruda"><svg><use href="#i-estrella" /></svg>Patrocinar</button>
+          </div>
+        </div>
+        <div>
+          <p class="rotulo">Después</p>
+          <div class="demo-fila">
+            <span class="insignia">Pendiente</span>
+            <button class="boton boton-primario boton-pildora">Postularme</button>
+            <button class="boton boton-secundario boton-pildora"><svg><use href="#i-estrella" /></svg>Patrocinar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal real -->
+  <div class="velo demo-velo" id="velo" hidden>
+    <div class="modal demo-modal" role="dialog" aria-modal="true" aria-labelledby="titulo-modal">
+      <p class="tarjeta-titulo" id="titulo-modal">Regalar patrocinio</p>
+      <p class="rotulo">Así se ve un diálogo sobre el velo del tema activo.</p>
+      <label class="demo-campo"><span class="rotulo">Días (1 a 90)</span><input class="campo" value="7" /></label>
+      <div class="demo-fila demo-fin">
+        <button class="boton boton-secundario" id="cerrar-modal">Cancelar</button>
+        <button class="boton boton-primario">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notificaciones" id="notificaciones" aria-live="polite"></div>
+
+  <script type="module" src="demo.js"></script>
+</body>
+</html>

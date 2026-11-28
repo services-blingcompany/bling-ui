@@ -110,6 +110,42 @@ color del texto; `.cargador-marca` los pinta con el amarillo de Bling, y
 `.esqueleto` marca el lugar de un dato que todavía no llegó, con un brillo que
 pasa. Con «reducir movimiento» todo sigue animando, más lento.
 
+## Estados y componentes (0.6)
+
+**Regla de estados.** «Elegido» se marca con la tinta del tema (neutro), como la
+pestaña activa y la sección actual de la barra lateral; el foco, con el anillo
+común (`--nc-border-focus`). El amarillo de marca queda para la marca (logo,
+`.cargador-marca`), nunca para un estado.
+
+Estados de los controles: `:active` (presionado), `aria-busy="true"` en `.boton`
+(anillo de carga sin cambiar el ancho), `aria-invalid="true"` en `.campo` y
+`.selector`, `aria-pressed` en `.opcion` y `.chip`, `aria-current="page"` en la
+paginación y las migas.
+
+| Clase | Para qué |
+|---|---|
+| `.boton-pildora` | Botón con extremos redondos y compensación óptica |
+| `.interruptor` | `<input type="checkbox" role="switch">` |
+| `.campo-con-icono` | Campo con un ícono a la izquierda |
+| `.grupo-campo`, `.ayuda`, `.ayuda-error` | Rótulo, campo y ayuda o error debajo |
+| `.aviso` (+ `-info`, `-exito`, `-alerta`, `-peligro`, `.aviso-titulo`) | Aviso dentro de la página |
+| `.notificaciones`, `.notificacion` (+ `-exito`, `-peligro`) | Notificación flotante |
+| `data-pista="Texto"` | Pista (tooltip) con el puntero o el foco |
+| `.avatar` (+ `-sm`, `-lg`) | Iniciales o imagen |
+| `.paginacion` | Páginas, con la actual en `aria-current="page"` |
+| `.vacio`, `.vacio-icono`, `.vacio-titulo`, `.vacio-texto` | Estado vacío |
+| `.progreso` (+ `-exito`) | `<progress>` con valor |
+| `.acordeon` | `<details>` con `<summary>` |
+| `.migas` | Migas de pan |
+| `.chip` | Filtro que se activa con `aria-pressed` |
+| `.atajo` | Atajo de teclado (`<kbd>`) |
+| `.separador`, `.item-menu-peligro` | Línea sólida; ítem de menú de peligro |
+
+**Demo.** `npm run demo` abre http://localhost:4173/demo/ con todos los
+componentes, sus estados y los seis temas. `npm test` comprueba que cada clase
+de la demo exista en `css/componentes.css`. Las correcciones ópticas siguen
+`docs/precision-grafica.md`.
+
 ## Marca: íconos, logo, tema y reportes
 
 Todas las apps usan lo mismo; nadie guarda su propia copia a mano.

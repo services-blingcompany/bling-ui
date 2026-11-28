@@ -152,6 +152,28 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+  .boton:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  /* Cargando (aria-busy="true"): conserva el ancho y muestra un anillo con la
+     tinta de la variante, así el botón no salta al cambiar de estado. */
+  .boton[aria-busy='true'] {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+  }
+  .boton[aria-busy='true']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 14px;
+    height: 14px;
+    margin: auto;
+    border-radius: 999px;
+    border: 2px solid color-mix(in srgb, var(--tinta, var(--color-ink)) 25%, transparent);
+    border-top-color: var(--tinta, var(--color-ink));
+    animation: cargador-girar 0.8s linear infinite;
+  }
   .boton svg {
     width: 14px;
     height: 14px;
@@ -162,6 +184,7 @@
     padding: 0 var(--esp-2);
   }
   .boton-primario {
+    --tinta: var(--color-on-strong);
     background-color: var(--color-strong);
     color: var(--color-on-strong);
   }
@@ -169,6 +192,7 @@
     background-color: var(--color-strong-hover);
   }
   .boton-secundario {
+    --tinta: var(--color-ink);
     background-color: var(--nc-surface);
     border-color: var(--nc-line);
     color: var(--color-ink);
@@ -177,6 +201,7 @@
     background-color: var(--color-surface-2);
   }
   .boton-fantasma {
+    --tinta: var(--color-ink-soft);
     background-color: transparent;
     color: var(--color-ink-soft);
   }
@@ -185,6 +210,7 @@
     color: var(--color-ink);
   }
   .boton-peligro {
+    --tinta: #fff;
     background-color: var(--color-danger-fill);
     color: #fff;
   }
@@ -193,6 +219,7 @@
   }
   /* Acción principal con el acento del tema (naranja): igual en claro y oscuro. */
   .boton-acento {
+    --tinta: #fff;
     background-color: var(--color-acento);
     color: #fff;
   }
@@ -206,6 +233,22 @@
   }
   .boton-icono.boton-compacto {
     width: var(--alto-control-compacto);
+  }
+  /* Botón píldora: suma a cada lado 1 - π/4 (≈ 0,2146) del radio, lo que la
+     curva le quita al rectángulo; con ícono al inicio lo deja concéntrico con
+     la curva (docs/precision-grafica.md). */
+  .boton-pildora {
+    border-radius: var(--radio-pildora);
+    padding: 0 calc(var(--esp-control) + var(--alto-control) / 2 * 0.2146);
+  }
+  .boton-pildora:has(> svg:first-child) {
+    padding-inline-start: calc((var(--alto-control) - 14px) / 2);
+  }
+  .boton-pildora.boton-compacto {
+    padding: 0 calc(var(--esp-2) + var(--alto-control-compacto) / 2 * 0.2146);
+  }
+  .boton-pildora.boton-compacto:has(> svg:first-child) {
+    padding-inline-start: calc((var(--alto-control-compacto) - 14px) / 2);
   }
 
   /* Campos y selectores. */
@@ -241,6 +284,10 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+  .campo[aria-invalid='true'],
+  .selector[aria-invalid='true'] {
+    border-color: var(--color-danger);
+  }
   .campo-compacto {
     height: var(--alto-control-compacto);
     padding: 0 var(--esp-2);
@@ -271,9 +318,9 @@
     align-items: center;
     gap: var(--esp-1);
     height: 20px;
-    padding: 0 var(--esp-2);
+    padding: 0 calc(var(--esp-2) + 10px * 0.2146);
     border: 1px solid var(--nc-line);
-    border-radius: 999px;
+    border-radius: var(--radio-pildora);
     font-size: var(--texto-rotulo);
     line-height: 1;
     color: var(--color-ink-soft);
@@ -317,13 +364,9 @@
     border-color: var(--color-muted);
   }
   .opcion[aria-pressed="true"] {
-    border-color: var(--color-brand);
-    box-shadow: 0 0 0 1px var(--color-brand);
+    border-color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px var(--color-ink);
     color: var(--color-ink);
-  }
-  .opcion:focus-visible {
-    outline: 2px solid var(--color-brand);
-    outline-offset: 2px;
   }
 
   /* Botón con aspecto de enlace: acciones secundarias dentro de un texto. */
@@ -367,6 +410,9 @@
   }
   .item-menu:hover {
     background-color: var(--color-surface-2);
+  }
+  .item-menu-peligro {
+    color: var(--color-danger-soft);
   }
 
   /* Pestañas segmentadas: un grupo de opciones del mismo alto que un botón. */
@@ -446,7 +492,7 @@
   .modal {
     background-color: var(--nc-surface);
     border: 1px solid var(--nc-line);
-    border-radius: 0.75rem;
+    border-radius: var(--radio-panel);
     box-shadow: var(--nc-shadow);
   }
 
@@ -630,6 +676,472 @@
     border: 0;
     border-top: 1px solid var(--color-line);
   }
+  /* ── Componentes de la 0.6 ────────────────────────────────────────────────
+     Misma regla que el resto: «elegido» con la tinta del tema (neutro), el foco
+     con el anillo común y el amarillo sólo para la marca. */
+
+  .menu-flotante .item-menu-peligro > svg {
+    color: currentColor;
+  }
+
+  /* Interruptor: <input type="checkbox" role="switch" class="interruptor">. */
+  .interruptor {
+    appearance: none;
+    position: relative;
+    flex: none;
+    width: 28px;
+    height: 16px;
+    margin: 0;
+    border-radius: var(--radio-pildora);
+    background-color: color-mix(in srgb, var(--color-muted) 45%, transparent);
+    cursor: pointer;
+    transition: background-color 120ms;
+  }
+  .interruptor::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+    transition: transform 120ms, background-color 120ms;
+  }
+  .interruptor:checked {
+    background-color: var(--color-ink);
+  }
+  .interruptor:checked::before {
+    transform: translateX(12px);
+    background-color: var(--color-bg);
+  }
+  .interruptor:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Campo con ícono: <label class="campo-con-icono"><svg/><input class="campo"></label>. */
+  .campo-con-icono {
+    position: relative;
+    display: block;
+  }
+  .campo-con-icono > svg {
+    position: absolute;
+    top: 50%;
+    left: var(--esp-control);
+    width: 14px;
+    height: 14px;
+    transform: translateY(-50%);
+    color: var(--color-muted);
+    pointer-events: none;
+  }
+  .campo-con-icono > .campo {
+    padding-left: calc(var(--esp-control) + 14px + var(--esp-2));
+  }
+
+  /* Grupo de campo: rótulo, campo y ayuda o error debajo. */
+  .grupo-campo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-1);
+    min-width: 0;
+  }
+  .ayuda {
+    font-size: var(--texto-rotulo);
+    line-height: var(--interlineado-rotulo);
+    color: var(--color-muted);
+  }
+  .ayuda-error {
+    color: var(--color-danger-soft);
+  }
+
+  /* Aviso dentro de la página: texto en la tinta común, el color en el ícono
+     y el fondo, así se lee igual en los seis temas. */
+  .aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--esp-2);
+    padding: var(--esp-2) var(--esp-3);
+    border: 1px solid var(--nc-line);
+    border-radius: var(--radio-control);
+    background-color: var(--color-surface-2);
+    color: var(--color-ink);
+    font-size: var(--texto-base);
+    line-height: var(--interlineado-base);
+  }
+  .aviso > svg {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    color: var(--color-muted);
+  }
+  .aviso-titulo {
+    font-weight: 500;
+  }
+  .aviso-info {
+    background-color: var(--color-info-bg);
+    border-color: var(--color-info-line);
+  }
+  .aviso-info > svg {
+    color: var(--color-info-soft);
+  }
+  .aviso-exito {
+    background-color: var(--color-success-bg);
+    border-color: var(--color-success-line);
+  }
+  .aviso-exito > svg {
+    color: var(--color-success-soft);
+  }
+  .aviso-alerta {
+    background-color: var(--color-warning-bg);
+    border-color: var(--color-warning-line);
+  }
+  .aviso-alerta > svg {
+    color: var(--color-warning-soft);
+  }
+  .aviso-peligro {
+    background-color: var(--color-danger-bg);
+    border-color: var(--color-danger-line);
+  }
+  .aviso-peligro > svg {
+    color: var(--color-danger-soft);
+  }
+
+  /* Notificaciones flotantes: <div class="notificaciones"> con <div class="notificacion">. */
+  .notificaciones {
+    position: fixed;
+    right: var(--esp-4);
+    bottom: var(--esp-4);
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-2);
+    width: min(360px, calc(100vw - 2 * var(--esp-4)));
+  }
+  .notificacion {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--esp-2);
+    padding: var(--esp-3);
+    background-color: var(--nc-surface);
+    border: 1px solid var(--nc-line);
+    border-radius: var(--radio-control);
+    box-shadow: var(--nc-shadow);
+    font-size: var(--texto-base);
+    line-height: var(--interlineado-base);
+    color: var(--color-ink);
+    animation: notificacion-entrar 160ms ease-out;
+  }
+  .notificacion > svg {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    color: var(--color-muted);
+  }
+  .notificacion-exito > svg {
+    color: var(--color-success-soft);
+  }
+  .notificacion-peligro > svg {
+    color: var(--color-danger-soft);
+  }
+  @keyframes notificacion-entrar {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+
+  /* Pista (tooltip) sólo con CSS: data-pista="Texto". Aparece con el puntero y
+     con el foco de teclado; para algo importante, mejor un texto a la vista. */
+  :where([data-pista]) {
+    position: relative;
+  }
+  [data-pista]::after {
+    content: attr(data-pista);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    z-index: 70;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background-color: var(--color-strong);
+    color: var(--color-on-strong);
+    font-size: var(--texto-rotulo);
+    line-height: var(--interlineado-rotulo);
+    font-weight: 500;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 120ms;
+  }
+  [data-pista]:hover::after,
+  [data-pista]:focus-visible::after {
+    opacity: 1;
+    transition-delay: 300ms;
+  }
+
+  /* Avatar: iniciales o una imagen. */
+  .avatar {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    overflow: hidden;
+    border: 1px solid var(--nc-line);
+    border-radius: 999px;
+    background-color: var(--color-surface-2);
+    color: var(--color-ink-soft);
+    font-size: var(--texto-rotulo);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .avatar > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .avatar-sm {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+  .avatar-lg {
+    width: 48px;
+    height: 48px;
+    font-size: var(--texto-titulo);
+  }
+
+  /* Paginación: botones o enlaces; la página actual con aria-current="page". */
+  .paginacion {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .paginacion > :is(a, button) {
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--alto-control-compacto);
+    height: var(--alto-control-compacto);
+    padding: 0 var(--esp-2);
+    border-radius: calc(var(--radio-control) - 2px);
+    font-size: var(--texto-base);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-soft);
+    transition: background-color 120ms, color 120ms;
+  }
+  .paginacion > :is(a, button):hover:not(:disabled) {
+    background-color: var(--color-surface-2);
+    color: var(--color-ink);
+  }
+  .paginacion > [aria-current='page'] {
+    background-color: var(--nc-surface);
+    box-shadow: 0 0 0 1px var(--nc-line);
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+  .paginacion > :disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .paginacion svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Estado vacío: qué pasa y qué se puede hacer. */
+  .vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--esp-2);
+    padding: var(--esp-8) var(--esp-4);
+    text-align: center;
+  }
+  .vacio-icono {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--nc-line);
+    border-radius: 999px;
+    background-color: var(--color-surface-2);
+    color: var(--color-muted);
+  }
+  .vacio-icono > svg {
+    width: 18px;
+    height: 18px;
+  }
+  .vacio-titulo {
+    font-size: var(--texto-titulo);
+    line-height: var(--interlineado-titulo);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+  .vacio-texto {
+    max-width: 36ch;
+    color: var(--color-muted);
+  }
+
+  /* Progreso con valor: <progress class="progreso" value="40" max="100">. */
+  .progreso {
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 6px;
+    border: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    background-color: var(--color-surface-2);
+    color: var(--color-ink);
+  }
+  .progreso::-webkit-progress-bar {
+    background-color: var(--color-surface-2);
+  }
+  .progreso::-webkit-progress-value {
+    background-color: currentColor;
+    border-radius: 999px;
+  }
+  .progreso::-moz-progress-bar {
+    background-color: currentColor;
+    border-radius: 999px;
+  }
+  .progreso-exito {
+    color: var(--color-success-fill);
+  }
+
+  /* Acordeón con <details class="acordeon"><summary>…</summary>…</details>. */
+  .acordeon {
+    border-bottom: 1px solid var(--nc-line);
+  }
+  .acordeon > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--esp-2);
+    min-height: 40px;
+    padding: var(--esp-2) 0;
+    font-weight: 500;
+    color: var(--color-ink);
+    cursor: pointer;
+    list-style: none;
+  }
+  .acordeon > summary::-webkit-details-marker {
+    display: none;
+  }
+  .acordeon > summary::after {
+    content: '';
+    flex: none;
+    width: 6px;
+    height: 6px;
+    margin: -3px 4px 0 0;
+    border-right: 1.5px solid var(--color-muted);
+    border-bottom: 1.5px solid var(--color-muted);
+    transform: rotate(45deg);
+    transition: transform 120ms;
+  }
+  .acordeon[open] > summary::after {
+    margin-top: 3px;
+    transform: rotate(225deg);
+  }
+  .acordeon > :not(summary) {
+    padding-bottom: var(--esp-3);
+    color: var(--color-ink-soft);
+  }
+
+  /* Migas de pan: <nav class="migas"><a>…</a><span aria-current="page">…</span></nav>. */
+  .migas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--esp-1);
+    font-size: var(--texto-base);
+    color: var(--color-muted);
+  }
+  .migas > * + *::before {
+    content: '/';
+    margin-right: var(--esp-1);
+    color: color-mix(in srgb, var(--color-muted) 60%, transparent);
+  }
+  .migas > a:hover {
+    color: var(--color-ink);
+  }
+  .migas > [aria-current='page'] {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  /* Chip de filtro: píldora que se activa con aria-pressed. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-1);
+    height: 24px;
+    padding: 0 calc(var(--esp-2) + 12px * 0.2146);
+    border: 1px solid var(--nc-line);
+    border-radius: var(--radio-pildora);
+    background-color: var(--nc-surface);
+    color: var(--color-ink-soft);
+    font-size: var(--texto-base);
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 120ms, border-color 120ms, color 120ms;
+  }
+  .chip:hover {
+    border-color: var(--color-muted);
+    color: var(--color-ink);
+  }
+  .chip[aria-pressed='true'] {
+    border-color: var(--color-ink);
+    background-color: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .chip > svg {
+    width: 12px;
+    height: 12px;
+  }
+  .chip:has(> svg:first-child) {
+    padding-inline-start: 6px;
+  }
+
+  /* Atajo de teclado: <kbd class="atajo">Ctrl K</kbd>. */
+  .atajo {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 5px;
+    border: 1px solid var(--nc-line);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    background-color: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    color: var(--color-ink-soft);
+  }
+
+  /* Separador sólido entre secciones. */
+  .separador {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--nc-line);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .notificacion {
+      animation: none;
+    }
+    .interruptor::before,
+    .acordeon > summary::after {
+      transition: none;
+    }
+  }
+
   /* ── Cargadores ──────────────────────────────────────────────────────────
      Varios estilos para que esperar no sea siempre el mismo círculo. Toman
      el color del texto (currentColor); .cargador-marca los pinta con el
