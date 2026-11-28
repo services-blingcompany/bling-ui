@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { createPortal } from 'react-dom';
 import { Buscador, PaletaComandos, Select, usarAtajo } from '../react-src/index.jsx';
 import { TEMAS } from '../tema/tema.js';
+import './demo-datos.jsx';
 
 const METRO = ['Montevideo', 'Canelones', 'San José'];
 const DEPARTAMENTOS = [
@@ -77,3 +78,4 @@ function Paleta() {
   );
 }
 montar('r-paleta', <Paleta />);
+

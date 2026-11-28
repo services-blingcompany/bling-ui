@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
-const css = ['css/componentes.css', 'css/controles.css'].map((f) => readFileSync(join(raiz, f), 'utf8')).join('\n');
+const css = ['css/componentes.css', 'css/controles.css', 'css/datos.css'].map((f) => readFileSync(join(raiz, f), 'utf8')).join('\n');
 const fuentes = ['demo/index.html', 'demo/demo.js'].map((f) => readFileSync(join(raiz, f), 'utf8')).join('\n');
 
 const TEMAS = new Set(['light', 'dark', 'amoled', 'corporate', 'horizon', 'daltonico']);

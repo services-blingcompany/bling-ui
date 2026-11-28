@@ -372,3 +372,6 @@ export function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial 
 
 /* ── Controles (0.7): Select, Buscador, PaletaComandos, usarAtajo ───── */
 export * from './controles.jsx';
+
+/* ── Datos (0.8): gráficas, indicadores y tablas ─────────────────────── */
+export * from './datos.jsx';

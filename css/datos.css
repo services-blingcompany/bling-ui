@@ -1,0 +1,359 @@
+/* @blingcompany/bling-ui — Datos (0.8): paleta de gráficas, piezas de las
+   gráficas React (líneas, barras, sparkline, barra segmentada), tarjeta de
+   indicador y tablas con orden, selección y encabezado fijo.
+
+   La paleta categórica es la de referencia de la guía de visualización,
+   validada contra las superficies de los seis temas (scripts del skill
+   dataviz): en los cinco oscuros pasa todo; en el claro, agua, amarillo y
+   magenta quedan debajo de 3:1 contra el blanco, así que cada gráfica lleva
+   leyenda, pista y la tabla «Ver los datos». El orden de las series es parte
+   de la accesibilidad: se asignan en este orden y nunca se reciclan (una
+   novena serie va a «Otros»). */
+
+/* ── Paleta (oscuros por defecto; el claro la redefine) ─────────────────── */
+:root {
+  --grafica-1: #3987e5; /* azul */
+  --grafica-2: #d95926; /* naranja */
+  --grafica-3: #199e70; /* agua */
+  --grafica-4: #c98500; /* amarillo */
+  --grafica-5: #d55181; /* magenta */
+  --grafica-6: #0ca30c; /* verde */
+  --grafica-7: #9085e9; /* violeta */
+  --grafica-8: #e66767; /* rojo */
+  --grafica-cuadricula: var(--nc-line);
+  --grafica-eje: color-mix(in srgb, var(--color-muted) 55%, transparent);
+  --grafica-apagada: color-mix(in srgb, var(--color-muted) 70%, transparent);
+}
+html.light {
+  --grafica-1: #2a78d6;
+  --grafica-2: #eb6834;
+  --grafica-3: #1baf7a;
+  --grafica-4: #eda100;
+  --grafica-5: #e87ba4;
+  --grafica-6: #008300;
+  --grafica-7: #6250d6;
+  --grafica-8: #e34948;
+}
+
+/* ── Gráfica: contenedor, ejes, leyenda, pista y tabla ──────────────────── */
+.grafica {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  min-width: 0;
+}
+.grafica-lienzo {
+  position: relative;
+  width: 100%;
+}
+.grafica-lienzo > svg,
+.sparkline > svg {
+  display: block;
+  overflow: visible;
+  /* Cada marca trae su trazo: nada se hereda de un estilo global de íconos. */
+  fill: none;
+  stroke: none;
+}
+.grafica-lienzo > svg:focus-visible {
+  outline: 2px solid var(--nc-border-focus);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.grafica-texto-eje {
+  fill: var(--color-muted);
+  font-family: var(--font-mono);
+  font-feature-settings: 'cv01';
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.grafica-texto-categoria {
+  fill: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: var(--texto-rotulo);
+}
+.grafica-cuadricula {
+  stroke: var(--grafica-cuadricula);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.grafica-base {
+  stroke: var(--grafica-eje);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.grafica-cursor {
+  stroke: var(--grafica-eje);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+/* Leyenda: siempre con dos o más series (la identidad nunca va sólo por color). */
+.grafica-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-1) var(--esp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--texto-rotulo);
+  line-height: var(--interlineado-rotulo);
+  color: var(--color-ink-soft);
+}
+.grafica-leyenda > li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.grafica-muestra {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.grafica-muestra-linea {
+  width: 12px;
+  height: 2px;
+  border-radius: 2px;
+}
+
+/* Pista al pasar el puntero (o con las flechas del teclado). */
+.grafica-pista {
+  position: absolute;
+  z-index: 10;
+  min-width: 140px;
+  padding: var(--esp-2) 10px;
+  background-color: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  border-radius: var(--radio-control);
+  box-shadow: var(--nc-shadow);
+  font-size: var(--texto-rotulo);
+  line-height: var(--interlineado-rotulo);
+  color: var(--color-ink);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.grafica-pista-titulo {
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.grafica-pista-fila {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.grafica-pista-fila > :nth-child(2) {
+  color: var(--color-ink-soft);
+}
+.grafica-pista-valor {
+  margin-left: auto;
+  padding-left: var(--esp-3);
+  font-family: var(--font-mono);
+  font-feature-settings: 'cv01';
+  font-variant-numeric: tabular-nums;
+}
+
+/* «Ver los datos»: la misma información en tabla, para quien no lee colores. */
+.grafica-datos > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--texto-rotulo);
+  color: var(--color-muted);
+  cursor: pointer;
+  list-style: none;
+}
+.grafica-datos > summary::-webkit-details-marker {
+  display: none;
+}
+.grafica-datos > summary:hover {
+  color: var(--color-ink);
+}
+.grafica-datos[open] > summary {
+  margin-bottom: var(--esp-2);
+}
+
+/* ── Barra segmentada: partes de un total ───────────────────────────────── */
+.barra-segmentada {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+  height: 8px;
+}
+.barra-segmentada > span {
+  min-width: 0;
+  height: 100%;
+}
+.barra-segmentada > span:first-child {
+  border-start-start-radius: 999px;
+  border-end-start-radius: 999px;
+}
+.barra-segmentada > span:last-child {
+  border-start-end-radius: 999px;
+  border-end-end-radius: 999px;
+}
+.barra-segmentada-alta {
+  height: 28px;
+}
+.barra-segmentada-alta > span {
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  border-radius: 4px !important;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-feature-settings: 'cv01';
+  font-size: 10px;
+  font-weight: 500;
+  color: #fff;
+}
+/* Sobre amarillo, texto oscuro (lo dice la paleta de referencia). */
+html.light .barra-segmentada-alta > span[data-serie='4'] {
+  color: #0b0b0b;
+}
+
+/* ── Tarjeta de indicador ───────────────────────────────────────────────── */
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+  min-width: 0;
+  padding: var(--esp-tarjeta);
+  background-color: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  border-radius: var(--radio-panel);
+}
+.indicador-etiqueta {
+  font-size: var(--texto-rotulo);
+  line-height: var(--interlineado-rotulo);
+  color: var(--color-muted);
+}
+.indicador-fila {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--esp-3);
+}
+.indicador-valor {
+  font-family: var(--font-mono);
+  font-feature-settings: 'cv01';
+  font-size: var(--texto-cifra);
+  line-height: var(--interlineado-cifra);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.indicador-delta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  white-space: nowrap;
+  font-size: var(--texto-rotulo);
+  line-height: var(--interlineado-rotulo);
+  color: var(--color-muted);
+}
+.indicador-delta > svg {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+.indicador-delta[data-sentido='bueno'] > .indicador-cambio {
+  color: var(--color-success-soft);
+}
+.indicador-delta[data-sentido='malo'] > .indicador-cambio {
+  color: var(--color-danger-soft);
+}
+.indicador-cambio {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-mono);
+  font-feature-settings: 'cv01';
+  font-weight: 500;
+}
+.indicador-tendencia {
+  flex: none;
+  width: 96px;
+}
+
+/* ── Tablas: contenedor con encabezado fijo, orden y selección ──────────── */
+.tabla-contenedor {
+  max-width: 100%;
+  overflow: auto;
+  border: 1px solid var(--nc-line);
+  border-radius: var(--radio-panel);
+  background-color: var(--nc-surface);
+}
+.tabla-contenedor .tabla-datos thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--nc-surface);
+  box-shadow: inset 0 -1px 0 var(--nc-line);
+  border-bottom: 0;
+}
+.tabla-datos tbody tr {
+  transition: background-color var(--duracion-rapida);
+}
+.tabla-datos tbody tr:hover {
+  background-color: color-mix(in srgb, var(--color-surface-2) 60%, transparent);
+}
+.tabla-datos tbody tr[aria-selected='true'] {
+  background-color: var(--color-surface-2);
+}
+.tabla-datos th.tabla-check,
+.tabla-datos td.tabla-check {
+  width: 36px;
+  padding-right: 0;
+}
+/* Encabezado que ordena: un botón con la flecha del sentido (aria-sort en el th). */
+.tabla-orden {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.tabla-orden:hover {
+  color: var(--color-ink);
+}
+.tabla-orden > svg {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  opacity: 0.35;
+  transition: transform var(--duracion-rapida) var(--curva), opacity var(--duracion-rapida);
+}
+.tabla-datos th[aria-sort='ascending'] .tabla-orden,
+.tabla-datos th[aria-sort='descending'] .tabla-orden {
+  color: var(--color-ink);
+}
+.tabla-datos th[aria-sort='ascending'] .tabla-orden > svg,
+.tabla-datos th[aria-sort='descending'] .tabla-orden > svg {
+  opacity: 1;
+}
+.tabla-datos th[aria-sort='descending'] .tabla-orden > svg {
+  transform: rotate(180deg);
+}
+.tabla-datos th.num .tabla-orden {
+  flex-direction: row-reverse;
+}
+.tabla-vacia {
+  padding: var(--esp-6) var(--esp-4) !important;
+  text-align: center;
+  color: var(--color-muted) !important;
+}
+/* Barra de acciones que aparece con filas elegidas. */
+.tabla-acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: var(--alto-control);
+  padding: var(--esp-1) var(--esp-3);
+  border-bottom: 1px solid var(--nc-line);
+  background-color: var(--color-surface-2);
+  font-size: var(--texto-base);
+  color: var(--color-ink);
+}

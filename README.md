@@ -185,6 +185,40 @@ El select se maneja con el teclado (flechas, Inicio, Fin, Enter, Esc y la
 primera letra), busca sin importar los acentos y se abre hacia arriba si no hay
 lugar abajo.
 
+## Gráficas, indicadores y tablas (0.8)
+
+`css/datos.css` (ya en `index.css`) y componentes React en SVG propio, sin
+dependencias. Siguen la guía de visualización de datos:
+
+- **Paleta de series** `--grafica-1` a `--grafica-8`, validada contra las
+  superficies de los seis temas: en los oscuros pasa todos los controles; en el
+  claro, agua, amarillo y magenta quedan debajo de 3:1, así que cada gráfica
+  lleva leyenda, pista y la tabla «Ver los datos». Las series se asignan en ese
+  orden y nunca se reciclan: una novena va a «Otros».
+- Un solo eje, marcas finas (barras de hasta 24 px con punta redondeada, líneas
+  de 2 px, área al 10 %), cuadrícula de 1 px, el texto siempre en la tinta del
+  tema (nunca en el color de la serie).
+- Pista con el puntero y con el teclado (Tab y flechas), etiqueta accesible con
+  el resumen y «Ver los datos» en tabla.
+
+```tsx
+<TarjetaIndicador etiqueta="Vacantes activas" valor={1284} delta={8.4} periodo="vs. octubre" tendencia={ultimos12} />
+<GraficoLineas categorias={semanas} series={[{ nombre: 'Montevideo', valores }]} area />
+<GraficoBarras categorias={deptos} series={[{ nombre: 'Octubre', valores: oct }, { nombre: 'Noviembre', valores: nov }]} />
+<BarraSegmentada partes={[{ nombre: 'Presencial', valor: 728 }, { nombre: 'Remoto', valor: 176 }]} alta />
+<Sparkline valores={ultimos12} />
+<Tabla columnas={columnas} filas={filas} seleccionable altoMaximo={320} acciones={(ids) => <button className="boton boton-secundario boton-sm">Pausar</button>} />
+```
+
+| Pieza | Qué hace |
+|---|---|
+| `TarjetaIndicador` (`.indicador`) | Número, variación con flecha (verde o rojo según si subir es bueno) y tendencia |
+| `GraficoLineas` | Evolución en el tiempo, una o varias series, con área opcional |
+| `GraficoBarras` | Comparar categorías; agrupadas con varias series; `etiquetas` con una sola |
+| `BarraSegmentada` | Partes de un total: fina (8 px) o alta (28 px) con el porcentaje adentro si entra |
+| `Sparkline` | Tendencia chica: gris, con el último tramo en el color 1 |
+| `Tabla` (`.tabla-contenedor`, `.tabla-orden`, `.tabla-acciones`) | Orden por columna (`aria-sort`), selección de filas con «elegir todas» y encabezado fijo |
+
 ## Marca: íconos, logo, tema y reportes
 
 Todas las apps usan lo mismo; nadie guarda su propia copia a mano.

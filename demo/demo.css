@@ -277,3 +277,29 @@ svg {
 #pildoras.cajas :is(.boton, .insignia) > * {
   outline: 1px dashed var(--color-info);
 }
+
+/* Gráficas y tablas */
+.demo-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+.demo-indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--esp-bloque);
+}
+.demo-graficas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: var(--esp-6) var(--esp-6);
+}
+.demo-graficas > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  min-width: 0;
+}
+.demo-segmentadas {
+  justify-content: flex-start;
+}

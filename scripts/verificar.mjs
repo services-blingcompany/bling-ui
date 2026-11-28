@@ -45,7 +45,7 @@ comprobar(colores.gray?.[900]?.includes('--rama-900') && colores.blue?.[950], 'p
 comprobar('bling-yellow' in colores && 'nc-surface' in colores, 'preset: paleta institucional');
 
 const tokens = readFileSync(join(raiz, 'css/tokens.css'), 'utf8');
-const componentes = ['css/componentes.css', 'css/controles.css'].map((f) => readFileSync(join(raiz, f), 'utf8')).join('\n');
+const componentes = ['css/componentes.css', 'css/controles.css', 'css/datos.css'].map((f) => readFileSync(join(raiz, f), 'utf8')).join('\n');
 const definidas = new Set([...tokens.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
 const tema = readFileSync(join(raiz, 'css/tema.css'), 'utf8');
 for (const m of tema.matchAll(/(--[a-z0-9-]+)\s*:/g)) definidas.add(m[1]);

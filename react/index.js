@@ -1,5 +1,5 @@
 // react-src/index.jsx
-import { useEffect as useEffect2, useId as useId2, useRef as useRef2, useState as useState2 } from "react";
+import { useEffect as useEffect3, useId as useId2, useRef as useRef3, useState as useState3 } from "react";
 
 // react-src/logoTrazos.js
 var VIEWBOX = "0 0 108.42 43.42";
@@ -425,11 +425,439 @@ function PaletaComandos({
   );
 }
 
+// react-src/datos.jsx
+import { useEffect as useEffect2, useMemo as useMemo2, useRef as useRef2, useState as useState2 } from "react";
+import { Fragment as Fragment3, jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
+var MAX_SERIES = 8;
+var colorSerie = (i) => i < MAX_SERIES ? `var(--grafica-${i + 1})` : "var(--grafica-apagada)";
+var fmt = new Intl.NumberFormat("es-UY", { maximumFractionDigits: 2 });
+var fmtCompacto = new Intl.NumberFormat("es-UY", { notation: "compact", maximumFractionDigits: 1 });
+var formatoNumero = (n) => Number.isFinite(n) ? fmt.format(n) : "\u2014";
+var formatoEje = (n, tope) => Math.abs(tope) >= 1e4 ? fmtCompacto.format(n) : fmt.format(n);
+var conSigno = (n) => `${n > 0 ? "+" : n < 0 ? "\u2212" : ""}${fmt.format(Math.abs(n))}`;
+function pasoLindo(rango, marcas = 4) {
+  const bruto = rango / marcas || 1;
+  const magnitud = 10 ** Math.floor(Math.log10(bruto));
+  const r = bruto / magnitud;
+  const paso = r <= 1 ? 1 : r <= 2 ? 2 : r <= 2.5 ? 2.5 : r <= 5 ? 5 : 10;
+  return paso * magnitud;
+}
+function escala(maximo, minimo = 0) {
+  const piso0 = Math.min(0, minimo);
+  const techo0 = maximo > piso0 ? maximo : piso0 + 1;
+  const paso = pasoLindo(techo0 - piso0);
+  const piso = Math.floor(piso0 / paso) * paso;
+  const tope = Math.ceil(techo0 / paso) * paso;
+  const marcas = [];
+  for (let v = piso; v <= tope + paso / 2; v += paso) marcas.push(Number(v.toFixed(10)));
+  return { piso, tope, marcas };
+}
+function usarAncho() {
+  const ref = useRef2(null);
+  const [ancho, setAncho] = useState2(0);
+  useEffect2(() => {
+    const el = ref.current;
+    if (!el) return void 0;
+    setAncho(el.clientWidth);
+    const obs = new ResizeObserver(([e]) => setAncho(Math.round(e.contentRect.width)));
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return [ref, ancho];
+}
+function indicesVisibles(categorias, espacio) {
+  const n = categorias.length;
+  if (!n) return [];
+  const largo = Math.max(...categorias.map((c) => String(c).length)) * 6.5 + 12;
+  const cada = Math.max(1, Math.ceil(largo / Math.max(espacio, 1)));
+  const idx = [];
+  for (let i = 0; i < n; i += cada) idx.push(i);
+  if (idx[idx.length - 1] !== n - 1) {
+    if (n - 1 - idx[idx.length - 1] < cada * 0.7) idx.pop();
+    idx.push(n - 1);
+  }
+  return idx;
+}
+function Flecha({ abajo = false }) {
+  return /* @__PURE__ */ jsx2("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.25", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: /* @__PURE__ */ jsx2("path", { d: abajo ? "M12 5v14M19 12l-7 7-7-7" : "M12 19V5M5 12l7-7 7 7" }) });
+}
+function Leyenda({ series, linea = false }) {
+  if (series.length < 2) return null;
+  return /* @__PURE__ */ jsx2("ul", { className: "grafica-leyenda", children: series.map((s, i) => /* @__PURE__ */ jsxs2("li", { children: [
+    /* @__PURE__ */ jsx2("span", { className: `grafica-muestra${linea ? " grafica-muestra-linea" : ""}`, style: { background: colorSerie(i) } }),
+    s.nombre
+  ] }, s.nombre)) });
+}
+function VerDatos({ categorias, series, formato, tituloCategoria }) {
+  return /* @__PURE__ */ jsxs2("details", { className: "grafica-datos", children: [
+    /* @__PURE__ */ jsx2("summary", { children: "Ver los datos" }),
+    /* @__PURE__ */ jsx2("div", { className: "tabla-contenedor", children: /* @__PURE__ */ jsxs2("table", { className: "tabla-datos", children: [
+      /* @__PURE__ */ jsx2("thead", { children: /* @__PURE__ */ jsxs2("tr", { children: [
+        /* @__PURE__ */ jsx2("th", { children: tituloCategoria }),
+        series.map((s) => /* @__PURE__ */ jsx2("th", { className: "num", children: s.nombre }, s.nombre))
+      ] }) }),
+      /* @__PURE__ */ jsx2("tbody", { children: categorias.map((c, i) => /* @__PURE__ */ jsxs2("tr", { children: [
+        /* @__PURE__ */ jsx2("td", { children: c }),
+        series.map((s) => /* @__PURE__ */ jsx2("td", { className: "num cifra", children: formato(s.valores[i]) }, s.nombre))
+      ] }, String(c))) })
+    ] }) })
+  ] });
+}
+function Pista({ x, y, ancho, titulo, filas, formato, linea }) {
+  const aLaDerecha = x < ancho * 0.62;
+  const estilo = { top: Math.max(0, y), left: aLaDerecha ? x + 14 : void 0, right: aLaDerecha ? void 0 : ancho - x + 14 };
+  return /* @__PURE__ */ jsxs2("div", { className: "grafica-pista", style: estilo, role: "status", children: [
+    /* @__PURE__ */ jsx2("div", { className: "grafica-pista-titulo", children: titulo }),
+    filas.map((f) => /* @__PURE__ */ jsxs2("div", { className: "grafica-pista-fila", children: [
+      /* @__PURE__ */ jsx2("span", { className: `grafica-muestra${linea ? " grafica-muestra-linea" : ""}`, style: { background: f.color } }),
+      /* @__PURE__ */ jsx2("span", { children: f.nombre }),
+      /* @__PURE__ */ jsx2("span", { className: "grafica-pista-valor", children: formato(f.valor) })
+    ] }, f.nombre))
+  ] });
+}
+function teclasActivo(e, activo, setActivo, n) {
+  const mapa = { ArrowRight: 1, ArrowLeft: -1 };
+  if (e.key in mapa) {
+    e.preventDefault();
+    setActivo(Math.min(n - 1, Math.max(0, (activo ?? (mapa[e.key] > 0 ? -1 : n)) + mapa[e.key])));
+  } else if (e.key === "Home") {
+    e.preventDefault();
+    setActivo(0);
+  } else if (e.key === "End") {
+    e.preventDefault();
+    setActivo(n - 1);
+  } else if (e.key === "Escape") {
+    setActivo(null);
+  }
+}
+function resumen(series, categorias, formato) {
+  if (!categorias.length) return "Sin datos";
+  return series.map((s) => `${s.nombre}: de ${formato(s.valores[0])} en ${categorias[0]} a ${formato(s.valores[s.valores.length - 1])} en ${categorias[categorias.length - 1]}`).join(". ");
+}
+function GraficoLineas({
+  categorias = [],
+  series = [],
+  alto = 220,
+  area = false,
+  desdeCero = true,
+  formato = formatoNumero,
+  titulo = "Gr\xE1fico de l\xEDneas",
+  tituloCategoria = "Per\xEDodo",
+  className = ""
+}) {
+  const [lienzo, ancho] = usarAncho();
+  const [activo, setActivo] = useState2(null);
+  const svg = useRef2(null);
+  const n = categorias.length;
+  const valores = series.flatMap((s) => s.valores).filter(Number.isFinite);
+  const { piso, tope, marcas } = escala(valores.length ? Math.max(...valores) : 1, desdeCero || !valores.length ? 0 : Math.min(...valores));
+  const izquierda = Math.max(...marcas.map((m2) => formatoEje(m2, tope).length)) * 6.2 + 12;
+  const m = { arriba: 8, derecha: 12, abajo: 26, izquierda };
+  const w = Math.max(1, ancho - m.izquierda - m.derecha);
+  const h = alto - m.arriba - m.abajo;
+  const x = (i) => m.izquierda + (n <= 1 ? w / 2 : i * w / (n - 1));
+  const y = (v) => m.arriba + h - (v - piso) / (tope - piso || 1) * h;
+  const camino = (vals) => vals.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const visibles = indicesVisibles(categorias, n > 1 ? w / (n - 1) : w);
+  const alMover = (e) => {
+    if (n < 1) return;
+    const caja = svg.current.getBoundingClientRect();
+    const i = Math.round((e.clientX - caja.left - m.izquierda) / w * (n - 1));
+    setActivo(Math.min(n - 1, Math.max(0, i)));
+  };
+  return /* @__PURE__ */ jsxs2("div", { className: `grafica ${className}`.trim(), children: [
+    /* @__PURE__ */ jsxs2("div", { className: "grafica-lienzo", ref: lienzo, style: { height: alto }, children: [
+      ancho > 0 && /* @__PURE__ */ jsxs2(
+        "svg",
+        {
+          ref: svg,
+          width: ancho,
+          height: alto,
+          role: "img",
+          tabIndex: 0,
+          "aria-label": `${titulo}. ${resumen(series, categorias, formato)}. Us\xE1 las flechas para recorrer los valores.`,
+          onPointerMove: alMover,
+          onPointerLeave: () => setActivo(null),
+          onBlur: () => setActivo(null),
+          onKeyDown: (e) => teclasActivo(e, activo, setActivo, n),
+          children: [
+            marcas.map((t) => /* @__PURE__ */ jsxs2("g", { children: [
+              /* @__PURE__ */ jsx2("line", { className: t === 0 ? "grafica-base" : "grafica-cuadricula", x1: m.izquierda, x2: ancho - m.derecha, y1: Math.round(y(t)) + 0.5, y2: Math.round(y(t)) + 0.5 }),
+              /* @__PURE__ */ jsx2("text", { className: "grafica-texto-eje", x: m.izquierda - 8, y: y(t), dy: "0.32em", textAnchor: "end", children: formatoEje(t, tope) })
+            ] }, t)),
+            visibles.map((i) => /* @__PURE__ */ jsx2("text", { className: "grafica-texto-categoria", x: x(i), y: alto - 6, textAnchor: n > 1 && i === 0 ? "start" : n > 1 && i === n - 1 ? "end" : "middle", children: categorias[i] }, i)),
+            area && series.map((s, k) => /* @__PURE__ */ jsx2("path", { d: `${camino(s.valores)}L${x(n - 1)},${y(Math.max(piso, 0))}L${x(0)},${y(Math.max(piso, 0))}Z`, fill: colorSerie(k), opacity: 0.1 }, `a-${s.nombre}`)),
+            series.map((s, k) => /* @__PURE__ */ jsx2("path", { d: camino(s.valores), fill: "none", stroke: colorSerie(k), strokeWidth: 2, strokeLinejoin: "round", strokeLinecap: "round" }, s.nombre)),
+            activo != null && /* @__PURE__ */ jsxs2(Fragment3, { children: [
+              /* @__PURE__ */ jsx2("line", { className: "grafica-cursor", x1: Math.round(x(activo)) + 0.5, x2: Math.round(x(activo)) + 0.5, y1: m.arriba, y2: m.arriba + h }),
+              series.map(
+                (s, k) => Number.isFinite(s.valores[activo]) ? /* @__PURE__ */ jsx2("circle", { cx: x(activo), cy: y(s.valores[activo]), r: 4, fill: colorSerie(k), stroke: "var(--nc-surface)", strokeWidth: 2 }, s.nombre) : null
+              )
+            ] })
+          ]
+        }
+      ),
+      activo != null && ancho > 0 && /* @__PURE__ */ jsx2(
+        Pista,
+        {
+          x: x(activo),
+          y: Math.min(...series.map((s) => y(s.valores[activo] ?? piso))) - 8,
+          ancho,
+          titulo: categorias[activo],
+          filas: series.map((s, k) => ({ nombre: s.nombre, color: colorSerie(k), valor: s.valores[activo] })),
+          formato,
+          linea: true
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsx2(Leyenda, { series, linea: true }),
+    /* @__PURE__ */ jsx2(VerDatos, { categorias, series, formato, tituloCategoria })
+  ] });
+}
+function GraficoBarras({
+  categorias = [],
+  series = [],
+  alto = 220,
+  etiquetas = false,
+  formato = formatoNumero,
+  titulo = "Gr\xE1fico de barras",
+  tituloCategoria = "Categor\xEDa",
+  className = ""
+}) {
+  const [lienzo, ancho] = usarAncho();
+  const [activo, setActivo] = useState2(null);
+  const n = categorias.length;
+  const k = Math.max(1, series.length);
+  const valores = series.flatMap((s) => s.valores).filter(Number.isFinite);
+  const { piso, tope, marcas } = escala(valores.length ? Math.max(...valores) : 1, 0);
+  const izquierda = Math.max(...marcas.map((t) => formatoEje(t, tope).length)) * 6.2 + 12;
+  const m = { arriba: etiquetas ? 18 : 8, derecha: 4, abajo: 26, izquierda };
+  const w = Math.max(1, ancho - m.izquierda - m.derecha);
+  const h = alto - m.arriba - m.abajo;
+  const banda = w / Math.max(1, n);
+  const anchoBarra = Math.min(24, Math.max(3, (banda * 0.72 - (k - 1) * 2) / k));
+  const anchoGrupo = k * anchoBarra + (k - 1) * 2;
+  const y = (v) => m.arriba + h - (v - piso) / (tope - piso || 1) * h;
+  const base = y(0);
+  const xBarra = (i, j) => m.izquierda + i * banda + (banda - anchoGrupo) / 2 + j * (anchoBarra + 2);
+  const barra = (x0, t, ancho0) => {
+    const alto0 = Math.max(0, base - t);
+    const r = Math.min(4, ancho0 / 2, alto0);
+    return `M${x0},${base}V${t + r}A${r},${r} 0 0 1 ${x0 + r},${t}H${x0 + ancho0 - r}A${r},${r} 0 0 1 ${x0 + ancho0},${t + r}V${base}Z`;
+  };
+  const visibles = indicesVisibles(categorias, banda);
+  return /* @__PURE__ */ jsxs2("div", { className: `grafica ${className}`.trim(), children: [
+    /* @__PURE__ */ jsxs2("div", { className: "grafica-lienzo", ref: lienzo, style: { height: alto }, children: [
+      ancho > 0 && /* @__PURE__ */ jsxs2(
+        "svg",
+        {
+          width: ancho,
+          height: alto,
+          role: "img",
+          tabIndex: 0,
+          "aria-label": `${titulo}. ${resumen(series, categorias, formato)}. Us\xE1 las flechas para recorrer las categor\xEDas.`,
+          onPointerLeave: () => setActivo(null),
+          onBlur: () => setActivo(null),
+          onKeyDown: (e) => teclasActivo(e, activo, setActivo, n),
+          children: [
+            marcas.map((t) => /* @__PURE__ */ jsxs2("g", { children: [
+              /* @__PURE__ */ jsx2("line", { className: t === 0 ? "grafica-base" : "grafica-cuadricula", x1: m.izquierda, x2: ancho - m.derecha, y1: Math.round(y(t)) + 0.5, y2: Math.round(y(t)) + 0.5 }),
+              /* @__PURE__ */ jsx2("text", { className: "grafica-texto-eje", x: m.izquierda - 8, y: y(t), dy: "0.32em", textAnchor: "end", children: formatoEje(t, tope) })
+            ] }, t)),
+            activo != null && /* @__PURE__ */ jsx2("rect", { x: m.izquierda + activo * banda, y: m.arriba, width: banda, height: h, fill: "var(--color-surface-2)", opacity: 0.7 }),
+            categorias.map(
+              (c, i) => series.map(
+                (s, j) => Number.isFinite(s.valores[i]) ? /* @__PURE__ */ jsx2("path", { d: barra(xBarra(i, j), y(s.valores[i]), anchoBarra), fill: colorSerie(j) }, `${c}-${s.nombre}`) : null
+              )
+            ),
+            etiquetas && series.length === 1 && categorias.map(
+              (c, i) => Number.isFinite(series[0].valores[i]) ? /* @__PURE__ */ jsx2("text", { className: "grafica-texto-eje", x: xBarra(i, 0) + anchoBarra / 2, y: y(series[0].valores[i]) - 5, textAnchor: "middle", children: formatoEje(series[0].valores[i], tope) }, `e-${c}`) : null
+            ),
+            visibles.map((i) => /* @__PURE__ */ jsx2("text", { className: "grafica-texto-categoria", x: m.izquierda + i * banda + banda / 2, y: alto - 6, textAnchor: "middle", children: categorias[i] }, `c-${i}`)),
+            categorias.map((c, i) => /* @__PURE__ */ jsx2("rect", { x: m.izquierda + i * banda, y: m.arriba, width: banda, height: h, fill: "transparent", onPointerEnter: () => setActivo(i) }, `z-${c}`))
+          ]
+        }
+      ),
+      activo != null && ancho > 0 && /* @__PURE__ */ jsx2(
+        Pista,
+        {
+          x: m.izquierda + activo * banda + banda / 2,
+          y: Math.min(...series.map((s) => y(s.valores[activo] ?? 0))) - 8,
+          ancho,
+          titulo: categorias[activo],
+          filas: series.map((s, j) => ({ nombre: s.nombre, color: colorSerie(j), valor: s.valores[activo] })),
+          formato
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsx2(Leyenda, { series }),
+    /* @__PURE__ */ jsx2(VerDatos, { categorias, series, formato, tituloCategoria })
+  ] });
+}
+function Sparkline({ valores = [], alto = 28, etiqueta, className = "" }) {
+  const [ref, ancho] = usarAncho();
+  const n = valores.length;
+  const min = Math.min(...valores);
+  const max = Math.max(...valores);
+  const pad = 4;
+  const x = (i) => pad + (n <= 1 ? 0 : i * (ancho - pad * 2) / (n - 1));
+  const y = (v) => pad + (alto - pad * 2) * (1 - (v - min) / (max - min || 1));
+  const camino = (desde, hasta) => valores.slice(desde, hasta).map((v, i) => `${i ? "L" : "M"}${x(i + desde).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const texto = etiqueta ?? (n ? `Tendencia: de ${formatoNumero(valores[0])} a ${formatoNumero(valores[n - 1])}` : "Sin datos");
+  return /* @__PURE__ */ jsx2("div", { ref, className: `sparkline ${className}`.trim(), style: { height: alto }, children: ancho > 0 && n > 1 && /* @__PURE__ */ jsxs2("svg", { width: ancho, height: alto, role: "img", "aria-label": texto, children: [
+    /* @__PURE__ */ jsx2("path", { d: camino(0, n - 1), fill: "none", stroke: "var(--grafica-apagada)", strokeWidth: 1.5, strokeLinejoin: "round", strokeLinecap: "round" }),
+    /* @__PURE__ */ jsx2("path", { d: camino(n - 2, n), fill: "none", stroke: "var(--grafica-1)", strokeWidth: 2, strokeLinecap: "round" }),
+    /* @__PURE__ */ jsx2("circle", { cx: x(n - 1), cy: y(valores[n - 1]), r: 3, fill: "var(--grafica-1)", stroke: "var(--nc-surface)", strokeWidth: 1.5 })
+  ] }) });
+}
+function BarraSegmentada({ partes = [], alta = false, formato = formatoNumero, titulo = "Distribuci\xF3n", className = "" }) {
+  const [ref, ancho] = usarAncho();
+  const total = partes.reduce((a, p) => a + Math.max(0, p.valor || 0), 0) || 1;
+  const porcentaje = (v) => Math.round(Math.max(0, v) / total * 100);
+  const entra = (p) => {
+    const anchoParte = Math.max(0, p.valor) / total * ancho - 2;
+    return alta && ancho > 0 && `${porcentaje(p.valor)} %`.length * 6.5 + 12 <= anchoParte;
+  };
+  return /* @__PURE__ */ jsxs2("div", { className: `grafica ${className}`.trim(), children: [
+    /* @__PURE__ */ jsx2("div", { ref, className: `barra-segmentada${alta ? " barra-segmentada-alta" : ""}`, role: "img", "aria-label": `${titulo}: ${partes.map((p) => `${p.nombre} ${porcentaje(p.valor)} %`).join(", ")}`, children: partes.map(
+      (p, i) => p.valor > 0 ? /* @__PURE__ */ jsx2("span", { "data-serie": i + 1, style: { flex: `${p.valor} 1 0`, background: colorSerie(i) }, title: `${p.nombre}: ${formato(p.valor)} (${porcentaje(p.valor)} %)`, children: entra(p) ? `${porcentaje(p.valor)} %` : null }, p.nombre) : null
+    ) }),
+    /* @__PURE__ */ jsx2("ul", { className: "grafica-leyenda", children: partes.map((p, i) => /* @__PURE__ */ jsxs2("li", { children: [
+      /* @__PURE__ */ jsx2("span", { className: "grafica-muestra", style: { background: colorSerie(i) } }),
+      p.nombre,
+      !entra(p) && /* @__PURE__ */ jsxs2("span", { className: "cifra", children: [
+        " ",
+        porcentaje(p.valor),
+        " %"
+      ] })
+    ] }, p.nombre)) })
+  ] });
+}
+function TarjetaIndicador({
+  etiqueta,
+  valor,
+  formato,
+  delta,
+  periodo = "vs. el per\xEDodo anterior",
+  subirEsBueno = true,
+  tendencia,
+  className = ""
+}) {
+  const texto = typeof valor === "number" ? formato ? formato(valor) : Math.abs(valor) >= 1e4 ? fmtCompacto.format(valor) : fmt.format(valor) : valor;
+  const sentido = delta == null || delta === 0 ? "neutro" : delta > 0 === subirEsBueno ? "bueno" : "malo";
+  return /* @__PURE__ */ jsxs2("div", { className: `indicador ${className}`.trim(), children: [
+    /* @__PURE__ */ jsx2("span", { className: "indicador-etiqueta", children: etiqueta }),
+    /* @__PURE__ */ jsxs2("div", { className: "indicador-fila", children: [
+      /* @__PURE__ */ jsxs2("div", { children: [
+        /* @__PURE__ */ jsx2("div", { className: "indicador-valor", children: texto }),
+        delta != null && /* @__PURE__ */ jsxs2("div", { className: "indicador-delta", "data-sentido": sentido, children: [
+          /* @__PURE__ */ jsxs2("span", { className: "indicador-cambio", children: [
+            delta !== 0 && /* @__PURE__ */ jsx2(Flecha, { abajo: delta < 0 }),
+            conSigno(delta),
+            " %"
+          ] }),
+          /* @__PURE__ */ jsx2("span", { children: periodo })
+        ] })
+      ] }),
+      tendencia?.length > 1 && /* @__PURE__ */ jsx2(Sparkline, { className: "indicador-tendencia", valores: tendencia, etiqueta: `Tendencia de ${etiqueta}` })
+    ] })
+  ] });
+}
+function Tabla({
+  columnas = [],
+  filas = [],
+  clave = "id",
+  seleccionable = false,
+  seleccion,
+  onSeleccion,
+  ordenInicial = null,
+  altoMaximo,
+  vacio = "No hay datos para mostrar",
+  etiqueta,
+  acciones,
+  className = ""
+}) {
+  const [orden, setOrden] = useState2(ordenInicial);
+  const [internos, setInternos] = useState2([]);
+  const todosRef = useRef2(null);
+  const elegidos = useMemo2(() => new Set(seleccion ?? internos), [seleccion, internos]);
+  const cambiar = (ids) => {
+    if (seleccion === void 0) setInternos(ids);
+    onSeleccion?.(ids);
+  };
+  const ordenadas = useMemo2(() => {
+    if (!orden) return filas;
+    const col = columnas.find((c) => c.clave === orden.clave);
+    const valor = col?.valorOrden ?? ((f) => f[orden.clave]);
+    const s = orden.sentido === "asc" ? 1 : -1;
+    return [...filas].sort((a, b) => {
+      const va = valor(a);
+      const vb = valor(b);
+      if (typeof va === "number" && typeof vb === "number") return (va - vb) * s;
+      return String(va ?? "").localeCompare(String(vb ?? ""), "es", { numeric: true }) * s;
+    });
+  }, [filas, orden, columnas]);
+  const todos = filas.length > 0 && filas.every((f) => elegidos.has(f[clave]));
+  const algunos = !todos && filas.some((f) => elegidos.has(f[clave]));
+  useEffect2(() => {
+    if (todosRef.current) todosRef.current.indeterminate = algunos;
+  }, [algunos]);
+  const ordenar = (c) => setOrden((o) => o?.clave === c.clave ? { clave: c.clave, sentido: o.sentido === "asc" ? "desc" : "asc" } : { clave: c.clave, sentido: c.num ? "desc" : "asc" });
+  const columnasTotal = columnas.length + (seleccionable ? 1 : 0);
+  return /* @__PURE__ */ jsxs2("div", { className: `tabla-contenedor ${className}`.trim(), style: altoMaximo ? { maxHeight: altoMaximo } : void 0, children: [
+    seleccionable && acciones && elegidos.size > 0 && /* @__PURE__ */ jsxs2("div", { className: "tabla-acciones", children: [
+      /* @__PURE__ */ jsx2("span", { className: "cifra", children: elegidos.size }),
+      " ",
+      elegidos.size === 1 ? "elegida" : "elegidas",
+      acciones([...elegidos])
+    ] }),
+    /* @__PURE__ */ jsxs2("table", { className: "tabla-datos", "aria-label": etiqueta, children: [
+      /* @__PURE__ */ jsx2("thead", { children: /* @__PURE__ */ jsxs2("tr", { children: [
+        seleccionable && /* @__PURE__ */ jsx2("th", { className: "tabla-check", children: /* @__PURE__ */ jsx2(
+          "input",
+          {
+            ref: todosRef,
+            type: "checkbox",
+            className: "casilla",
+            checked: todos,
+            onChange: () => cambiar(todos ? [] : filas.map((f) => f[clave])),
+            "aria-label": "Elegir todas las filas"
+          }
+        ) }),
+        columnas.map((c) => {
+          const sentido = orden?.clave === c.clave ? orden.sentido === "asc" ? "ascending" : "descending" : "none";
+          return /* @__PURE__ */ jsx2("th", { className: c.num ? "num" : void 0, "aria-sort": c.ordenable === false ? void 0 : sentido, style: c.ancho ? { width: c.ancho } : void 0, children: c.ordenable === false ? c.titulo : /* @__PURE__ */ jsxs2("button", { type: "button", className: "tabla-orden", onClick: () => ordenar(c), children: [
+            c.titulo,
+            /* @__PURE__ */ jsx2(Flecha, {})
+          ] }) }, c.clave);
+        })
+      ] }) }),
+      /* @__PURE__ */ jsx2("tbody", { children: ordenadas.length === 0 ? /* @__PURE__ */ jsx2("tr", { children: /* @__PURE__ */ jsx2("td", { className: "tabla-vacia", colSpan: columnasTotal, children: vacio }) }) : ordenadas.map((f) => {
+        const id = f[clave];
+        const elegida = elegidos.has(id);
+        return /* @__PURE__ */ jsxs2("tr", { "aria-selected": seleccionable ? elegida : void 0, children: [
+          seleccionable && /* @__PURE__ */ jsx2("td", { className: "tabla-check", children: /* @__PURE__ */ jsx2(
+            "input",
+            {
+              type: "checkbox",
+              className: "casilla",
+              checked: elegida,
+              onChange: () => cambiar(elegida ? [...elegidos].filter((x) => x !== id) : [...elegidos, id]),
+              "aria-label": `Elegir ${f[columnas[0]?.clave] ?? id}`
+            }
+          ) }),
+          columnas.map((c) => /* @__PURE__ */ jsx2("td", { className: c.num ? "num cifra" : void 0, children: c.render ? c.render(f) : f[c.clave] }, c.clave))
+        ] }, id);
+      }) })
+    ] })
+  ] });
+}
+
 // react-src/index.jsx
-import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx3, jsxs as jsxs3 } from "react/jsx-runtime";
 function Logo({ alto = 28, titulo = marca_default.nombre, className, style }) {
   const [, , w, h] = VIEWBOX.split(" ").map(Number);
-  return /* @__PURE__ */ jsx2(
+  return /* @__PURE__ */ jsx3(
     "svg",
     {
       viewBox: VIEWBOX,
@@ -446,19 +874,19 @@ function Logo({ alto = 28, titulo = marca_default.nombre, className, style }) {
 var HIJOS = { rayas: 12, barras: 5, puntos: 3, onda: 2, anillo: 0, linea: 0 };
 function Cargador({ variante = "rayas", tam = "md", deMarca = false, etiqueta = "Cargando", className = "" }) {
   const clases = ["cargador", `cargador-${variante}`, tam === "sm" && "cargador-sm", tam === "lg" && "cargador-lg", deMarca && "cargador-marca", className].filter(Boolean).join(" ");
-  return /* @__PURE__ */ jsx2("span", { className: clases, role: "status", "aria-label": etiqueta, children: Array.from({ length: HIJOS[variante] ?? 0 }, (_, i) => /* @__PURE__ */ jsx2("i", {}, i)) });
+  return /* @__PURE__ */ jsx3("span", { className: clases, role: "status", "aria-label": etiqueta, children: Array.from({ length: HIJOS[variante] ?? 0 }, (_, i) => /* @__PURE__ */ jsx3("i", {}, i)) });
 }
 function PantallaDeCarga({ mensaje, variante = "rayas" }) {
-  return /* @__PURE__ */ jsxs2(
+  return /* @__PURE__ */ jsxs3(
     "div",
     {
       role: "status",
       "aria-live": "polite",
       style: { minHeight: "100dvh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20, background: "var(--color-bg)", color: "var(--color-ink)" },
       children: [
-        /* @__PURE__ */ jsx2(Logo, { alto: 36 }),
-        /* @__PURE__ */ jsx2(Cargador, { variante, tam: "lg", deMarca: true, etiqueta: mensaje || "Cargando" }),
-        mensaje ? /* @__PURE__ */ jsx2("p", { style: { fontSize: 14, color: "var(--color-muted)", margin: 0 }, children: mensaje }) : null
+        /* @__PURE__ */ jsx3(Logo, { alto: 36 }),
+        /* @__PURE__ */ jsx3(Cargador, { variante, tam: "lg", deMarca: true, etiqueta: mensaje || "Cargando" }),
+        mensaje ? /* @__PURE__ */ jsx3("p", { style: { fontSize: 14, color: "var(--color-muted)", margin: 0 }, children: mensaje }) : null
       ]
     }
   );
@@ -522,18 +950,18 @@ function crearClienteReportes(apiBase = "") {
 }
 function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug", pedirEmail = false, emailInicial = "" }) {
   const id = useId2();
-  const [tipo, setTipo] = useState2(tipoInicial);
-  const [titulo, setTitulo] = useState2("");
-  const [descripcion, setDescripcion] = useState2("");
-  const [email, setEmail] = useState2(emailInicial);
-  const [imagen, setImagen] = useState2(null);
-  const [vista, setVista] = useState2(null);
-  const [error, setError] = useState2("");
-  const [enviando, setEnviando] = useState2(false);
-  const [enviado, setEnviado] = useState2(false);
-  const archivoRef = useRef2(null);
-  const primerCampo = useRef2(null);
-  useEffect2(() => {
+  const [tipo, setTipo] = useState3(tipoInicial);
+  const [titulo, setTitulo] = useState3("");
+  const [descripcion, setDescripcion] = useState3("");
+  const [email, setEmail] = useState3(emailInicial);
+  const [imagen, setImagen] = useState3(null);
+  const [vista, setVista] = useState3(null);
+  const [error, setError] = useState3("");
+  const [enviando, setEnviando] = useState3(false);
+  const [enviado, setEnviado] = useState3(false);
+  const archivoRef = useRef3(null);
+  const primerCampo = useRef3(null);
+  useEffect3(() => {
     if (!abierto) return void 0;
     const alTeclear = (e) => e.key === "Escape" && !enviando && cerrar();
     document.addEventListener("keydown", alTeclear);
@@ -543,7 +971,7 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
       clearTimeout(t);
     };
   });
-  useEffect2(() => () => vista && URL.revokeObjectURL(vista), [vista]);
+  useEffect3(() => () => vista && URL.revokeObjectURL(vista), [vista]);
   if (!abierto) return null;
   function reiniciar() {
     setTipo(tipoInicial);
@@ -596,13 +1024,13 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
   }
   const etiqueta = { display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6, color: "var(--color-ink)" };
   const ayuda = { fontSize: 12, color: "var(--color-muted)", marginTop: 4 };
-  return /* @__PURE__ */ jsx2(
+  return /* @__PURE__ */ jsx3(
     "div",
     {
       className: "velo",
       style: { position: "fixed", inset: 0, zIndex: 1e3, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 },
       onMouseDown: (e) => e.target === e.currentTarget && !enviando && cerrar(),
-      children: /* @__PURE__ */ jsxs2(
+      children: /* @__PURE__ */ jsxs3(
         "div",
         {
           className: "modal",
@@ -611,18 +1039,18 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
           "aria-labelledby": `${id}-t`,
           style: { boxSizing: "border-box", width: "100%", maxWidth: 480, maxHeight: "calc(100dvh - 32px)", overflowY: "auto", padding: 20, color: "var(--color-ink)" },
           children: [
-            /* @__PURE__ */ jsxs2("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16 }, children: [
-              /* @__PURE__ */ jsx2("h2", { id: `${id}-t`, style: { margin: 0, fontSize: 17, fontWeight: 600 }, children: enviado ? "\xA1Gracias!" : "Reportar un problema" }),
-              /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-fantasma boton-icono boton-compacto", onClick: cerrar, disabled: enviando, "aria-label": "Cerrar", children: /* @__PURE__ */ jsx2("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", "aria-hidden": "true", children: /* @__PURE__ */ jsx2("path", { d: "M18 6 6 18M6 6l12 12" }) }) })
+            /* @__PURE__ */ jsxs3("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16 }, children: [
+              /* @__PURE__ */ jsx3("h2", { id: `${id}-t`, style: { margin: 0, fontSize: 17, fontWeight: 600 }, children: enviado ? "\xA1Gracias!" : "Reportar un problema" }),
+              /* @__PURE__ */ jsx3("button", { type: "button", className: "boton boton-fantasma boton-icono boton-compacto", onClick: cerrar, disabled: enviando, "aria-label": "Cerrar", children: /* @__PURE__ */ jsx3("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", "aria-hidden": "true", children: /* @__PURE__ */ jsx3("path", { d: "M18 6 6 18M6 6l12 12" }) }) })
             ] }),
-            enviado ? /* @__PURE__ */ jsxs2("div", { children: [
-              /* @__PURE__ */ jsx2("p", { style: { margin: "0 0 16px", fontSize: 14 }, children: "Recibimos tu reporte. Lo revisa el equipo y, si dejaste un correo o ten\xE9s sesi\xF3n iniciada, te escribimos cuando haya novedades." }),
-              /* @__PURE__ */ jsxs2("div", { style: { display: "flex", justifyContent: "flex-end", gap: 8 }, children: [
-                /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-secundario", onClick: reiniciar, children: "Enviar otro" }),
-                /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-primario", onClick: cerrar, children: "Listo" })
+            enviado ? /* @__PURE__ */ jsxs3("div", { children: [
+              /* @__PURE__ */ jsx3("p", { style: { margin: "0 0 16px", fontSize: 14 }, children: "Recibimos tu reporte. Lo revisa el equipo y, si dejaste un correo o ten\xE9s sesi\xF3n iniciada, te escribimos cuando haya novedades." }),
+              /* @__PURE__ */ jsxs3("div", { style: { display: "flex", justifyContent: "flex-end", gap: 8 }, children: [
+                /* @__PURE__ */ jsx3("button", { type: "button", className: "boton boton-secundario", onClick: reiniciar, children: "Enviar otro" }),
+                /* @__PURE__ */ jsx3("button", { type: "button", className: "boton boton-primario", onClick: cerrar, children: "Listo" })
               ] })
-            ] }) : /* @__PURE__ */ jsxs2("form", { onSubmit: enviar, noValidate: true, children: [
-              /* @__PURE__ */ jsx2("div", { role: "radiogroup", "aria-label": "Tipo de reporte", style: { display: "flex", gap: 6, marginBottom: 14 }, children: TIPOS.map((t) => /* @__PURE__ */ jsx2(
+            ] }) : /* @__PURE__ */ jsxs3("form", { onSubmit: enviar, noValidate: true, children: [
+              /* @__PURE__ */ jsx3("div", { role: "radiogroup", "aria-label": "Tipo de reporte", style: { display: "flex", gap: 6, marginBottom: 14 }, children: TIPOS.map((t) => /* @__PURE__ */ jsx3(
                 "button",
                 {
                   type: "button",
@@ -635,9 +1063,9 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
                 },
                 t.id
               )) }),
-              /* @__PURE__ */ jsxs2("div", { style: { marginBottom: 12 }, children: [
-                /* @__PURE__ */ jsx2("label", { htmlFor: `${id}-titulo`, style: etiqueta, children: "T\xEDtulo" }),
-                /* @__PURE__ */ jsx2(
+              /* @__PURE__ */ jsxs3("div", { style: { marginBottom: 12 }, children: [
+                /* @__PURE__ */ jsx3("label", { htmlFor: `${id}-titulo`, style: etiqueta, children: "T\xEDtulo" }),
+                /* @__PURE__ */ jsx3(
                   "input",
                   {
                     ref: primerCampo,
@@ -651,9 +1079,9 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs2("div", { style: { marginBottom: 12 }, children: [
-                /* @__PURE__ */ jsx2("label", { htmlFor: `${id}-desc`, style: etiqueta, children: "Detalle" }),
-                /* @__PURE__ */ jsx2(
+              /* @__PURE__ */ jsxs3("div", { style: { marginBottom: 12 }, children: [
+                /* @__PURE__ */ jsx3("label", { htmlFor: `${id}-desc`, style: etiqueta, children: "Detalle" }),
+                /* @__PURE__ */ jsx3(
                   "textarea",
                   {
                     id: `${id}-desc`,
@@ -665,17 +1093,17 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
                     placeholder: tipo === "suggestion" ? "Qu\xE9 te gustar\xEDa y para qu\xE9 lo usar\xEDas" : "Qu\xE9 hiciste, qu\xE9 esperabas y qu\xE9 pas\xF3"
                   }
                 ),
-                /* @__PURE__ */ jsxs2("p", { style: ayuda, children: [
+                /* @__PURE__ */ jsxs3("p", { style: ayuda, children: [
                   descripcion.length,
                   "/1000"
                 ] })
               ] }),
-              /* @__PURE__ */ jsxs2("div", { style: { marginBottom: 12 }, children: [
-                /* @__PURE__ */ jsx2("span", { style: etiqueta, children: "Captura (opcional)" }),
-                vista ? /* @__PURE__ */ jsxs2("div", { style: { display: "flex", alignItems: "center", gap: 10 }, children: [
-                  /* @__PURE__ */ jsx2("img", { src: vista, alt: "Captura adjunta", style: { width: 64, height: 48, objectFit: "cover", borderRadius: 6, border: "1px solid var(--nc-line)" } }),
-                  /* @__PURE__ */ jsx2("span", { style: { fontSize: 13, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, children: imagen?.name }),
-                  /* @__PURE__ */ jsx2(
+              /* @__PURE__ */ jsxs3("div", { style: { marginBottom: 12 }, children: [
+                /* @__PURE__ */ jsx3("span", { style: etiqueta, children: "Captura (opcional)" }),
+                vista ? /* @__PURE__ */ jsxs3("div", { style: { display: "flex", alignItems: "center", gap: 10 }, children: [
+                  /* @__PURE__ */ jsx3("img", { src: vista, alt: "Captura adjunta", style: { width: 64, height: 48, objectFit: "cover", borderRadius: 6, border: "1px solid var(--nc-line)" } }),
+                  /* @__PURE__ */ jsx3("span", { style: { fontSize: 13, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, children: imagen?.name }),
+                  /* @__PURE__ */ jsx3(
                     "button",
                     {
                       type: "button",
@@ -687,20 +1115,20 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
                       children: "Quitar"
                     }
                   )
-                ] }) : /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-secundario boton-compacto", onClick: () => archivoRef.current?.click(), children: "Adjuntar imagen" }),
-                /* @__PURE__ */ jsx2("input", { ref: archivoRef, type: "file", accept: FORMATOS.join(","), hidden: true, onChange: elegirImagen }),
-                /* @__PURE__ */ jsx2("p", { style: ayuda, children: "JPG, PNG o WebP, hasta 5 MB." })
+                ] }) : /* @__PURE__ */ jsx3("button", { type: "button", className: "boton boton-secundario boton-compacto", onClick: () => archivoRef.current?.click(), children: "Adjuntar imagen" }),
+                /* @__PURE__ */ jsx3("input", { ref: archivoRef, type: "file", accept: FORMATOS.join(","), hidden: true, onChange: elegirImagen }),
+                /* @__PURE__ */ jsx3("p", { style: ayuda, children: "JPG, PNG o WebP, hasta 5 MB." })
               ] }),
-              pedirEmail ? /* @__PURE__ */ jsxs2("div", { style: { marginBottom: 12 }, children: [
-                /* @__PURE__ */ jsx2("label", { htmlFor: `${id}-email`, style: etiqueta, children: "Correo para responderte (opcional)" }),
-                /* @__PURE__ */ jsx2("input", { id: `${id}-email`, type: "email", className: "campo", style: { width: "100%", boxSizing: "border-box" }, value: email, onChange: (e) => setEmail(e.target.value), placeholder: "tu@correo.com" })
+              pedirEmail ? /* @__PURE__ */ jsxs3("div", { style: { marginBottom: 12 }, children: [
+                /* @__PURE__ */ jsx3("label", { htmlFor: `${id}-email`, style: etiqueta, children: "Correo para responderte (opcional)" }),
+                /* @__PURE__ */ jsx3("input", { id: `${id}-email`, type: "email", className: "campo", style: { width: "100%", boxSizing: "border-box" }, value: email, onChange: (e) => setEmail(e.target.value), placeholder: "tu@correo.com" })
               ] }) : null,
-              error ? /* @__PURE__ */ jsx2("p", { role: "alert", style: { fontSize: 13, margin: "0 0 12px", padding: "8px 10px", borderRadius: 8, color: "var(--bling-danger)", background: "var(--bling-danger-bg)", border: "1px solid var(--bling-danger-border)" }, children: error }) : null,
-              /* @__PURE__ */ jsx2("p", { style: { ...ayuda, marginBottom: 14 }, children: "Mandamos tambi\xE9n la p\xE1gina, el navegador y el tema que us\xE1s, para poder reproducirlo." }),
-              /* @__PURE__ */ jsxs2("div", { style: { display: "flex", justifyContent: "flex-end", gap: 8 }, children: [
-                /* @__PURE__ */ jsx2("button", { type: "button", className: "boton boton-secundario", onClick: cerrar, disabled: enviando, children: "Cancelar" }),
-                /* @__PURE__ */ jsxs2("button", { type: "submit", className: "boton boton-primario", disabled: !listo, children: [
-                  enviando ? /* @__PURE__ */ jsx2(Cargador, { variante: "anillo", tam: "sm", etiqueta: "Enviando" }) : null,
+              error ? /* @__PURE__ */ jsx3("p", { role: "alert", style: { fontSize: 13, margin: "0 0 12px", padding: "8px 10px", borderRadius: 8, color: "var(--bling-danger)", background: "var(--bling-danger-bg)", border: "1px solid var(--bling-danger-border)" }, children: error }) : null,
+              /* @__PURE__ */ jsx3("p", { style: { ...ayuda, marginBottom: 14 }, children: "Mandamos tambi\xE9n la p\xE1gina, el navegador y el tema que us\xE1s, para poder reproducirlo." }),
+              /* @__PURE__ */ jsxs3("div", { style: { display: "flex", justifyContent: "flex-end", gap: 8 }, children: [
+                /* @__PURE__ */ jsx3("button", { type: "button", className: "boton boton-secundario", onClick: cerrar, disabled: enviando, children: "Cancelar" }),
+                /* @__PURE__ */ jsxs3("button", { type: "submit", className: "boton boton-primario", disabled: !listo, children: [
+                  enviando ? /* @__PURE__ */ jsx3(Cargador, { variante: "anillo", tam: "sm", etiqueta: "Enviando" }) : null,
                   enviando ? "Enviando\u2026" : "Enviar"
                 ] })
               ] })
@@ -712,14 +1140,22 @@ function ReportarProblema({ abierto, onCerrar, app, cliente, tipoInicial = "bug"
   );
 }
 export {
+  BarraSegmentada,
   Buscador,
   Cargador,
+  GraficoBarras,
+  GraficoLineas,
   Logo,
   PaletaComandos,
   PantallaDeCarga,
   ReportarProblema,
   Select,
+  Sparkline,
+  Tabla,
+  TarjetaIndicador,
+  colorSerie,
   crearClienteReportes,
+  formatoNumero,
   metaDelEntorno,
   usarAtajo
 };

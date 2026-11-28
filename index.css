@@ -1,5 +1,5 @@
 /* @blingcompany/bling-ui — todo junto, en el orden correcto:
-   fuentes → tema (los 6 temas) → roles y medidas → componentes → controles.
+   fuentes → tema (los 6 temas) → roles y medidas → componentes → controles → datos.
    Importar ANTES que las utilidades de Tailwind (en Tailwind 3, antes del CSS
    con @tailwind utilities; en Tailwind 4, después de @import "tailwindcss" y
    antes de tailwind/v4.css). */
@@ -8,3 +8,4 @@
 @import "./css/tokens.css";
 @import "./css/componentes.css";
 @import "./css/controles.css";
+@import "./css/datos.css";

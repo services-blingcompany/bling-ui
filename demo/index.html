@@ -33,6 +33,7 @@
       <symbol id="i-menos" viewBox="0 0 24 24"><path d="M5 12h14" /></symbol>
       <symbol id="i-candado" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
       <symbol id="i-ojo" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" /></symbol>
+      <symbol id="i-grafica" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 5-6" /></symbol>
       <symbol id="i-estrella" viewBox="0 0 24 24"><path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6l-5.4 2.9 1.2-6-4.5-4.2 6.1-.7z" /></symbol>
     </defs>
   </svg>
@@ -73,6 +74,12 @@
           <a class="barra-lateral-item" href="#pestanas" title="Pestañas y opciones"><svg><use href="#i-panel" /></svg><span class="barra-lateral-texto">Pestañas y opciones</span></a>
           <a class="barra-lateral-item" href="#navegacion" title="Migas, páginas y chips"><svg><use href="#i-izq" /></svg><span class="barra-lateral-texto">Migas, páginas y chips</span></a>
           <a class="barra-lateral-item" href="#acordeon" title="Acordeón"><svg><use href="#i-der" /></svg><span class="barra-lateral-texto">Acordeón</span></a>
+        </details>
+        <details class="barra-lateral-grupo" open>
+          <summary class="barra-lateral-titulo">Gráficas y tablas</summary>
+          <a class="barra-lateral-item" href="#indicadores" title="Indicadores"><svg><use href="#i-estrella" /></svg><span class="barra-lateral-texto">Indicadores</span></a>
+          <a class="barra-lateral-item" href="#graficas" title="Gráficas"><svg><use href="#i-grafica" /></svg><span class="barra-lateral-texto">Gráficas</span><span class="contador">4</span></a>
+          <a class="barra-lateral-item" href="#tabla-interactiva" title="Tabla interactiva"><svg><use href="#i-panel" /></svg><span class="barra-lateral-texto">Tabla interactiva</span></a>
         </details>
         <details class="barra-lateral-grupo" open>
           <summary class="barra-lateral-titulo">Datos y estado</summary>
@@ -322,6 +329,31 @@
         <button class="opcion demo-opcion" aria-pressed="true"><strong>Destacada</strong><span class="rotulo">Antes que las comunes</span></button>
         <button class="opcion demo-opcion" aria-pressed="false"><strong>Urgente</strong><span class="rotulo">Primeras posiciones</span></button>
       </div>
+    </section>
+
+    <!-- Indicadores -->
+    <section id="indicadores" class="demo-ancho demo-seccion">
+      <p class="rotulo-mayus">Indicadores (React)</p>
+      <div class="demo-indicadores" id="r-indicadores"></div>
+    </section>
+
+    <!-- Gráficas -->
+    <section id="graficas" class="bloque demo-ancho">
+      <p class="rotulo-mayus">Gráficas (React, SVG propio)</p>
+      <p class="rotulo">Paleta validada en los seis temas, un solo eje, leyenda con dos o más series, pista con el puntero o con las flechas (hacé foco con Tab) y la tabla «Ver los datos».</p>
+      <div class="demo-graficas">
+        <div><p class="tarjeta-titulo">Postulaciones por semana</p><div id="r-lineas"></div></div>
+        <div><p class="tarjeta-titulo">Vacantes por departamento</p><div id="r-barras"></div></div>
+        <div><p class="tarjeta-titulo">Ingresos del mes (una serie, con valores)</p><div id="r-barras-simple"></div></div>
+        <div class="demo-segmentadas"><p class="tarjeta-titulo">Vacantes por modalidad</p><div id="r-segmentada"></div><div id="r-segmentada-alta"></div></div>
+      </div>
+    </section>
+
+    <!-- Tabla interactiva -->
+    <section id="tabla-interactiva" class="bloque demo-ancho">
+      <p class="rotulo-mayus">Tabla interactiva (React)</p>
+      <p class="rotulo">Tocá un encabezado para ordenar, elegí filas y desplazá: el encabezado queda fijo.</p>
+      <div id="r-tabla"></div>
     </section>
 
     <!-- Tarjeta y cifras -->
